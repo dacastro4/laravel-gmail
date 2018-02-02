@@ -35,10 +35,7 @@
   "autoload": {
     "psr-4": {
       "App\\": "app/"
-    },
-    "classmap": [
-      "vendor/google/apiclient/src/Google"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {

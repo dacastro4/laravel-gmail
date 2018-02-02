@@ -1,0 +1,65 @@
+{
+  "name": "dacastro4/laravel-gmail",
+  "description": "Gmail API package for Laravel",
+  "keywords": [
+    "framework",
+    "laravel",
+    "API",
+    "Gmail"
+  ],
+  "license": "MIT",
+  "type": "project",
+  "authors": [
+    {
+      "name": "Daniel Castro",
+      "email": "danielcastro04@gmail.com",
+      "homepage": "https://danielcastro.me"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "google/apiclient": "^2.0",
+    "illuminate/auth": "~5.0|~5.1|~5.2|~5.3",
+    "illuminate/config": "~5.0|~5.1|~5.2|~5.3",
+    "illuminate/database": "~5.0|~5.1|~5.2|~5.3",
+    "illuminate/routing": "~5.0|~5.1|~5.2|~5.3",
+    "illuminate/session": "~5.0|~5.1|~5.2|~5.3",
+    "illuminate/support": "~5.0|~5.1|~5.2|~5.3",
+    "swiftmailer/swiftmailer": "^6.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~6.5",
+    "mockery/mockery": "~0.9",
+    "squizlabs/php_codesniffer": "~2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    },
+    "classmap": [
+      "vendor/google/apiclient/src/Google"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Dacastro4\\LaravelGmail\\LaravelGmailServiceProvider"
+      ],
+      "aliases": {
+        "LaravelGmail": "Dacastro4\\LaravelGmail\\Facade\\LaravelGmail"
+      }
+    }
+  },
+  "config": {
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "optimize-autoloader": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

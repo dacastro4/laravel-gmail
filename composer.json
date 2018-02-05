@@ -2,13 +2,11 @@
   "name": "dacastro4/laravel-gmail",
   "description": "Gmail API package for Laravel",
   "keywords": [
-    "framework",
+    "api",
     "laravel",
-    "API",
     "Gmail"
   ],
   "license": "MIT",
-  "type": "project",
   "authors": [
     {
       "name": "Daniel Castro",
@@ -43,6 +41,9 @@
     }
   },
   "extra": {
+    "branch-alias": {
+      "dev-master": "v0.2"
+    },
     "laravel": {
       "providers": [
         "Dacastro4\\LaravelGmail\\LaravelGmailServiceProvider"

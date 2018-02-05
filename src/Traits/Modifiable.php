@@ -1,6 +1,8 @@
 <?php
 
 namespace Dacastro4\LaravelGmail\Traits;
+
+use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Google_Service_Gmail;
 use Google_Service_Gmail_ModifyMessageRequest;
 
@@ -10,77 +12,120 @@ use Google_Service_Gmail_ModifyMessageRequest;
 trait Modifiable
 {
 
+	//TODO search for a naming convention for all the methods
+
+	use ModifiesLabels {
+		ModifiesLabels::__construct as private __mlConstruct();
+	}
+
+	private $messageRequest;
+
+	public function __construct()
+	{
+		$this->__mlConstruct();
+	}
+
+	/**
+	 * Marks emails as "READ". Returns string of message if fail
+	 *
+	 * @return Mail|string
+	 */
 	public function markAsRead()
 	{
-		$body = new Google_Service_Gmail_ModifyMessageRequest();
-		$body->setRemoveLabelIds( [ 'UNREAD' ] );
 		try {
-			$message = $this->service->users_messages->modify( 'me', $this->getId(), $body );
+			return $this->removeSingleLabel( 'UNREAD' );
 		} catch ( \Exception $e ) {
 			return "Couldn't mark email as read: {$e->getMessage()}";
 		}
-
-		return true;
 	}
 
+	/**
+	 * Marks emails as unread
+	 *
+	 * @return Mail|string
+	 * @throws \Exception
+	 */
 	public function markAsUnread()
 	{
-		$body = new Google_Service_Gmail_ModifyMessageRequest();
-		$body->setAddLabelIds( [ 'UNREAD' ] );
 		try {
-			$message = $this->service->users_messages->modify( 'me', $this->getId(), $body );
+			return $this->addSingleLabel( 'UNREAD' );
 		} catch ( \Exception $e ) {
-			return "Couldn't mark email as unread: {$e->getMessage()}";
+			throw new \Exception( "Couldn't mark email as unread: {$e->getMessage()}" );
 		}
-
-		return true;
 	}
 
-	//TODO: Mark and unmark IMPORTANT
-	public function asImportant()
+	/**
+	 * @return Mail|string
+	 * @throws \Exception
+	 */
+	public function markAsImportant()
 	{
-
+		try {
+			return $this->addSingleLabel( 'IMPORTANT' );
+		} catch ( \Exception $e ) {
+			throw new \Exception( "Couldn't remove mark email as important.: {$e->getMessage()}" );
+		}
 	}
 
-	public function asNotImportant()
+	/**
+	 * @return Mail|string
+	 * @throws \Exception
+	 */
+	public function markAsNotImportant()
 	{
-
+		try {
+			return $this->removeSingleLabel( 'IMPORTANT' );
+		} catch ( \Exception $e ) {
+			throw new \Exception( "Couldn't mark email as unread: {$e->getMessage()}" );
+		}
 	}
 
-	//TODO: Mark and unmark STARRED
+	/**
+	 * @return Mail|string
+	 * @throws \Exception
+	 */
 	public function star()
 	{
-
+		try {
+			return $this->addSingleLabel( 'STARRED' );
+		} catch ( \Exception $e ) {
+			throw new \Exception( "Couldn't remove mark email as important.: {$e->getMessage()}" );
+		}
 	}
 
+	/**
+	 * @return Mail|string
+	 * @throws \Exception
+	 */
 	public function unStart()
 	{
-
-	}
-
-	//TODO: add labels function
-	public function addLabels( $labels )
-	{
-
-	}
-
-	public function removeLabels( $labels )
-	{
-
-	}
-
-	//TODO: Change labels function
-	public function changeLabels( $newBox )
-	{
-		$body = new Google_Service_Gmail_ModifyMessageRequest();
-		$body->setAddLabelIds( [ 'UNREAD' ] );
 		try {
-			$message = $this->service->users_messages->modify( 'me', $this->getId(), $body );
+			return $this->removeSingleLabel( 'STARRED' );
 		} catch ( \Exception $e ) {
-			return "Couldn't mark email as unread: {$e->getMessage()}";
+			throw new \Exception( "Couldn't mark email as unread: {$e->getMessage()}" );
 		}
-
-		return true;
 	}
 
+	/**
+	 * Send the email to the trash
+	 *
+	 * @return \Dacastro4\LaravelGmail\Services\Message\Mail|\Exception
+	 */
+	public function trash()
+	{
+		try {
+			return $this->addSingleLabel( 'TRASH' );
+		} catch ( \Exception $e ) {
+			return new \Exception( "Couldn't mark email as trash: {$e->getMessage()}" );
+		}
+	}
+
+	public function untrash()
+	{
+		try {
+			return $this->removeSingleLabel( 'TRASH' );
+		} catch ( \Exception $e ) {
+			return new \Exception( "Couldn't untrash the email: {$e->getMessage()}" );
+		}
+	}
 }

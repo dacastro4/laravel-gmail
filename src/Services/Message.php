@@ -3,23 +3,57 @@
 namespace Dacastro4\LaravelGmail\Services;
 
 use Dacastro4\LaravelGmail\LaravelGmailClass;
-use Dacastro4\LaravelGmail\ServiceAbstract;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Dacastro4\LaravelGmail\Traits\SendsParameters;
 use Google_Service_Gmail;
 
-class Message implements ServiceAbstract
+class Message
 {
 
 	use SendsParameters;
 
 	public $service;
+
 	public $preload = false;
+
+	/**
+	 * Optional parameter for getting single and multiple emails
+	 *
+	 * @var array
+	 */
 	protected $params = [];
 
+	/**
+	 * Message constructor.
+	 *
+	 * @param LaravelGmailClass $client
+	 */
 	public function __construct( LaravelGmailClass $client )
 	{
 		$this->service = new Google_Service_Gmail( $client );
+	}
+
+	/**
+	 * Returns a collection of Mail instances
+	 *
+	 * @param null $pageToken
+	 *
+	 * @return \Illuminate\Support\Collection
+	 */
+	public function all( $pageToken = null )
+	{
+		if ( $pageToken ) {
+			$this->add( $pageToken, 'pageToken' );
+		}
+
+		$messages = [];
+		$allMessages = $this->service->users_messages->listUsersMessages( 'me', $this->params )->getMessages();
+
+		foreach ( $allMessages as $message ) {
+			$messages[] = new Mail( $message, $this->preload );
+		}
+
+		return collect( $messages );
 	}
 
 	/**
@@ -34,29 +68,35 @@ class Message implements ServiceAbstract
 		return new Mail( $message );
 	}
 
+	/**
+	 * Filter to get only unread emalis
+	 *
+	 * @return $this
+	 */
 	public function unread()
 	{
-		$this->add('is%3Aunread' );
-
-		return $this;
-	}
-
-	public function from( $email )
-	{
-		$this->add("from:{$email}");
-
-		return $this;
-	}
-
-	public function preload()
-	{
-		$this->preload = true;
+		$this->add( 'is%3Aunread' );
 
 		return $this;
 	}
 
 	/**
-	 * Valid boxes
+	 * Filter to get only emails from a specific email address
+	 *
+	 * @param $email
+	 *
+	 * @return $this
+	 */
+	public function from( $email )
+	{
+		$this->add( "from:{$email}" );
+
+		return $this;
+	}
+
+	/**
+	 * Filters emails by tag
+	 * Example:
 	 * * starred
 	 * * inbox
 	 * * spam
@@ -71,43 +111,34 @@ class Message implements ServiceAbstract
 	 */
 	public function in( $box = 'inbox' )
 	{
-		$this->add("in%3A{$box}" );
+		$this->add( "in%3A{$box}" );
 
 		return $this;
 	}
 
 	/**
-	 * Determines if the Mail has attachments
+	 * Determines if the email has attachments
 	 *
 	 * @return $this
 	 */
 	public function hasAttachment()
 	{
-		$this->add('has%3Aattachment');
+		$this->add( 'has%3Aattachment' );
 
 		return $this;
 	}
 
 	/**
-	 * Returns a collection of Mail instances
+	 * Preload the information on each Mail objects.
+	 * If is not preload you will have to call the load method from the Mail class
+	 * @see Mail::load()
 	 *
-	 * @param null $pageToken
-	 *
-	 * @return \Illuminate\Support\Collection
+	 * @return $this
 	 */
-	public function list( $pageToken = null )
+	public function preload()
 	{
-		if ( $pageToken ) {
-			$this->add($pageToken, 'pageToken');
-		}
+		$this->preload = true;
 
-		$messages = [];
-		$allMessages = $this->service->users_messages->listUsersMessages( 'me', $this->params )->getMessages();
-
-		foreach ($allMessages as $message) {
-			$messages[] = new Mail($message, $this->preload);
-		}
-
-		return collect($messages);
+		return $this;
 	}
 }

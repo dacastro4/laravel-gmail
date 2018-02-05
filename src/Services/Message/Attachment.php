@@ -11,23 +11,42 @@ class Attachment extends GmailConnection
 {
 	use HasDecodableBody;
 
+	/**
+	 * @var
+	 */
 	public $body;
+	/**
+	 * @var
+	 */
 	public $id;
+	/**
+	 * @var
+	 */
 	public $filename;
+	/**
+	 * @var
+	 */
 	public $mimeType;
+	/**
+	 * @var
+	 */
 	public $size;
+	/**
+	 * @var Google_Service_Gmail
+	 */
 	private $service;
 
 	/**
-	 * @var \Google_Service_Gmail_MessagePart
+	 * @var
 	 */
-	private $part;
-	/**
-	 * @var \Google_Service_Gmail
-	 */
-	private $client = null;
 	private $messageId;
 
+	/**
+	 * Attachment constructor.
+	 *
+	 * @param                                   $singleMessageId
+	 * @param \Google_Service_Gmail_MessagePart $part
+	 */
 	public function __construct( $singleMessageId, \Google_Service_Gmail_MessagePart $part )
 	{
 		parent::__construct();
@@ -42,21 +61,41 @@ class Attachment extends GmailConnection
 		$this->messageId = $singleMessageId;
 	}
 
+	/**
+	 * Retuns attachment ID
+	 *
+	 * @return string
+	 */
 	public function getId()
 	{
 		return $this->id;
 	}
 
+	/**
+	 * Returns attachment file name
+	 *
+	 * @return string
+	 */
 	public function getFileName()
 	{
 		return $this->filename;
 	}
 
+	/**
+	 * Returns mime type of the attachment
+	 *
+	 * @return string
+	 */
 	public function getMimeType()
 	{
 		return $this->getMimeType();
 	}
 
+	/**
+	 * Returns approximate size of the attachment
+	 *
+	 * @return mixed
+	 */
 	public function getSize()
 	{
 		return $this->size;
@@ -73,8 +112,8 @@ class Attachment extends GmailConnection
 	}
 
 	/**
-	 * @param      $path
-	 * @param null $filename
+	 * @param string $path
+	 * @param string|null $filename
 	 *
 	 * @return string
 	 * @throws \Exception
@@ -82,16 +121,16 @@ class Attachment extends GmailConnection
 	public function saveAttachmentTo( $path = null, $filename = null )
 	{
 
-		$data = $this->getDecodedBody($this->getData());
+		$data = $this->getDecodedBody( $this->getData() );
 
-		if(!$data) {
-			throw new \Exception('Could not get the attachment');
+		if ( ! $data ) {
+			throw new \Exception( 'Could not get the attachment.' );
 		}
 
-		$filename = $filename ?? $this->filename;
+		$filename = $filename ?: $this->filename;
 
-		if($path) {
-			if(!ends_with('/', $path)) {
+		if ( $path ) {
+			if ( ! ends_with( '/', $path ) ) {
 				$path = "{$path}/";
 			}
 		} else {
@@ -100,7 +139,7 @@ class Attachment extends GmailConnection
 
 		$filePathAndName = "{$path}{$filename}";
 
-		Storage::put($filePathAndName, $data);
+		Storage::put( $filePathAndName, $data );
 
 		return $filePathAndName;
 

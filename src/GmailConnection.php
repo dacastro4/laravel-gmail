@@ -5,6 +5,7 @@ namespace Dacastro4\LaravelGmail;
 use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Container\Container;
+use Illuminate\Config\Repository as Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Request;
 
@@ -16,22 +17,21 @@ class GmailConnection extends Google_Client
 	protected $app;
 	protected $accessToken;
 	protected $token;
+	private $config;
 
-	public function __construct()
+	public function __construct(Config $config = null)
 	{
 		$this->app = Container::getInstance();
+		$this->config = $config;
 		parent::__construct( $this->getConfigs() );
-		$this->setScopes( [
-			                  Google_Service_Gmail::GMAIL_READONLY,
-			                  Google_Service_Gmail::GMAIL_MODIFY,
-		                  ] );
+		$this->setScopes( $this->getUserScopes() );
 		$this->setAccessType( 'offline' );
 		$this->refreshTokenIfNeeded();
 	}
 
 	public function getAccessToken()
 	{
-		$token = parent::getAccessToken() ?? $this->config();
+		$token = parent::getAccessToken() ?: $this->config();
 		return $token;
 	}
 
@@ -72,7 +72,7 @@ class GmailConnection extends Google_Client
 
 	public function isAccessTokenExpired()
 	{
-		$token = parent::getAccessToken() ?? $this->config();
+		$token = parent::getAccessToken() ?: $this->config();
 		$this->setAccessToken($token);
 
 		return parent::isAccessTokenExpired();
@@ -84,15 +84,6 @@ class GmailConnection extends Google_Client
 		$this->setAccessToken( 'null' );
 	}
 
-	function expandHomeDirectory( $path )
-	{
-		$homeDirectory = getenv( 'HOME' );
-		if ( empty( $homeDirectory ) ) {
-			$homeDirectory = getenv( 'HOMEDRIVE' ) . getenv( 'HOMEPATH' );
-		}
-
-		return str_replace( '~', realpath( $homeDirectory ), $path );
-	}
 
 	private function refreshTokenIfNeeded()
 	{
@@ -141,15 +132,15 @@ class GmailConnection extends Google_Client
 	public function getConfigs()
 	{
 		return [
-			'client_secret' => config('gmail.client_secret'),
-			'client_id'     => config('gmail.client_id'),
-			'redirect_uri'  => url( config('gmail.redirect_url', '/') ),
+			'client_secret' => $this->config->get('gmail.client_secret'),
+			'client_id'     => $this->config->get('gmail.client_id'),
+			'redirect_uri'  => url( $this->config->get('gmail.redirect_url', '/') ),
 		];
 	}
 
 	public function config( $string = null, $email = null )
 	{
-		$email = $email ?? $this->emailAddress;
+		$email = $email ?: $this->emailAddress;
 		$file = storage_path( "gmail-{$email}json" );
 
 		if ( File::exists( $file ) ) {
@@ -173,7 +164,15 @@ class GmailConnection extends Google_Client
 	private function getFileName()
 	{
 		//TODO Make the replacer function
-		return config('gmail.credentials_file_name');
+		return $this->config->get('gmail.credentials_file_name');
+	}
+
+	private function getUserScopes()
+	{
+		return [
+			Google_Service_Gmail::GMAIL_READONLY,
+			Google_Service_Gmail::GMAIL_MODIFY,
+		];
 	}
 
 }

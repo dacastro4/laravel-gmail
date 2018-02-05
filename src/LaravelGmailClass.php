@@ -2,15 +2,15 @@
 
 namespace Dacastro4\LaravelGmail;
 
-use Illuminate\Http\Request;
+use Illuminate\Config\Repository as Config;
 use Illuminate\Support\Facades\Redirect;
 
 class LaravelGmailClass extends GmailConnection
 {
 
-	public function __construct()
+	public function __construct( Config $config )
 	{
-		parent::__construct();
+		parent::__construct( $config );
 	}
 
 	/**

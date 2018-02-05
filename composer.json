@@ -17,7 +17,7 @@
     }
   ],
   "require": {
-    "php": ">=7.0",
+    "php": ">=5.6",
     "google/apiclient": "^2.0",
     "illuminate/auth": "~5.0|~5.1|~5.2|~5.3",
     "illuminate/config": "~5.0|~5.1|~5.2|~5.3",
@@ -34,7 +34,7 @@
   },
   "autoload": {
     "psr-4": {
-      "App\\": "app/"
+      "Dacastro4\\LaravelGmail\\": "src/"
     }
   },
   "autoload-dev": {

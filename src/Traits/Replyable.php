@@ -147,7 +147,7 @@ trait Replyable
 	 */
 	public function cc( $cc, $name = null )
 	{
-		$this->cc = $this->emailList( $cc );
+		$this->cc = $this->emailList( $cc, $name );
 		$this->nameCc = $name;
 
 		return $this;
@@ -162,7 +162,7 @@ trait Replyable
 	 */
 	public function bcc( $bcc, $name = null )
 	{
-		$this->bcc = $this->emailList( $bcc );
+		$this->bcc = $this->emailList( $bcc, $name );
 		$this->nameBcc = $name;
 
 		return $this;
@@ -255,6 +255,7 @@ trait Replyable
 		$this->setReplyThreat();
 		$this->setReplySubject();
 		$body = $this->getMessageBody();
+		$body->setThreadId($this->getThreatId());
 
 		return new Mail( $this->service->users_messages->send( 'me', $body, $this->parameters ) );
 	}
@@ -316,13 +317,26 @@ trait Replyable
 		return rtrim( strtr( base64_encode( $data ), '+/', '-_' ), '=' );
 	}
 
-	private function emailList( $list )
+	private function emailList( $list, $name = null )
 	{
 		if ( is_array( $list ) ) {
-			return implode( ', ', $list );
+			return $this->convertEmailList( $list, $name );
 		} else {
 			return $list;
 		}
+	}
+
+	private function convertEmailList( $emails, $name = null )
+	{
+		$newList = [];
+		$c = 0;
+		foreach ( $emails as $key => $email ) {
+			$emailName = isset( $name[ $c ] ) ? $name[ $c ] : explode( '@', $email )[ 0 ];
+			$newList[ $email ] = $emailName;
+			$c = $c + 1;
+		}
+
+		return $newList;
 	}
 
 	private function setReplySubject()

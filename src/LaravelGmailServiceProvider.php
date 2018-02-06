@@ -16,8 +16,6 @@ class LaravelGmailServiceProvider extends ServiceProvider
 	public function register()
 	{
 
-		$app = $this->app ?: app();
-
 		$this->mergeConfigFrom( __DIR__ . '/config/gmail.php', 'gmail' );
 
 		// Main Service

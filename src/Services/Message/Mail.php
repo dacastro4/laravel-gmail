@@ -66,7 +66,7 @@ class Mail extends GmailConnection
 	 * @param \Google_Service_Gmail_Message $message
 	 * @param bool $preload
 	 */
-	public function __construct( \Google_Service_Gmail_Message $message, $preload = false )
+	public function __construct( \Google_Service_Gmail_Message $message = null, $preload = false )
 	{
 
 		$this->service = new Google_Service_Gmail( $this );
@@ -75,16 +75,18 @@ class Mail extends GmailConnection
 		$this->__mConstruct();
 		parent::__construct();
 
-		if ( $preload ) {
-			$message = $this->service->users_messages->get( 'me', $message->getId() );
-		}
+		if(!is_null($message)) {
+			if ( $preload ) {
+				$message = $this->service->users_messages->get( 'me', $message->getId() );
+			}
 
-		$this->id = $message->getId();
-		$this->internalDate = $message->getInternalDate();
-		$this->labels = $message->getLabelIds();
-		$this->size = $message->getSizeEstimate();
-		$this->threatId = $message->getThreadId();
-		$this->payload = $message->getPayload();
+			$this->id = $message->getId();
+			$this->internalDate = $message->getInternalDate();
+			$this->labels = $message->getLabelIds();
+			$this->size = $message->getSizeEstimate();
+			$this->threatId = $message->getThreadId();
+			$this->payload = $message->getPayload();
+		}
 	}
 
 	/**
@@ -196,9 +198,7 @@ class Mail extends GmailConnection
 	 */
 	public function getPlainTextBody( $raw = false )
 	{
-		$part = $this->getBodyPart();
-		$body = $part->getBody();
-		$content = $body->getData();
+		$content = $this->getBody();
 
 		return $raw ? $content : $this->getDecodedBody( $content );
 	}
@@ -218,9 +218,7 @@ class Mail extends GmailConnection
 	 */
 	public function getHtmlBody( $raw = false )
 	{
-		$part = $this->getBodyPart( 'text/html' );
-		$body = $part->getBody();
-		$content = $body->getData();
+		$content = $this->getBody('text/html' );
 
 		return $raw ? $content : $this->getDecodedBody( $content );
 	}
@@ -281,7 +279,7 @@ class Mail extends GmailConnection
 	 *
 	 * @return \Google_Service_Gmail_MessagePart|null
 	 */
-	private function getBodyPart( $type = 'text/html' )
+	private function getBodyPart( $type = 'text/plain' )
 	{
 		$body = $this->payload->getParts();
 
@@ -301,6 +299,14 @@ class Mail extends GmailConnection
 		}
 
 		return null;
+	}
+
+	public function getBody( $type = 'text/plain' )
+	{
+		$part = $this->getBodyPart($type);
+		$body = $part->getBody();
+
+		return $body->getData();
 	}
 
 	/**

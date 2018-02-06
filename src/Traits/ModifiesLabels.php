@@ -8,6 +8,10 @@ use Google_Service_Gmail_ModifyMessageRequest;
 trait ModifiesLabels
 {
 
+	public $messageRequest;
+
+	public $service;
+
 	public function __construct()
 	{
 		$this->messageRequest = new Google_Service_Gmail_ModifyMessageRequest();
@@ -25,7 +29,7 @@ trait ModifiesLabels
 		try {
 			return $this->modify();
 		} catch ( \Exception $e ) {
-			throw new \Exception( "Couldn't mark email as unread: {$e->getMessage()}" );
+			throw new \Exception( "Couldn't add labels: {$e->getMessage()}" );
 		}
 	}
 
@@ -41,7 +45,7 @@ trait ModifiesLabels
 		try {
 			return $this->modify();
 		} catch ( \Exception $e ) {
-			throw new \Exception( "Couldn't remove mark email as important.: {$e->getMessage()}" );
+			throw new \Exception( "Couldn't remove labels: {$e->getMessage()}" );
 		}
 	}
 

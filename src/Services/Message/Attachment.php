@@ -44,7 +44,7 @@ class Attachment extends GmailConnection
 	/**
 	 * Attachment constructor.
 	 *
-	 * @param                                   $singleMessageId
+	 * @param $singleMessageId
 	 * @param \Google_Service_Gmail_MessagePart $part
 	 */
 	public function __construct( $singleMessageId, \Google_Service_Gmail_MessagePart $part )
@@ -129,12 +129,12 @@ class Attachment extends GmailConnection
 
 		$filename = $filename ?: $this->filename;
 
-		if ( $path ) {
+		if ( is_null($path) ) {
+			$path = '/';
+		} else {
 			if ( ! ends_with( '/', $path ) ) {
 				$path = "{$path}/";
 			}
-		} else {
-			$path = '/';
 		}
 
 		$filePathAndName = "{$path}{$filename}";

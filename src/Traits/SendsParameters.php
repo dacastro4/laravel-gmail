@@ -4,6 +4,9 @@ namespace Dacastro4\LaravelGmail\Traits;
 
 trait SendsParameters
 {
+
+	protected $params;
+
 	/**
 	 * Ads parameters to the parameters property which is used to send additional parameter in the request.
 	 *

@@ -19,19 +19,22 @@ class GmailConnection extends Google_Client
 	protected $token;
 	private $config;
 
-	public function __construct(Config $config = null)
+	public function __construct( Config $config = null )
 	{
 		$this->app = Container::getInstance();
 		$this->config = $config;
 		parent::__construct( $this->getConfigs() );
 		$this->setScopes( $this->getUserScopes() );
 		$this->setAccessType( 'offline' );
-		$this->refreshTokenIfNeeded();
+		if ( $this->check() ) {
+			$this->refreshTokenIfNeeded();
+		}
 	}
 
 	public function getAccessToken()
 	{
 		$token = parent::getAccessToken() ?: $this->config();
+
 		return $token;
 	}
 
@@ -50,7 +53,8 @@ class GmailConnection extends Google_Client
 				if ( $me ) {
 					$this->emailAddress = $me->emailAddress;
 				}
-				$this->setAccessToken($accessToken);
+				$this->setAccessToken( $accessToken );
+
 				return $accessToken;
 			} else {
 				throw new \Exception( 'No access token' );
@@ -67,13 +71,15 @@ class GmailConnection extends Google_Client
 
 	public function check()
 	{
-		return !$this->isAccessTokenExpired();
+		return ! $this->isAccessTokenExpired();
 	}
 
 	public function isAccessTokenExpired()
 	{
 		$token = parent::getAccessToken() ?: $this->config();
-		$this->setAccessToken($token);
+		if ( $token ) {
+			$this->setAccessToken( $token );
+		}
 
 		return parent::isAccessTokenExpired();
 	}
@@ -81,7 +87,6 @@ class GmailConnection extends Google_Client
 	public function logout()
 	{
 		$this->revokeToken();
-		$this->setAccessToken( 'null' );
 	}
 
 
@@ -90,7 +95,7 @@ class GmailConnection extends Google_Client
 		if ( $this->isAccessTokenExpired() ) {
 			$this->fetchAccessTokenWithRefreshToken( $this->getRefreshToken() );
 			$token = $this->getAccessToken();
-			$this->setAccessToken($token);
+			$this->setAccessToken( $token );
 		}
 	}
 
@@ -104,10 +109,10 @@ class GmailConnection extends Google_Client
 		return $service->users->getProfile( 'me' );
 	}
 
-	public function setAccessToken($token)
+	public function setAccessToken( $token )
 	{
-		parent::setAccessToken($token);
-		$this->saveAccessToken($token);
+		parent::setAccessToken( $token );
+		$this->saveAccessToken( $token );
 	}
 
 	/**
@@ -115,15 +120,28 @@ class GmailConnection extends Google_Client
 	 *
 	 * @param array $config
 	 */
-	public function saveAccessToken( array $config)
+	public function saveAccessToken( array $config )
 	{
 		$fileName = $this->getFileName();
 		$file = $file = storage_path( $fileName );
 
-		File::delete($file);
+		File::delete( $file );
 
 		$config[ 'email' ] = $this->emailAddress;
 		File::put( $file, json_encode( $config ) );
+	}
+
+	/**
+	 * Delete the credentials in a file
+	 */
+	public function deleteAccessToken()
+	{
+		$fileName = $this->getFileName();
+		$file = $file = storage_path( $fileName );
+
+		File::delete( $file );
+
+		File::put( $file, json_encode( [] ) );
 	}
 
 	/**
@@ -132,9 +150,9 @@ class GmailConnection extends Google_Client
 	public function getConfigs()
 	{
 		return [
-			'client_secret' => $this->config->get('gmail.client_secret'),
-			'client_id'     => $this->config->get('gmail.client_id'),
-			'redirect_uri'  => url( $this->config->get('gmail.redirect_url', '/') ),
+			'client_secret' => $this->config->get( 'gmail.client_secret' ),
+			'client_id'     => $this->config->get( 'gmail.client_id' ),
+			'redirect_uri'  => url( $this->config->get( 'gmail.redirect_url', '/' ) ),
 		];
 	}
 
@@ -149,7 +167,7 @@ class GmailConnection extends Google_Client
 				true
 			);
 
-			if($string) {
+			if ( $string ) {
 				if ( isset( $config[ $string ] ) ) {
 					return $config[ $string ];
 				}
@@ -158,13 +176,14 @@ class GmailConnection extends Google_Client
 			}
 
 		}
+
 		return null;
 	}
 
 	private function getFileName()
 	{
 		//TODO Make the replacer function
-		return $this->config->get('gmail.credentials_file_name');
+		return $this->config->get( 'gmail.credentials_file_name' );
 	}
 
 	private function getUserScopes()

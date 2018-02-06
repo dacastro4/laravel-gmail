@@ -12,8 +12,6 @@ use Google_Service_Gmail_ModifyMessageRequest;
 trait Modifiable
 {
 
-	//TODO search for a naming convention for all the methods
-
 	use ModifiesLabels {
 		ModifiesLabels::__construct as private __mlConstruct();
 	}
@@ -84,7 +82,7 @@ trait Modifiable
 	 * @return Mail|string
 	 * @throws \Exception
 	 */
-	public function star()
+	public function addStar()
 	{
 		try {
 			return $this->addSingleLabel( 'STARRED' );
@@ -97,7 +95,7 @@ trait Modifiable
 	 * @return Mail|string
 	 * @throws \Exception
 	 */
-	public function unStart()
+	public function removeStar()
 	{
 		try {
 			return $this->removeSingleLabel( 'STARRED' );
@@ -111,7 +109,7 @@ trait Modifiable
 	 *
 	 * @return \Dacastro4\LaravelGmail\Services\Message\Mail|\Exception
 	 */
-	public function trash()
+	public function sendToTrash()
 	{
 		try {
 			return $this->addSingleLabel( 'TRASH' );
@@ -120,7 +118,7 @@ trait Modifiable
 		}
 	}
 
-	public function untrash()
+	public function removeFromTrash()
 	{
 		try {
 			return $this->removeSingleLabel( 'TRASH' );

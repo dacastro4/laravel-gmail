@@ -2,6 +2,7 @@
 
 namespace Dacastro4\LaravelGmail;
 
+use Dacastro4\LaravelGmail\Services\Message;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Support\Facades\Redirect;
 
@@ -14,35 +15,28 @@ class LaravelGmailClass extends GmailConnection
 	}
 
 	/**
-	 * @param $name
-	 * @param $arguments
-	 *
-	 * @return mixed
-	 * @throws \Exception
+	 * @return Message
 	 */
-	public function __call( $name, $arguments )
+	public function message()
 	{
-		if ( method_exists( $this, $name ) ) {
-			call_user_func_array( [
-				                      $this,
-				                      $name ], $arguments );
-		} else {
-			$className = "Dacastro4\\LaravelGmail\\Services\\{$name}";
-			if ( class_exists( $className ) ) {
-				try {
-					$class = new \ReflectionClass( $className );
-					$instance = $class->newInstanceArgs( [ $this ] );
-
-					return $instance;
-				} catch ( \ReflectionException $e ) {
-					throw new \Exception( "Class Not Found {$name}" );
-				}
-			}
-
-			return null;
-		}
+		return new Message($this);
 	}
 
+	/**
+	 * Returns the Gmail user email
+	 *
+	 * @return \Google_Service_Gmail_Profile
+	 */
+	public function user()
+	{
+		return $this->config('email');
+	}
+
+	/**
+	 * Gets the URL to authorize the user
+	 *
+	 * @return string
+	 */
 	public function getAuthUrl()
 	{
 		return $this->createAuthUrl();
@@ -56,7 +50,7 @@ class LaravelGmailClass extends GmailConnection
 	public function logout()
 	{
 		$this->revokeToken();
-		$this->setAccessToken( 'null' );
+		$this->deleteAccessToken();
 	}
 
 }

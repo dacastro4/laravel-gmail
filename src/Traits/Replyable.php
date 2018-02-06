@@ -55,7 +55,7 @@ trait Replyable
 	/**
 	 * Email of the recipient
 	 *
-	 * @var string
+	 * @var string|array
 	 */
 	private $to;
 
@@ -203,6 +203,8 @@ trait Replyable
 	public function attach( $path )
 	{
 
+		$file = [];
+
 		//TODO: Solve the attach issue. Which files should I attach? UploadFile it's an option.
 		if ( Storage::has( $path ) ) {
 			$content = Storage::get( $path );
@@ -265,9 +267,9 @@ trait Replyable
 	 */
 	public function send()
 	{
-		//TODO: How to send email
+		$body = $this->getBody();
 
-		return new Mail( $this->service->users_messages->send( 'me', $this->body, $this->parameters ) );
+		return new Mail( $this->service->users_messages->send( 'me', $body, $this->parameters ) );
 	}
 
 	/**
@@ -340,4 +342,6 @@ trait Replyable
 			$this->setHeader( 'Message-ID', $this->getHeader( 'Message-ID' ) );
 		}
 	}
+
+	public abstract function getThreatId();
 }

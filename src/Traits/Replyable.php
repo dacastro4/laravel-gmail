@@ -254,8 +254,7 @@ trait Replyable
 	{
 		$this->setReplyThreat();
 		$this->setReplySubject();
-		$body = $this->getBody();
-		$body->setThreadId( $this->getThreatId() );
+		$body = $this->getMessageBody();
 
 		return new Mail( $this->service->users_messages->send( 'me', $body, $this->parameters ) );
 	}
@@ -267,7 +266,7 @@ trait Replyable
 	 */
 	public function send()
 	{
-		$body = $this->getBody();
+		$body = $this->getMessageBody();
 
 		return new Mail( $this->service->users_messages->send( 'me', $body, $this->parameters ) );
 	}
@@ -289,7 +288,7 @@ trait Replyable
 	/**
 	 * @return Google_Service_Gmail_Message
 	 */
-	private function getBody()
+	private function getMessageBody()
 	{
 		$body = new Google_Service_Gmail_Message();
 

@@ -6,7 +6,7 @@ use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Container\Container;
 use Illuminate\Config\Repository as Config;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Request;
 
 class GmailConnection extends Google_Client
@@ -123,12 +123,15 @@ class GmailConnection extends Google_Client
 	public function saveAccessToken( array $config )
 	{
 		$fileName = $this->getFileName();
-		$file = $file = storage_path( $fileName );
+		$file = "gmail/tokens/$fileName.json";
 
-		File::delete( $file );
+		if ( Storage::exists( $file ) ) {
+			Storage::delete( storage_path($file) );
+		}
 
 		$config[ 'email' ] = $this->emailAddress;
-		File::put( $file, json_encode( $config ) );
+
+		Storage::put( $file, json_encode( $config ) );
 	}
 
 	/**
@@ -137,11 +140,13 @@ class GmailConnection extends Google_Client
 	public function deleteAccessToken()
 	{
 		$fileName = $this->getFileName();
-		$file = $file = storage_path( $fileName );
+		$file = "gmail/tokens/$fileName.json";
 
-		File::delete( $file );
+		if ( Storage::exists( $file ) ) {
+			Storage::delete( $file );
+		}
 
-		File::put( $file, json_encode( [] ) );
+		Storage::put( $file, json_encode( [] ) );
 	}
 
 	/**
@@ -150,20 +155,20 @@ class GmailConnection extends Google_Client
 	public function getConfigs()
 	{
 		return [
-			'client_secret' => $this->config->get( 'gmail.client_secret' ),
-			'client_id'     => $this->config->get( 'gmail.client_id' ),
-			'redirect_uri'  => url( $this->config->get( 'gmail.redirect_url', '/' ) ),
+			'client_secret' => $this->config['gmail.client_secret'],
+			'client_id'     => $this->config['gmail.client_id'],
+			'redirect_uri'  => url( $this->config['gmail.redirect_url'] ),
 		];
 	}
 
 	public function config( $string = null, $email = null )
 	{
 		$email = $email ?: $this->emailAddress;
-		$file = storage_path( "gmail-{$email}json" );
+		$file = "gmail/tokens/gmail-{$email}json.json";
 
-		if ( File::exists( $file ) ) {
+		if ( Storage::exists( $file ) ) {
 			$config = json_decode(
-				File::get( $file ),
+				Storage::get( $file ),
 				true
 			);
 
@@ -183,7 +188,7 @@ class GmailConnection extends Google_Client
 	private function getFileName()
 	{
 		//TODO Make the replacer function
-		return $this->config->get( 'gmail.credentials_file_name' );
+		return $this->config['gmail.credentials_file_name'];
 	}
 
 	private function getUserScopes()

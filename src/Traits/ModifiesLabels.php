@@ -8,7 +8,7 @@ use Google_Service_Gmail_ModifyMessageRequest;
 trait ModifiesLabels
 {
 
-	public $messageRequest;
+	private $messageRequest;
 
 	public $service;
 

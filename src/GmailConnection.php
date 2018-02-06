@@ -53,7 +53,7 @@ class GmailConnection extends Google_Client
 				if ( $me ) {
 					$this->emailAddress = $me->emailAddress;
 				}
-				$this->setAccessToken( $accessToken );
+				$this->setBothAccessToken( $accessToken );
 
 				return $accessToken;
 			} else {
@@ -112,6 +112,12 @@ class GmailConnection extends Google_Client
 	public function setAccessToken( $token )
 	{
 		parent::setAccessToken( $token );
+	}
+
+	public function setBothAccessToken( $token )
+	{
+		parent::setAccessToken( $token );
+		$this->saveAccessToken($token);
 	}
 
 	/**

@@ -13,7 +13,7 @@ trait Modifiable
 {
 
 	use ModifiesLabels {
-		ModifiesLabels::__construct as private __mlConstruct();
+		ModifiesLabels::__construct as private __mlConstruct;
 	}
 
 	private $messageRequest;

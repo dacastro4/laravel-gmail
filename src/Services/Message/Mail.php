@@ -281,24 +281,26 @@ class Mail extends GmailConnection
 	 */
 	private function getBodyPart( $type = 'text/plain' )
 	{
+
 		$body = $this->payload->getParts();
 
-		if ( isset( $body[ 0 ] ) ) {
-
-			$parts = $body[ 0 ]->getParts();
-
-			/** @var \Google_Service_Gmail_MessagePart $part */
-			foreach ( $parts as $part ) {
-				if ( $part->getMimeType() === $type ) {
-					break;
-				}
-			}
-
-			return $part ?: null;
-
+		if($this->hasAttachments()) {
+			//Get the first attachment that is the main body
+			$body = isset($body[ 0 ]) ? $body[ 0 ] : [];
+			$parts = $body->getParts();
+		} else {
+			$parts = $body;
 		}
 
-		return null;
+		/** @var \Google_Service_Gmail_MessagePart $part */
+		foreach ( $parts as $part ) {
+			if ( $part->getMimeType() === $type ) {
+				break;
+			}
+		}
+
+		return $part ?: null;
+
 	}
 
 	public function getBody( $type = 'text/plain' )

@@ -5,13 +5,18 @@ namespace Dacastro4\LaravelGmail\Traits;
 use Google_Service_Gmail;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Trait Configurable
+ * @package Dacastro4\LaravelGmail\Traits
+ * @property $configuration
+ * @property $emailAddress
+ */
 trait Configurable
 {
 
-	public function config( $string = null, $email = null )
+	public function config( $string = null )
 	{
-		$email = $email ?: $this->emailAddress;
-		$fileName = $this->getFileName( $email );
+		$fileName = $this->getFileName();
 		$file = "gmail/tokens/{$fileName}.json";
 
 		if ( Storage::exists( $file ) ) {
@@ -47,9 +52,10 @@ trait Configurable
 
 	private function getUserScopes()
 	{
-		return array_merge( [
-			                    Google_Service_Gmail::GMAIL_READONLY,
-		                    ], $this->mapScopes() );
+		return array_merge(
+			[
+				Google_Service_Gmail::GMAIL_READONLY,
+			], $this->mapScopes() );
 	}
 
 	private function configApi()
@@ -87,45 +93,25 @@ trait Configurable
 	{
 		switch ( $scope ) {
 			case 'all':
-				{
-					return Google_Service_Gmail::MAIL_GOOGLE_COM;
-				}
+				return Google_Service_Gmail::MAIL_GOOGLE_COM;
 			case 'compose':
-				{
-					return Google_Service_Gmail::GMAIL_COMPOSE;
-				}
+				return Google_Service_Gmail::GMAIL_COMPOSE;
 			case 'insert':
-				{
-					return Google_Service_Gmail::GMAIL_INSERT;
-				}
+				return Google_Service_Gmail::GMAIL_INSERT;
 			case 'labels':
-				{
-					return Google_Service_Gmail::GMAIL_LABELS;
-				}
+				return Google_Service_Gmail::GMAIL_LABELS;
 			case 'metadata':
-				{
-					return Google_Service_Gmail::GMAIL_METADATA;
-				}
+				return Google_Service_Gmail::GMAIL_METADATA;
 			case 'modify':
-				{
-					return Google_Service_Gmail::GMAIL_MODIFY;
-				}
+				return Google_Service_Gmail::GMAIL_MODIFY;
 			case 'readonly':
-				{
-					return Google_Service_Gmail::GMAIL_READONLY;
-				}
+				return Google_Service_Gmail::GMAIL_READONLY;
 			case 'send':
-				{
-					return Google_Service_Gmail::GMAIL_SEND;
-				}
+				return Google_Service_Gmail::GMAIL_SEND;
 			case 'settings_basic':
-				{
-					return Google_Service_Gmail::GMAIL_SETTINGS_BASIC;
-				}
+				return Google_Service_Gmail::GMAIL_SETTINGS_BASIC;
 			case 'settings_sharing':
-				{
-					return Google_Service_Gmail::GMAIL_SETTINGS_SHARING;
-				}
+				return Google_Service_Gmail::GMAIL_SETTINGS_SHARING;
 		}
 	}
 

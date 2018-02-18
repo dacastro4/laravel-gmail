@@ -144,7 +144,7 @@ class Mail extends GmailConnection
 	/**
 	 * Returns all the headers of the email
 	 *
-	 * @return \Google_Service_Gmail_MessagePartHeader
+	 * @return Collection
 	 */
 	public function getHeaders()
 	{
@@ -169,6 +169,10 @@ class Mail extends GmailConnection
 	public function getFrom()
 	{
 		$from = $this->getHeader( 'From' );
+
+		if(is_array($from)) {
+			$from = array_shift($from);
+		}
 
 		preg_match( '/<(.*)>/', $from, $matches );
 
@@ -216,6 +220,10 @@ class Mail extends GmailConnection
 	public function getTo()
 	{
 		$allTo = $this->getHeader( 'To' );
+
+		if(is_array($allTo)) {
+			$allTo = array_shift($allTo);
+		}
 
 		return $this->formatEmailList( $allTo );
 	}
@@ -424,6 +432,8 @@ class Mail extends GmailConnection
 		$explodedEmails = explode( ',', $emails );
 
 		foreach ( $explodedEmails as $email ) {
+
+			$item = [];
 
 			preg_match( '/<(.*)>/', $email, $matches );
 

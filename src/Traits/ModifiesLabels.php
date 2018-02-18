@@ -72,4 +72,6 @@ trait ModifiesLabels
 	{
 		return new Mail( $this->service->users_messages->modify( 'me', $this->getId(), $this->messageRequest ) );
 	}
+
+	abstract function getId();
 }

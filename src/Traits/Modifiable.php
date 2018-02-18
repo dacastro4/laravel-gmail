@@ -13,14 +13,14 @@ trait Modifiable
 {
 
 	use ModifiesLabels {
-		ModifiesLabels::__construct as private __mlConstruct;
+		ModifiesLabels::__construct as private __mConstruct;
 	}
 
 	private $messageRequest;
 
 	public function __construct()
 	{
-		$this->__mlConstruct();
+		$this->__mConstruct();
 	}
 
 	/**

@@ -39,4 +39,6 @@ trait HasHeaders
 		return $value;
 	}
 
+	abstract function getHeaders();
+
 }

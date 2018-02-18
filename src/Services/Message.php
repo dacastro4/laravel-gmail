@@ -36,7 +36,7 @@ class Message
 	/**
 	 * Returns a collection of Mail instances
 	 *
-	 * @param null $pageToken
+	 * @param null|string $pageToken
 	 *
 	 * @return \Illuminate\Support\Collection
 	 */

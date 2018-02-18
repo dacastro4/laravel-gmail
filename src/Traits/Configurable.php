@@ -52,8 +52,6 @@ trait Configurable
 
 	private function getUserScopes()
 	{
-		dd( $this->mapScopes() );
-
 		return array_merge(
 			[
 				Google_Service_Gmail::GMAIL_READONLY,
@@ -109,10 +107,10 @@ trait Configurable
 		return array_get( $scopes, $scope );
 	}
 
-	abstract function setScopes( $scopes );
+	public abstract function setScopes( $scopes );
 
-	abstract function setAccessType( $type );
+	public abstract function setAccessType( $type );
 
-	abstract function setApprovalPrompt( $approval );
+	public abstract function setApprovalPrompt( $approval );
 
 }

@@ -42,7 +42,7 @@ class Message
 	 */
 	public function all( $pageToken = null )
 	{
-		if ( $pageToken ) {
+		if ( !is_null($pageToken) ) {
 			$this->add( $pageToken, 'pageToken' );
 		}
 

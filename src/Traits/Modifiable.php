@@ -20,6 +20,7 @@ trait Modifiable
 
 	public function __construct()
 	{
+		/** @scrutinizer ignore-call */
 		$this->__mConstruct();
 	}
 

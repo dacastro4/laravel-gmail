@@ -55,7 +55,7 @@ class GmailConnection extends Google_Client
 			if ( !is_null($code) && !empty($code) ) {
 				$accessToken = $this->fetchAccessTokenWithAuthCode( $code );
 				$me = $this->getProfile();
-				if ( $me && $me instanceof \Google_Service_Gmail_Profile ) {
+				if ( property_exists($me, 'emailAddress') ) {
 					$this->emailAddress = $me->emailAddress;
 				}
 				$this->setBothAccessToken( $accessToken );

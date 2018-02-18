@@ -361,11 +361,11 @@ trait Replyable
 		}
 	}
 
-	abstract function getThreatId();
+	public abstract function getThreatId();
 
-	abstract function getId();
+	public abstract function getId();
 
-	abstract function getSubject();
+	public abstract function getSubject();
 
-	abstract function getHeader();
+	public abstract function getHeader( $header );
 }

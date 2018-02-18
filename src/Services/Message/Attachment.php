@@ -115,10 +115,12 @@ class Attachment extends GmailConnection
 	 * @param string $path
 	 * @param string|null $filename
 	 *
+	 * @param string $disk
+	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function saveAttachmentTo( $path = null, $filename = null )
+	public function saveAttachmentTo( $path = null, $filename = null, $disk = 'local' )
 	{
 
 		$data = $this->getDecodedBody( $this->getData() );
@@ -139,7 +141,7 @@ class Attachment extends GmailConnection
 
 		$filePathAndName = "{$path}{$filename}";
 
-		Storage::put( $filePathAndName, $data );
+		Storage::disk($disk)->put( $filePathAndName, $data );
 
 		return $filePathAndName;
 

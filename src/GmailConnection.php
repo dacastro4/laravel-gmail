@@ -2,14 +2,17 @@
 
 namespace Dacastro4\LaravelGmail;
 
+use Dacastro4\LaravelGmail\Traits\Configurable;
 use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Container\Container;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 
 class GmailConnection extends Google_Client
 {
+
+	use Configurable;
 
 	protected $emailAddress;
 	protected $refreshToken;
@@ -21,11 +24,13 @@ class GmailConnection extends Google_Client
 	public function __construct( $config = null )
 	{
 		$this->app = Container::getInstance();
+
 		$this->configuration = $config;
+
 		parent::__construct( $this->getConfigs() );
-		$this->setScopes( $this->getUserScopes() );
-		$this->setAccessType( 'offline' );
-		$this->setApprovalPrompt( 'force' );
+
+		$this->configApi();
+
 		if ( $this->check() ) {
 			$this->refreshTokenIfNeeded();
 		}
@@ -69,14 +74,27 @@ class GmailConnection extends Google_Client
 		$this->setAccessToken( $token );
 	}
 
+	/**
+	 * Check
+	 *
+	 * @return bool
+	 */
 	public function check()
 	{
 		return ! $this->isAccessTokenExpired();
 	}
 
+	/**
+	 * Check if token exists and is expired
+	 * Throws an AuthException when the auth file its empty or with the wrong token
+	 *
+	 *
+	 * @return bool
+	 */
 	public function isAccessTokenExpired()
 	{
-		$token = parent::getAccessToken() ?: $this->config();
+		$token = $this->getToken();
+
 		if ( $token ) {
 			$this->setAccessToken( $token );
 		}
@@ -84,12 +102,22 @@ class GmailConnection extends Google_Client
 		return parent::isAccessTokenExpired();
 	}
 
+	/**
+	 * Revokes user's permission and logs them out
+	 */
 	public function logout()
 	{
 		$this->revokeToken();
 	}
 
+	public function getToken()
+	{
+		return parent::getAccessToken() ?: $this->config();
+	}
 
+	/**
+	 * Refresh the auth token if needed
+	 */
 	private function refreshTokenIfNeeded()
 	{
 		if ( $this->isAccessTokenExpired() ) {
@@ -100,6 +128,8 @@ class GmailConnection extends Google_Client
 	}
 
 	/**
+	 * Gets user profile from Gmail
+	 *
 	 * @return \Google_Service_Gmail_Profile
 	 */
 	public function getProfile()
@@ -109,11 +139,17 @@ class GmailConnection extends Google_Client
 		return $service->users->getProfile( 'me' );
 	}
 
+	/**
+	 * @param array|string $token
+	 */
 	public function setAccessToken( $token )
 	{
 		parent::setAccessToken( $token );
 	}
 
+	/**
+	 * @param $token
+	 */
 	public function setBothAccessToken( $token )
 	{
 		parent::setAccessToken( $token );
@@ -152,57 +188,6 @@ class GmailConnection extends Google_Client
 		}
 
 		Storage::put( $file, json_encode( [] ) );
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getConfigs()
-	{
-		return [
-			'client_secret' => $this->configuration[ 'gmail.client_secret' ],
-			'client_id'     => $this->configuration[ 'gmail.client_id' ],
-			'redirect_uri'  => url( $this->configuration[ 'gmail.redirect_url' ] ),
-		];
-	}
-
-	public function config( $string = null, $email = null )
-	{
-		$email = $email ?: $this->emailAddress;
-		$fileName = $this->getFileName( $email );
-		$file = "gmail/tokens/{$fileName}.json";
-
-		if ( Storage::exists( $file ) ) {
-			$config = json_decode(
-				Storage::get( $file ),
-				true
-			);
-
-			if ( $string ) {
-				if ( isset( $config[ $string ] ) ) {
-					return $config[ $string ];
-				}
-			} else {
-				return $config;
-			}
-
-		}
-
-		return null;
-	}
-
-	private function getFileName( $email = null )
-	{
-		//TODO Make the replacer function
-		return $this->configuration[ 'gmail.credentials_file_name' ];
-	}
-
-	private function getUserScopes()
-	{
-		return [
-			Google_Service_Gmail::GMAIL_READONLY,
-			Google_Service_Gmail::GMAIL_MODIFY,
-		];
 	}
 
 }

@@ -22,12 +22,11 @@ trait HasHeaders
 
 		$value = null;
 
-		/** @var Google_Service_Gmail_MessagePartHeader $header */
 		foreach ( $headers as $header ) {
-			if ( $header->getName() === $headerName ) {
-				$value = $header->getValue();
+			if ( $header->key === $headerName ) {
+				$value = $header->value;
 				if ( ! is_null( $regex ) ) {
-					preg_match_all( $regex, $header->getValue(), $value );
+					preg_match_all( $regex, $header->value, $value );
 				}
 				break;
 			}

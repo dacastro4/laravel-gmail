@@ -65,6 +65,7 @@ class Mail extends GmailConnection
 	 *
 	 * @param \Google_Service_Gmail_Message $message
 	 * @param bool $preload
+	 *
 	 */
 	public function __construct( \Google_Service_Gmail_Message $message = null, $preload = false )
 	{
@@ -73,9 +74,9 @@ class Mail extends GmailConnection
 
 		$this->__rConstruct();
 		$this->__mConstruct();
-		parent::__construct(config());
+		parent::__construct( config() );
 
-		if(!is_null($message)) {
+		if ( ! is_null( $message ) ) {
 			if ( $preload ) {
 				$message = $this->service->users_messages->get( 'me', $message->getId() );
 			}
@@ -113,7 +114,7 @@ class Mail extends GmailConnection
 	 * Returns the labels of the email
 	 * Example: INBOX, STARRED, UNREAD
 	 *
-	 * @return mixed
+	 * @return array
 	 */
 	public function getLabels()
 	{
@@ -147,7 +148,7 @@ class Mail extends GmailConnection
 	 */
 	public function getHeaders()
 	{
-		return $this->payload->getHeaders();
+		return $this->buildHeaders( $this->payload->getHeaders() );
 	}
 
 	/**
@@ -160,15 +161,63 @@ class Mail extends GmailConnection
 		return $this->getHeader( 'Subject' );
 	}
 
+	/**
+	 * Returns array of name and email of each recipient
+	 *
+	 * @return array
+	 */
 	public function getFrom()
 	{
+		$from = $this->getHeader( 'From' );
 
-		//TODO: Fix to work with multiple emails
-		$email = $this->getHeader( 'From' );
+		preg_match( '/<(.*)>/', $from, $matches );
 
-		preg_match( '/<(.*)>/', $email, $matches );
+		$name = preg_replace( '/ <(.*)>/', '', $from );
+
+		return [
+			'name'  => $name,
+			'email' => isset( $matches[ 1 ] ) ? $matches[ 1 ] : null,
+		];
+	}
+
+	/**
+	 * Returns email of sender
+	 *
+	 * @return string|null
+	 */
+	public function getFromEmail()
+	{
+		$from = $this->getHeader( 'From' );
+
+		preg_match( '/<(.*)>/', $from, $matches );
 
 		return isset( $matches[ 1 ] ) ? $matches[ 1 ] : null;
+	}
+
+	/**
+	 * Returns name of the sender
+	 *
+	 * @return string|null
+	 */
+	public function getFromName()
+	{
+		$from = $this->getHeader( 'From' );
+
+		$name = preg_replace( '/ <(.*)>/', '', $from );
+
+		return $name;
+	}
+
+	/**
+	 * Returns array list of recipients
+	 *
+	 * @return array
+	 */
+	public function getTo()
+	{
+		$allTo = $this->getHeader( 'To' );
+
+		return $this->formatEmailList( $allTo );
 	}
 
 	/**
@@ -218,7 +267,7 @@ class Mail extends GmailConnection
 	 */
 	public function getHtmlBody( $raw = false )
 	{
-		$content = $this->getBody('text/html' );
+		$content = $this->getBody( 'text/html' );
 
 		return $raw ? $content : $this->getDecodedBody( $content );
 	}
@@ -231,7 +280,15 @@ class Mail extends GmailConnection
 		return $this->getHtmlBody( true );
 	}
 
-	public function getAttachments()
+	/**
+	 * Returns a collection of attachments
+	 *
+	 * @param bool $preload Preload the attachment's data
+	 *
+	 * @return Collection
+	 * @throws \Exception
+	 */
+	public function getAttachments($preload = false)
 	{
 		$attachments = new Collection( [] );
 		$parts = $this->payload->getParts();
@@ -243,6 +300,9 @@ class Mail extends GmailConnection
 
 			if ( $body->getAttachmentId() ) {
 				$attachment = ( new Attachment( $this->getId(), $part ) );
+				if($preload) {
+					$attachment = $attachment->getData();
+				}
 				$attachments->push(
 					$attachment
 				);
@@ -252,6 +312,15 @@ class Mail extends GmailConnection
 
 		return $attachments;
 
+	}
+
+	/**
+	 * @return Collection
+	 * @throws \Exception
+	 */
+	public function getAttachmentsWithData()
+	{
+		return $this->getAttachments(true);
 	}
 
 	/**
@@ -284,9 +353,9 @@ class Mail extends GmailConnection
 
 		$body = $this->payload->getParts();
 
-		if($this->hasAttachments()) {
+		if ( $this->hasAttachments() ) {
 			//Get the first attachment that is the main body
-			$body = isset($body[ 0 ]) ? $body[ 0 ] : [];
+			$body = isset( $body[ 0 ] ) ? $body[ 0 ] : [];
 			$parts = $body->getParts();
 		} else {
 			$parts = $body;
@@ -305,7 +374,7 @@ class Mail extends GmailConnection
 
 	public function getBody( $type = 'text/plain' )
 	{
-		$part = $this->getBodyPart($type);
+		$part = $this->getBodyPart( $type );
 		$body = $part->getBody();
 
 		return $body->getData();
@@ -322,4 +391,57 @@ class Mail extends GmailConnection
 
 		return new self( $message );
 	}
+
+	private function buildHeaders( $emailHeaders )
+	{
+		$headers = [];
+
+		foreach ( $emailHeaders as $header ) {
+			/** @var \Google_Service_Gmail_MessagePartHeader $header */
+
+			$head = new \stdClass();
+
+			$head->key = $header->getName();
+			$head->value = $header->getValue();
+
+			$headers[] = $head;
+		}
+
+		return collect( $headers );
+
+	}
+
+	/**
+	 * Returns an array of emails from an string in RFC 822 format
+	 *
+	 * @param string $emails email list in RFC 822 format
+	 *
+	 * @return array
+	 */
+	public function formatEmailList( $emails )
+	{
+		$all = [];
+		$explodedEmails = explode( ',', $emails );
+
+		foreach ( $explodedEmails as $email ) {
+
+			preg_match( '/<(.*)>/', $email, $matches );
+
+			$item['email'] = str_replace(' ', '', isset( $matches[ 1 ] ) ? $matches[1] : $email);
+
+			$name = preg_replace( '/ <(.*)>/', '', $email );
+
+			if(starts_with($name, ' ')) {
+				$name = substr($name, 1);
+			}
+
+			$item['name'] = str_replace("\"", '', $name ?: null);
+
+			$all[] = $item;
+
+		}
+
+		return $all;
+	}
+
 }

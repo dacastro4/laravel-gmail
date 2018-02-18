@@ -249,9 +249,14 @@ trait Replyable
 	 * Reply to a specific email
 	 *
 	 * @return Mail
+	 * @throws \Exception
 	 */
 	public function reply()
 	{
+		if(!$this->getId()) {
+			throw new \Exception('This is a new email. Use send().');
+		}
+
 		$this->setReplyThreat();
 		$this->setReplySubject();
 		$body = $this->getMessageBody();

@@ -1,0 +1,9 @@
+<phpunit>
+    <php>
+        <env name="APP_URL" value="http://localhost:3005"/>
+        <env name="GOOGLE_PROJECT_ID" value="robotic-jet-193118"/>
+        <env name="GOOGLE_CLIENT_ID" value="33776691528-ps87e52orao40nqhh31obr2e6vl7b9e9.apps.googleusercontent.com"/>
+        <env name="GOOGLE_CLIENT_SECRET" value="RI9hyP0HM9K8NfQx4AObhAhx"/>
+        <env name="GOOGLE_REDIRECT_URI" value="/oauth/gmail/callback"/>
+    </php>
+</phpunit>

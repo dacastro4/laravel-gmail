@@ -18,14 +18,21 @@ trait ModifiesLabels
 	}
 
 	/**
-	 * @param array $labels
+	 * Adds labels to the email
+	 *
+	 * @param string|array $labels
 	 *
 	 * @return Mail|string
 	 * @throws \Exception
 	 */
-	public function addLabels( array $labels )
+	public function addLabel( $labels )
 	{
+		if(is_string($labels)) {
+			$labels = [$labels];
+		}
+
 		$this->messageRequest->setAddLabelIds( $labels );
+
 		try {
 			return $this->modify();
 		} catch ( \Exception $e ) {
@@ -34,47 +41,26 @@ trait ModifiesLabels
 	}
 
 	/**
-	 * @param array $labels
+	 * Removes labels from the email
+	 *
+	 * @param string|array $labels
 	 *
 	 * @return Mail|string
 	 * @throws \Exception
 	 */
-	public function removeLabels( array $labels )
+	public function removeLabel( $labels )
 	{
+		if(is_string($labels)) {
+			$labels = [$labels];
+		}
+
 		$this->messageRequest->setRemoveLabelIds( $labels );
+
 		try {
 			return $this->modify();
 		} catch ( \Exception $e ) {
 			throw new \Exception( "Couldn't remove labels: {$e->getMessage()}" );
 		}
-	}
-
-	/**
-	 * Adds a single label to the request
-	 *
-	 * @param $label
-	 *
-	 * @return Mail
-	 */
-	private function addSingleLabel( $label )
-	{
-		$this->messageRequest->setAddLabelIds( [ $label ] );
-
-		return $this->modify();
-	}
-
-	/**
-	 * Removes a single label from the request
-	 *
-	 * @param $label
-	 *
-	 * @return Mail
-	 */
-	private function removeSingleLabel( $label )
-	{
-		$this->messageRequest->setRemoveLabelIds( [ $label ] );
-
-		return $this->modify();
 	}
 
 	/**

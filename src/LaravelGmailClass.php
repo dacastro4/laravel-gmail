@@ -2,6 +2,7 @@
 
 namespace Dacastro4\LaravelGmail;
 
+use Dacastro4\LaravelGmail\Exceptions\AuthException;
 use Dacastro4\LaravelGmail\Services\Message;
 use Illuminate\Config\Repository as Config;
 use Illuminate\Support\Facades\Redirect;
@@ -16,10 +17,15 @@ class LaravelGmailClass extends GmailConnection
 
 	/**
 	 * @return Message
+	 * @throws AuthException
 	 */
 	public function message()
 	{
-		return new Message($this);
+		if ( ! $this->getToken() ) {
+			throw new AuthException( 'No credentials found.' );
+		}
+
+		return new Message( $this );
 	}
 
 	/**
@@ -29,7 +35,7 @@ class LaravelGmailClass extends GmailConnection
 	 */
 	public function user()
 	{
-		return $this->config('email');
+		return $this->config( 'email' );
 	}
 
 	/**

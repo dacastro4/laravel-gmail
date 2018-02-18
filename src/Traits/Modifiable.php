@@ -31,7 +31,7 @@ trait Modifiable
 	public function markAsRead()
 	{
 		try {
-			return $this->removeSingleLabel( 'UNREAD' );
+			return $this->removeLabel( 'UNREAD' );
 		} catch ( \Exception $e ) {
 			return "Couldn't mark email as read: {$e->getMessage()}";
 		}
@@ -46,7 +46,7 @@ trait Modifiable
 	public function markAsUnread()
 	{
 		try {
-			return $this->addSingleLabel( 'UNREAD' );
+			return $this->addLabel( 'UNREAD' );
 		} catch ( \Exception $e ) {
 			throw new \Exception( "Couldn't mark email as unread: {$e->getMessage()}" );
 		}
@@ -59,7 +59,7 @@ trait Modifiable
 	public function markAsImportant()
 	{
 		try {
-			return $this->addSingleLabel( 'IMPORTANT' );
+			return $this->addLabel( 'IMPORTANT' );
 		} catch ( \Exception $e ) {
 			throw new \Exception( "Couldn't remove mark email as important.: {$e->getMessage()}" );
 		}
@@ -72,7 +72,7 @@ trait Modifiable
 	public function markAsNotImportant()
 	{
 		try {
-			return $this->removeSingleLabel( 'IMPORTANT' );
+			return $this->removeLabel( 'IMPORTANT' );
 		} catch ( \Exception $e ) {
 			throw new \Exception( "Couldn't mark email as unread: {$e->getMessage()}" );
 		}
@@ -85,7 +85,7 @@ trait Modifiable
 	public function addStar()
 	{
 		try {
-			return $this->addSingleLabel( 'STARRED' );
+			return $this->addLabel( 'STARRED' );
 		} catch ( \Exception $e ) {
 			throw new \Exception( "Couldn't remove mark email as important.: {$e->getMessage()}" );
 		}
@@ -98,7 +98,7 @@ trait Modifiable
 	public function removeStar()
 	{
 		try {
-			return $this->removeSingleLabel( 'STARRED' );
+			return $this->removeLabel( 'STARRED' );
 		} catch ( \Exception $e ) {
 			throw new \Exception( "Couldn't mark email as unread: {$e->getMessage()}" );
 		}
@@ -112,7 +112,7 @@ trait Modifiable
 	public function sendToTrash()
 	{
 		try {
-			return $this->addSingleLabel( 'TRASH' );
+			return $this->addLabel( 'TRASH' );
 		} catch ( \Exception $e ) {
 			return new \Exception( "Couldn't mark email as trash: {$e->getMessage()}" );
 		}
@@ -121,7 +121,7 @@ trait Modifiable
 	public function removeFromTrash()
 	{
 		try {
-			return $this->removeSingleLabel( 'TRASH' );
+			return $this->removeLabel( 'TRASH' );
 		} catch ( \Exception $e ) {
 			return new \Exception( "Couldn't untrash the email: {$e->getMessage()}" );
 		}

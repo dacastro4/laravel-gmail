@@ -253,14 +253,14 @@ trait Replyable
 	 */
 	public function reply()
 	{
-		if(!$this->getId()) {
-			throw new \Exception('This is a new email. Use send().');
+		if ( ! $this->getId() ) {
+			throw new \Exception( 'This is a new email. Use send().' );
 		}
 
 		$this->setReplyThreat();
 		$this->setReplySubject();
 		$body = $this->getMessageBody();
-		$body->setThreadId($this->getThreatId());
+		$body->setThreadId( $this->getThreatId() );
 
 		return new Mail( $this->service->users_messages->send( 'me', $body, $this->parameters ) );
 	}

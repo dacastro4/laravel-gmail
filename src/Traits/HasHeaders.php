@@ -14,7 +14,7 @@ trait HasHeaders
 	 *
 	 * @param string $regex if this is set, value will be evaluated with the give regular expression.
 	 *
-	 * @return null|string|array
+	 * @return null|string
 	 */
 	public function getHeader( $headerName, $regex = null )
 	{
@@ -30,6 +30,10 @@ trait HasHeaders
 				}
 				break;
 			}
+		}
+
+		if ( is_array( $value ) ) {
+			return isset( $value[ 1 ] ) ? $value[ 1 ] : null;
 		}
 
 		return $value;

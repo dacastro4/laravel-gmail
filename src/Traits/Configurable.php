@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Storage;
 /**
  * Trait Configurable
  * @package Dacastro4\LaravelGmail\Traits
- * @property $configuration
- * @property $emailAddress
  */
 trait Configurable
 {
+
+	private $configuration;
 
 	public function config( $string = null )
 	{
@@ -52,6 +52,8 @@ trait Configurable
 
 	private function getUserScopes()
 	{
+		dd( $this->mapScopes() );
+
 		return array_merge(
 			[
 				Google_Service_Gmail::GMAIL_READONLY,
@@ -91,28 +93,26 @@ trait Configurable
 
 	private function scopeMap( $scope )
 	{
-		switch ( $scope ) {
-			case 'all':
-				return Google_Service_Gmail::MAIL_GOOGLE_COM;
-			case 'compose':
-				return Google_Service_Gmail::GMAIL_COMPOSE;
-			case 'insert':
-				return Google_Service_Gmail::GMAIL_INSERT;
-			case 'labels':
-				return Google_Service_Gmail::GMAIL_LABELS;
-			case 'metadata':
-				return Google_Service_Gmail::GMAIL_METADATA;
-			case 'modify':
-				return Google_Service_Gmail::GMAIL_MODIFY;
-			case 'readonly':
-				return Google_Service_Gmail::GMAIL_READONLY;
-			case 'send':
-				return Google_Service_Gmail::GMAIL_SEND;
-			case 'settings_basic':
-				return Google_Service_Gmail::GMAIL_SETTINGS_BASIC;
-			case 'settings_sharing':
-				return Google_Service_Gmail::GMAIL_SETTINGS_SHARING;
-		}
+		$scopes = [
+			'all'              => Google_Service_Gmail::MAIL_GOOGLE_COM,
+			'compose'          => Google_Service_Gmail::GMAIL_COMPOSE,
+			'insert'           => Google_Service_Gmail::GMAIL_INSERT,
+			'labels'           => Google_Service_Gmail::GMAIL_LABELS,
+			'metadata'         => Google_Service_Gmail::GMAIL_METADATA,
+			'modify'           => Google_Service_Gmail::GMAIL_MODIFY,
+			'readonly'         => Google_Service_Gmail::GMAIL_READONLY,
+			'send'             => Google_Service_Gmail::GMAIL_SEND,
+			'settings_basic'   => Google_Service_Gmail::GMAIL_SETTINGS_BASIC,
+			'settings_sharing' => Google_Service_Gmail::GMAIL_SETTINGS_SHARING,
+		];
+
+		return array_get( $scopes, $scope );
 	}
+
+	abstract function setScopes( $scopes );
+
+	abstract function setAccessType( $type );
+
+	abstract function setApprovalPrompt( $approval );
 
 }

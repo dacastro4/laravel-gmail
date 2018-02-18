@@ -170,10 +170,6 @@ class Mail extends GmailConnection
 	{
 		$from = $this->getHeader( 'From' );
 
-		if(is_array($from)) {
-			$from = array_shift($from);
-		}
-
 		preg_match( '/<(.*)>/', $from, $matches );
 
 		$name = preg_replace( '/ <(.*)>/', '', $from );
@@ -221,10 +217,6 @@ class Mail extends GmailConnection
 	{
 		$allTo = $this->getHeader( 'To' );
 
-		if(is_array($allTo)) {
-			$allTo = array_shift($allTo);
-		}
-
 		return $this->formatEmailList( $allTo );
 	}
 
@@ -251,7 +243,7 @@ class Mail extends GmailConnection
 	/**
 	 * @param bool $raw
 	 *
-	 * @return bool|string
+	 * @return string
 	 */
 	public function getPlainTextBody( $raw = false )
 	{
@@ -296,7 +288,7 @@ class Mail extends GmailConnection
 	 * @return Collection
 	 * @throws \Exception
 	 */
-	public function getAttachments($preload = false)
+	public function getAttachments( $preload = false )
 	{
 		$attachments = new Collection( [] );
 		$parts = $this->payload->getParts();
@@ -308,7 +300,7 @@ class Mail extends GmailConnection
 
 			if ( $body->getAttachmentId() ) {
 				$attachment = ( new Attachment( $this->getId(), $part ) );
-				if($preload) {
+				if ( $preload ) {
 					$attachment = $attachment->getData();
 				}
 				$attachments->push(
@@ -328,7 +320,7 @@ class Mail extends GmailConnection
 	 */
 	public function getAttachmentsWithData()
 	{
-		return $this->getAttachments(true);
+		return $this->getAttachments( true );
 	}
 
 	/**
@@ -376,7 +368,7 @@ class Mail extends GmailConnection
 			}
 		}
 
-		return $part ?: null;
+		return isset($part) ? $part : null;
 
 	}
 
@@ -437,15 +429,15 @@ class Mail extends GmailConnection
 
 			preg_match( '/<(.*)>/', $email, $matches );
 
-			$item['email'] = str_replace(' ', '', isset( $matches[ 1 ] ) ? $matches[1] : $email);
+			$item[ 'email' ] = str_replace( ' ', '', isset( $matches[ 1 ] ) ? $matches[ 1 ] : $email );
 
 			$name = preg_replace( '/ <(.*)>/', '', $email );
 
-			if(starts_with($name, ' ')) {
-				$name = substr($name, 1);
+			if ( starts_with( $name, ' ' ) ) {
+				$name = substr( $name, 1 );
 			}
 
-			$item['name'] = str_replace("\"", '', $name ?: null);
+			$item[ 'name' ] = str_replace( "\"", '', $name ?: null );
 
 			$all[] = $item;
 

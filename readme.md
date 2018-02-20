@@ -179,29 +179,29 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 
 ## Messages
 
-`LaravelGmail::messages()->all( $pageToken = null )` Returns all the emails from the inbox
+`LaravelGmail::message()->all( $pageToken = null )` Returns all the emails from the inbox
 
-`LaravelGmail::messages()->get( $id )` Returns a single email with all the information
+`LaravelGmail::message()->get( $id )` Returns a single email with all the information
 
 ### Modifiers
 
 You can modify your query with these methods. For example:
 
-To get all unread emails: `LaravelGmail::messages()->unread()->all()`
+To get all unread emails: `LaravelGmail::message()->unread()->all()`
 
-`messages()->unread()`
+`message()->unread()`
 
-`messages()->from( $email )`
+`message()->from( $email )`
 
-`messages()->in( $box = 'inbox' )`
+`message()->in( $box = 'inbox' )`
 
-`messages()->hasAttachment()`
+`message()->hasAttachment()`
 
 Of course you can use as a fluent api.
 
 ``` php
     
-    LaravelGmail::messages()
+    LaravelGmail::message()
                 ->from('someone@gmail.com')
                 ->unread()
                 ->in('TRASH')
@@ -219,7 +219,7 @@ Example:
 
 ``` php
     
-    LaravelGmail::messages()
+    LaravelGmail::message()
                 ->from('someone@gmail.com')
                 ->unread()
                 ->in('TRASH')

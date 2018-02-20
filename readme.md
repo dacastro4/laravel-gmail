@@ -40,7 +40,7 @@ Now add the alias.
 
 ``` php
 'aliases' => [
-    'Twitter' => Dacastro4\LaravelGmail\Facades\LaravelGmail::class,
+    'LaravelGmail' => Dacastro4\LaravelGmail\Facades\LaravelGmail::class,
 ]
 ```
 

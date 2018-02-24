@@ -367,5 +367,5 @@ trait Replyable
 
 	public abstract function getSubject();
 
-	public abstract function getHeader( $header );
+	public abstract function getHeader( $header, $regex = null );
 }

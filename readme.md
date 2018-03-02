@@ -6,6 +6,8 @@
 [![Github All Releases](https://img.shields.io/github/downloads/dacastro4/laravel-gmail/total.svg)]()
 [![GitHub license](https://img.shields.io/github/license/dacastro4/laravel-gmail.svg)](https://github.com/dacastro4/laravel-gmail/blob/master/LICENSE)
 
+*Work in progress!!*
+
 # Gmail
 Gmail API for Laravel 5
 

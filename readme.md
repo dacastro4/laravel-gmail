@@ -93,7 +93,7 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 
 `$mail->message( $message )` sets the body of the email
 
-`$mail->attach( $path )` add file attachments to the email
+`$mail->attach( ...$path )` add file attachments to the email
 
 `$mail->priority( $priority )` sets the priority of the email from 1 to 5
 

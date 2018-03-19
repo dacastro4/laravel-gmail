@@ -6,14 +6,17 @@ use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\FileExistsException;
 use Swift_Attachment;
 use Swift_Message;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
  * @property Google_Service_Gmail $service
  */
 trait Replyable
 {
+	use HasHeaders;
 
 	private $swiftMessage;
 
@@ -195,26 +198,22 @@ trait Replyable
 	/**
 	 * Attaches new file to the email from the Storage folder
 	 *
-	 * @param $path
+	 * @param array $files comma separated of files
 	 *
 	 * @return $this
 	 * @throws \Exception
 	 */
-	public function attach( $path )
+	public function attach( ...$files )
 	{
 
-		$file = [];
+		foreach ( $files as $file ) {
 
-		//TODO: Solve the attach issue. Which files should I attach? UploadFile it's an option.
-		if ( Storage::has( $path ) ) {
-			$content = Storage::get( $path );
-			$name = Storage::name( $path );
-			$file[ $name ] = $content;
-		} else {
-			throw new \Exception( 'File does not exists.' );
+			if ( ! file_exists( $file ) ) {
+				throw new FileNotFoundException( $file );
+			}
+
+			array_push( $this->attachments, $file );
 		}
-
-		array_push( $this->attachments, $file );
 
 		return $this;
 	}
@@ -309,7 +308,7 @@ trait Replyable
 
 		foreach ( $this->attachments as $file ) {
 			$this->swiftMessage
-				->attach( Swift_Attachment::fromPath( $file->path )->setFilename( $file->name ) );
+				->attach( Swift_Attachment::fromPath( $file ) );
 		}
 
 		$body->setRaw( $this->base64_encode( $this->swiftMessage->toString() ) );
@@ -366,6 +365,4 @@ trait Replyable
 	public abstract function getId();
 
 	public abstract function getSubject();
-
-	public abstract function getHeader( $header, $regex = null );
 }

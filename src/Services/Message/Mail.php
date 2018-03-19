@@ -5,7 +5,6 @@ namespace Dacastro4\LaravelGmail\Services\Message;
 use Carbon\Carbon;
 use Dacastro4\LaravelGmail\GmailConnection;
 use Dacastro4\LaravelGmail\Traits\HasDecodableBody;
-use Dacastro4\LaravelGmail\Traits\HasHeaders;
 use Dacastro4\LaravelGmail\Traits\Modifiable;
 use Dacastro4\LaravelGmail\Traits\Replyable;
 use Google_Service_Gmail;
@@ -18,7 +17,6 @@ use Illuminate\Support\Collection;
 class Mail extends GmailConnection
 {
 	use HasDecodableBody,
-		HasHeaders,
 		Modifiable,
 		Replyable {
 		Replyable::__construct as private __rConstruct;

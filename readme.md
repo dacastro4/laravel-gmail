@@ -138,7 +138,7 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 `$mail->getHeader( $headerName, $regex = null )` Returns the header by name. Optionally, you can execute a regex on the value
 
 
-#Labels
+# Labels
 
 `$mail->markAsRead` Removes the 'UNREAD' label from the email.
 

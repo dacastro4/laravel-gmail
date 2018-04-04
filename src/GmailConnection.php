@@ -172,7 +172,7 @@ class GmailConnection extends Google_Client
 
 		$config[ 'email' ] = $this->emailAddress;
 
-		Storage::put( $file, json_encode( $config ) );
+		Storage::disk('local')->put( $file, json_encode( $config ) );
 	}
 
 	/**

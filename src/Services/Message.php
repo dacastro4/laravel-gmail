@@ -81,6 +81,20 @@ class Message
 	}
 
 	/**
+	 * Filter to get only unread emalis
+	 *
+	 * @param $query
+	 *
+	 * @return $this
+	 */
+	public function subject($query)
+	{
+		$this->add( "[{$query}]" );
+
+		return $this;
+	}
+
+	/**
 	 * Filter to get only emails from a specific email address
 	 *
 	 * @param $email
@@ -89,7 +103,7 @@ class Message
 	 */
 	public function from( $email )
 	{
-		$this->add( "from:{$email}" );
+		$this->add( "from%3A{$email}" );
 
 		return $this;
 	}

@@ -5,13 +5,18 @@ namespace Dacastro4\LaravelGmail;
 use Dacastro4\LaravelGmail\Exceptions\AuthException;
 use Dacastro4\LaravelGmail\Services\Message;
 use Illuminate\Config\Repository as Config;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Redirect;
 
 class LaravelGmailClass extends GmailConnection
 {
 
-	public function __construct( Config $config )
+	public function __construct( $config )
 	{
+		if(class_basename($config) === 'Application') {
+			$config = $config['config'];
+		}
+
 		parent::__construct( $config );
 	}
 

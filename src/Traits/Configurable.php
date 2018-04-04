@@ -17,11 +17,11 @@ trait Configurable
 	public function config( $string = null )
 	{
 		$fileName = $this->getFileName();
-		$file = "gmail/tokens/{$fileName}.json";
+		$file = storage_path("app/gmail/tokens/{$fileName}.json");
 
-		if ( Storage::exists( $file ) ) {
+		if ( file_exists( $file ) ) {
 			$config = json_decode(
-				Storage::get( $file ),
+				file_get_contents( $file ),
 				true
 			);
 

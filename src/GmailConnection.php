@@ -52,10 +52,10 @@ class GmailConnection extends Google_Client
 		if ( ! $this->check() ) {
 			$request = Request::capture();
 			$code = (string) $request->input( 'code', null );
-			if ( !is_null($code) && !empty($code) ) {
+			if ( ! is_null( $code ) && ! empty( $code ) ) {
 				$accessToken = $this->fetchAccessTokenWithAuthCode( $code );
 				$me = $this->getProfile();
-				if ( property_exists($me, 'emailAddress') ) {
+				if ( property_exists( $me, 'emailAddress' ) ) {
 					$this->emailAddress = $me->emailAddress;
 				}
 				$this->setBothAccessToken( $accessToken );
@@ -166,8 +166,8 @@ class GmailConnection extends Google_Client
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
 
-		if ( Storage::exists( $file ) ) {
-			Storage::delete( storage_path( $file ) );
+		if ( file_exists( storage_path( "app/{$file}" ) ) ) {
+			Storage::delete( storage_path( "app/{$file}" ) );
 		}
 
 		$config[ 'email' ] = $this->emailAddress;
@@ -183,11 +183,11 @@ class GmailConnection extends Google_Client
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
 
-		if ( Storage::exists( $file ) ) {
-			Storage::delete( $file );
+		if ( file_exists( storage_path( "app/{$file}" ) ) ) {
+			Storage::disk('local')->delete( "app/{$file}" );
 		}
 
-		Storage::put( $file, json_encode( [] ) );
+		Storage::disk('local')->put( $file, json_encode( [] ) );
 	}
 
 }

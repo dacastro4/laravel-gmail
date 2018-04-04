@@ -3,7 +3,6 @@
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Google_Service_Gmail;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Trait Configurable

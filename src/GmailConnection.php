@@ -166,13 +166,13 @@ class GmailConnection extends Google_Client
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
 
-		if ( file_exists( storage_path( "app/{$file}" ) ) ) {
-			Storage::delete( storage_path( "app/{$file}" ) );
+		if ( Storage::disk( 'local' )->exists( $file ) ) {
+			Storage::disk( 'local' )->delete( $file );
 		}
 
 		$config[ 'email' ] = $this->emailAddress;
 
-		Storage::disk('local')->put( $file, json_encode( $config ) );
+		Storage::disk( 'local' )->put( $file, json_encode( $config ) );
 	}
 
 	/**
@@ -183,11 +183,11 @@ class GmailConnection extends Google_Client
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
 
-		if ( file_exists( storage_path( "app/{$file}" ) ) ) {
-			Storage::disk('local')->delete( "app/{$file}" );
+		if ( Storage::disk( 'local' )->exists( $file ) ) {
+			Storage::disk( 'local' )->delete( $file );
 		}
 
-		Storage::disk('local')->put( $file, json_encode( [] ) );
+		Storage::disk( 'local' )->put( $file, json_encode( [] ) );
 	}
 
 }

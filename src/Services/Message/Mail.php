@@ -444,4 +444,18 @@ class Mail extends GmailConnection
 		return $all;
 	}
 
+	/**
+	 * Sets the access token in case we wanna use a different token
+	 *
+	 * @param string $token
+	 *
+	 * @return Mail
+	 */
+	public function using( $token )
+	{
+		$this->setToken($token);
+
+		return $this;
+	}
+
 }

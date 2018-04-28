@@ -5,8 +5,6 @@ namespace Dacastro4\LaravelGmail\Traits;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
-use Illuminate\Support\Facades\Storage;
-use League\Flysystem\FileExistsException;
 use Swift_Attachment;
 use Swift_Message;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
@@ -179,6 +177,21 @@ trait Replyable
 	public function subject( $subject )
 	{
 		$this->subject = $subject;
+
+		return $this;
+	}
+
+	/**
+	 * @param string $view
+	 * @param array $data
+	 * @param array $mergeData
+	 *
+	 * @return $this
+	 * @throws \Throwable
+	 */
+	public function view( $view, $data = [], $mergeData = [] )
+	{
+		$this->message = view( $view, $data, $mergeData )->render();
 
 		return $this;
 	}

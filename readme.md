@@ -124,6 +124,8 @@ and after that you don't have to call it again.
 For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a string of email and name.
 
 
+`$mail->using( $token )` If you don't want to use the token file, you can use this function that sets the token to use in the request. It doesn't refresh
+
 `$mail->to( $to, $name = null )` sets the recipient email and name as optional
 
 `$mail->from( $from, $name = null )` sets sender's email
@@ -135,6 +137,8 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 `$mail->subject( $subject )` sets the subject of the email
 
 `$mail->message( $message )` sets the body of the email
+
+`$mail->view( 'view.name' )` sets the body from a blade file
 
 `$mail->attach( ...$path )` add file attachments to the email
 

@@ -5,8 +5,6 @@ namespace Dacastro4\LaravelGmail\Traits;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
-use Illuminate\Support\Facades\Storage;
-use League\Flysystem\FileExistsException;
 use Swift_Attachment;
 use Swift_Message;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
@@ -123,7 +121,7 @@ trait Replyable
 	 *
 	 * @param string|null $name
 	 *
-	 * @return $this
+	 * @return Replyable
 	 */
 	public function to( $to, $name = null )
 	{
@@ -146,7 +144,7 @@ trait Replyable
 	 *
 	 * @param string|null $name
 	 *
-	 * @return $this
+	 * @return Replyable
 	 */
 	public function cc( $cc, $name = null )
 	{
@@ -161,7 +159,7 @@ trait Replyable
 	 *
 	 * @param string|null $name
 	 *
-	 * @return $this
+	 * @return Replyable
 	 */
 	public function bcc( $bcc, $name = null )
 	{
@@ -174,7 +172,7 @@ trait Replyable
 	/**
 	 * @param string $subject
 	 *
-	 * @return $this
+	 * @return Replyable
 	 */
 	public function subject( $subject )
 	{
@@ -184,9 +182,24 @@ trait Replyable
 	}
 
 	/**
+	 * @param string $view
+	 * @param array $data
+	 * @param array $mergeData
+	 *
+	 * @return Replyable
+	 * @throws \Throwable
+	 */
+	public function view( $view, $data = [], $mergeData = [] )
+	{
+		$this->message = view( $view, $data, $mergeData )->render();
+
+		return $this;
+	}
+
+	/**
 	 * @param string $message
 	 *
-	 * @return $this
+	 * @return Replyable
 	 */
 	public function message( $message )
 	{
@@ -200,7 +213,7 @@ trait Replyable
 	 *
 	 * @param array $files comma separated of files
 	 *
-	 * @return $this
+	 * @return Replyable
 	 * @throws \Exception
 	 */
 	public function attach( ...$files )
@@ -223,7 +236,7 @@ trait Replyable
 	 *
 	 * @param int $priority
 	 *
-	 * @return $this
+	 * @return Replyable
 	 */
 	public function priority( $priority )
 	{
@@ -235,7 +248,7 @@ trait Replyable
 	/**
 	 * @param array $parameters
 	 *
-	 * @return $this
+	 * @return Replyable
 	 */
 	public function optionalParameters( array $parameters )
 	{

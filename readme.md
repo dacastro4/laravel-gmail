@@ -63,6 +63,49 @@ To modify the scopes and the credentials file name, just run:
 
 Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailServiceProvider"` and modify the config file `config/gmail.php`.
 
+# Example
+
+## Welcome Blade:
+```blade
+<body>
+    <h1>{{ LaravelGmail::user() }}</h1>
+    @if(LaravelGmail::check())
+        <a href="{{ url('oauth/gmail/logout') }}">logout</a>
+    @else
+        <a href="{{ url('oauth/gmail') }}">login</a>
+    @endif
+</body>
+```
+
+## Routes:
+```php
+Route::get('/oauth/gmail', function (){
+    return LaravelGmail::redirect();
+});
+
+Route::get('/oauth/gmail/callback', function (){
+    LaravelGmail::makeToken();
+    return redirect()->to('/');
+});
+
+Route::get('/oauth/gmail/logout', function (){
+    LaravelGmail::logout(); //It returns exception if fails
+    return redirect()->to('/');
+});
+```
+
+Then if in your controller or wherever you want to do your logic, you do something like:
+```php
+$messages = LaravelGmail::message()->subject('test')->unread()->preload()->all();
+foreach ( $messages as $message ) {
+    $body = $message->getHtmlBody();
+    $subject = $message->getSubject();
+}
+```
+Note that if you don't preload the messages you have to do something like:
+` $body = $message->load()->getSubject();`
+and after that you don't have to call it again.
+
 # Documentation
 
 ## Basic

@@ -5,7 +5,7 @@ namespace Dacastro4\LaravelGmail\Traits;
 trait SendsParameters
 {
 
-	protected $params;
+	protected $params = [];
 
 	/**
 	 * Ads parameters to the parameters property which is used to send additional parameter in the request.
@@ -15,6 +15,8 @@ trait SendsParameters
 	 */
 	public function add( $query, $column = 'q' )
 	{
+		$query = urlencode($query);
+
 		if ( isset( $this->params[ $column ] ) ) {
 			$this->params[ $column ] = "{$this->params[$column]} $query";
 		} else {

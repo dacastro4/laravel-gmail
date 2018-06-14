@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Storage;
 class GmailConnection extends Google_Client
 {
 
-	use Configurable;
+	use Configurable {
+		__construct as configConstruct;
+	}
 
 	protected $emailAddress;
 	protected $refreshToken;
@@ -24,6 +26,8 @@ class GmailConnection extends Google_Client
 	public function __construct( $config = null )
 	{
 		$this->app = Container::getInstance();
+
+		$this->configConstruct($config);
 
 		$this->configuration = $config;
 

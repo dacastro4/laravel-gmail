@@ -11,12 +11,17 @@ use Google_Service_Gmail;
 trait Configurable
 {
 
-	private $configuration;
+	private $_config;
+
+	public function __construct( $config )
+	{
+		$this->_config = $config;
+	}
 
 	public function config( $string = null )
 	{
 		$fileName = $this->getFileName();
-		$file = storage_path("app/gmail/tokens/{$fileName}.json");
+		$file = storage_path( "app/gmail/tokens/{$fileName}.json" );
 
 		if ( file_exists( $file ) ) {
 			$config = json_decode(
@@ -43,9 +48,9 @@ trait Configurable
 	public function getConfigs()
 	{
 		return [
-			'client_secret' => $this->configuration[ 'gmail.client_secret' ],
-			'client_id'     => $this->configuration[ 'gmail.client_id' ],
-			'redirect_uri'  => url( $this->configuration[ 'gmail.redirect_url' ] ),
+			'client_secret' => $this->_config[ 'gmail.client_secret' ],
+			'client_id'     => $this->_config[ 'gmail.client_id' ],
+			'redirect_uri'  => url( $this->_config[ 'gmail.redirect_url' ] ),
 		];
 	}
 
@@ -59,8 +64,8 @@ trait Configurable
 
 	private function configApi()
 	{
-		$type = $this->configuration[ 'gmail.access_type' ];
-		$approval_prompt = $this->configuration[ 'gmail.approval_prompt' ];
+		$type = $this->_config[ 'gmail.access_type' ];
+		$approval_prompt = $this->_config[ 'gmail.approval_prompt' ];
 
 		$this->setScopes( $this->getUserScopes() );
 
@@ -71,12 +76,12 @@ trait Configurable
 
 	private function getFileName()
 	{
-		return $this->configuration[ 'gmail.credentials_file_name' ];
+		return $this->_config[ 'gmail.credentials_file_name' ];
 	}
 
 	private function mapScopes()
 	{
-		$scopes = $this->configuration[ 'gmail.scopes' ];
+		$scopes = $this->_config[ 'gmail.scopes' ];
 		$mappedScopes = [];
 
 		if ( ! empty( $scopes ) ) {

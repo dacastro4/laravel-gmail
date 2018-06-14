@@ -75,7 +75,7 @@ class Message
 	 */
 	public function unread()
 	{
-		$this->add( 'is%3Aunread' );
+		$this->add( 'is:unread' );
 
 		return $this;
 	}
@@ -103,7 +103,7 @@ class Message
 	 */
 	public function from( $email )
 	{
-		$this->add( "from%3A{$email}" );
+		$this->add( "from:{$email}" );
 
 		return $this;
 	}
@@ -125,7 +125,7 @@ class Message
 	 */
 	public function in( $box = 'inbox' )
 	{
-		$this->add( "in%3A{$box}" );
+		$this->add( "in:{$box}" );
 
 		return $this;
 	}
@@ -137,7 +137,7 @@ class Message
 	 */
 	public function hasAttachment()
 	{
-		$this->add( 'has%3Aattachment' );
+		$this->add( 'has:attachment' );
 
 		return $this;
 	}

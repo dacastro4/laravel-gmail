@@ -42,7 +42,7 @@ class Message
 	 */
 	public function all( $pageToken = null )
 	{
-		if ( !is_null($pageToken) ) {
+		if ( ! is_null( $pageToken ) ) {
 			$this->add( $pageToken, 'pageToken' );
 		}
 
@@ -54,6 +54,20 @@ class Message
 		}
 
 		return collect( $messages );
+	}
+
+	/**
+	 * Limit the messages coming from the query
+	 *
+	 * @param int $number
+	 *
+	 * @return Message
+	 */
+	public function take( $number )
+	{
+		$this->params[ 'maxResults' ] = abs( (int) $number );
+
+		return $this;
 	}
 
 	/**
@@ -87,7 +101,7 @@ class Message
 	 *
 	 * @return $this
 	 */
-	public function subject($query)
+	public function subject( $query )
 	{
 		$this->add( "[{$query}]" );
 

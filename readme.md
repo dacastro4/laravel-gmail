@@ -230,6 +230,8 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 
 `LaravelGmail::message()->all( $pageToken = null )` Returns all the emails from the inbox
 
+`LaravelGmail::message()->take(2)->all( $pageToken = null )` The `take` method limits the emails coming from the query by the number set
+
 `LaravelGmail::message()->get( $id )` Returns a single email with all the information
 
 ### Modifiers

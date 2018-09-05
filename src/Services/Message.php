@@ -16,6 +16,8 @@ class Message
 
 	public $preload = false;
 
+	public $pageToken;
+
 	/**
 	 * Optional parameter for getting single and multiple emails
 	 *
@@ -47,13 +49,41 @@ class Message
 		}
 
 		$messages = [];
-		$allMessages = $this->service->users_messages->listUsersMessages( 'me', $this->params )->getMessages();
+		$response = $this->service->users_messages->listUsersMessages( 'me', $this->params );
+
+		$this->pageToken = $response->getNextPageToken();
+
+		$allMessages = $response->getMessages();
 
 		foreach ( $allMessages as $message ) {
 			$messages[] = new Mail( $message, $this->preload );
 		}
 
 		return collect( $messages );
+	}
+
+	/**
+	 * Returns next page if available of messages or an empty collection
+	 *
+	 * @return \Illuminate\Support\Collection
+	 */
+	public function next()
+	{
+		if($this->pageToken) {
+			return $this->all($this->pageToken);
+		} else {
+			return collect([]);
+		}
+	}
+
+	/**
+	 * Returns boolean if the page token variable is null or not
+	 *
+	 * @return bool
+	 */
+	public function hasNextPage()
+	{
+		return !!$this->pageToken;
 	}
 
 	/**

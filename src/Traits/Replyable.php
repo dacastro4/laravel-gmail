@@ -134,7 +134,7 @@ trait Replyable
 	public function from( $from, $name = null )
 	{
 		$this->from = $from;
-		$this->nameTo = $name;
+		$this->nameFrom = $name;
 
 		return $this;
 	}

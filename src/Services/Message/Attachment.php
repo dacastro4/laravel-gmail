@@ -55,7 +55,7 @@ class Attachment extends GmailConnection
 
 		$body = $part->getBody();
 		$this->id = $body->getAttachmentId();
-		$this->size = $body->getAttachmentId();
+		$this->size = $body->getSize();
 		$this->filename = $part->getFilename();
 		$this->mimeType = $part->getMimeType();
 		$this->messageId = $singleMessageId;

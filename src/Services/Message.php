@@ -151,18 +151,20 @@ class Message
 
 		return $this;
 	}
-	
+
 	/**
 	 * add an array of from addresses
 	 *
-	 * @param $email
+	 * @param $emails
 	 *
 	 * @return $this
 	 */
-	public function fromThese($emails)
+	public function fromThese( $emails )
 	{
-		for ($i=0; $i < count($emails); $i++) 
-			!$i ? $this->add("{from:$emails[$i]") : $i == count($emails) - 1 ? $this->add("from:$emails[$i]}") : $this->from($emails[$i]);
+		$emailsCount = count( $emails );
+		for ( $i = 0; $i < $emailsCount; $i ++ ) {
+			! $i ? $this->add( "{from:$emails[$i]" ) : $i == $emailsCount - 1 ? $this->add( "from:$emails[$i]}" ) : $this->from( $emails[ $i ] );
+		}
 
 		return $this;
 	}

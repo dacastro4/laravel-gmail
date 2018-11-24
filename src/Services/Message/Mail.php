@@ -371,12 +371,23 @@ class Mail extends GmailConnection
 
 	}
 
+	/**
+	 * Returns a specific body part from an email
+	 * @param string $type
+	 *
+	 * @return null|string
+	 */
 	public function getBody( $type = 'text/plain' )
 	{
 		$part = $this->getBodyPart( $type );
-		$body = $part->getBody();
 
-		return $body->getData();
+		if ( $part ) {
+			$body = $part->getBody();
+
+			return $body->getData();
+		}
+
+		return null;
 	}
 
 	/**

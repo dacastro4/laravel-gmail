@@ -130,7 +130,7 @@ class Message
 	 * @param $query
 	 *
 	 * @return $this
-	*/
+	 */
 	public function subject( $query )
 	{
 		$this->add( "[{$query}]" );
@@ -144,7 +144,7 @@ class Message
 	 * @param $email
 	 *
 	 * @return $this
-	*/
+	 */
 	public function from( $email )
 	{
 		$this->add( "from:{$email}" );
@@ -153,7 +153,7 @@ class Message
 	}
 
     /**
-     * Filter to get only emails to a specific email address
+     * Filter to get only emails from a specific email address
      *
      * @param $email
      *
@@ -161,9 +161,9 @@ class Message
      */
 	public function to( $email )
 	{
-	    $this->add( "to:{$email}" );
+		$this->add( "to:{$email}" );
 
-        return $this;
+		return $this;
 	}
 
 	/**

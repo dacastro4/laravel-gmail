@@ -159,12 +159,12 @@ class Message
      *
      * @return $this
      */
-    public function to( $email )
-    {
-        $this->add( "to:{$email}" );
+	public function to( $email )
+	{
+	    $this->add( "to:{$email}" );
 
         return $this;
-    }
+	}
 
 	/**
 	 * add an array of from addresses

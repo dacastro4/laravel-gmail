@@ -130,7 +130,7 @@ class Message
 	 * @param $query
 	 *
 	 * @return $this
-	 */
+	*/
 	public function subject( $query )
 	{
 		$this->add( "[{$query}]" );
@@ -144,7 +144,7 @@ class Message
 	 * @param $email
 	 *
 	 * @return $this
-	 */
+	*/
 	public function from( $email )
 	{
 		$this->add( "from:{$email}" );

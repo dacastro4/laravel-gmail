@@ -69,10 +69,10 @@ class Message
 	 */
 	public function next()
 	{
-		if($this->pageToken) {
-			return $this->all($this->pageToken);
+		if ( $this->pageToken ) {
+			return $this->all( $this->pageToken );
 		} else {
-			return collect([]);
+			return collect( [] );
 		}
 	}
 
@@ -152,13 +152,13 @@ class Message
 		return $this;
 	}
 
-    /**
-     * Filter to get only emails from a specific email address
-     *
-     * @param $email
-     *
-     * @return $this
-     */
+	/**
+	 * Filter to get only emails from a specific email address
+	 *
+	 * @param $email
+	 *
+	 * @return $this
+	 */
 	public function to( $email )
 	{
 		$this->add( "to:{$email}" );

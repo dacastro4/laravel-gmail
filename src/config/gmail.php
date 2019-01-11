@@ -34,7 +34,7 @@ return [
 	'redirect_url'  => env( 'GOOGLE_REDIRECT_URI', '/' ),
 
 	'scopes' => [
-		'modify',
+		'readonly',
 	],
 
 	'access_type' => 'offline',

@@ -54,12 +54,18 @@ trait Configurable
 		];
 	}
 
+	public function setAdditionalScopes( array $scopes )
+	{   
+		$this->additionalScopes = $scopes;
+
+		return $this;
+	}
+
 	private function getUserScopes()
 	{
-		return array_merge(
-			[
-				Google_Service_Gmail::GMAIL_READONLY,
-			], $this->mapScopes() );
+		$scopes = $this->_config[ 'gmail.scopes' ];
+
+		return array_merge( $scopes, $this->mapScopes(), $this->additionalScopes );
 	}
 
 	private function configApi()

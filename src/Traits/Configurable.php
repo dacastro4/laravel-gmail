@@ -13,6 +13,8 @@ trait Configurable
 
 	private $_config;
 
+	protected $additionalScopes;
+
 	public function __construct( $config )
 	{
 		$this->_config = $config;

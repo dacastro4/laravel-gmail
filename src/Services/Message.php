@@ -152,6 +152,20 @@ class Message
 		return $this;
 	}
 
+    /**
+     * Filter to get only emails from a specific email address
+     *
+     * @param $email
+     *
+     * @return $this
+     */
+	public function to( $email )
+	{
+		$this->add( "to:{$email}" );
+
+		return $this;
+	}
+
 	/**
 	 * add an array of from addresses
 	 *

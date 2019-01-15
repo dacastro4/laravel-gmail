@@ -35,6 +35,8 @@ return [
 
 	'scopes' => [
 		'readonly',
+		'modify',
+		'metadata',
 	],
 
 	'access_type' => 'offline',

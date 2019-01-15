@@ -13,7 +13,7 @@ trait Configurable
 
 	private $_config;
 
-	protected $additionalScopes;
+	protected $additionalScopes = [];
 
 	public function __construct( $config )
 	{
@@ -57,7 +57,7 @@ trait Configurable
 	}
 
 	public function setAdditionalScopes( array $scopes )
-	{   
+	{
 		$this->additionalScopes = $scopes;
 
 		return $this;
@@ -65,9 +65,7 @@ trait Configurable
 
 	private function getUserScopes()
 	{
-		$scopes = $this->_config[ 'gmail.scopes' ];
-
-		return array_merge( $scopes, $this->mapScopes(), $this->additionalScopes );
+		return $this->mapScopes();
 	}
 
 	private function configApi()
@@ -89,7 +87,8 @@ trait Configurable
 
 	private function mapScopes()
 	{
-		$scopes = $this->_config[ 'gmail.scopes' ];
+		$scopes = array_merge( $this->_config[ 'gmail.scopes' ], $this->additionalScopes );
+		$scopes = array_unique(array_filter($scopes));
 		$mappedScopes = [];
 
 		if ( ! empty( $scopes ) ) {

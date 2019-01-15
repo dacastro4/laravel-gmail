@@ -66,6 +66,21 @@ To modify the scopes and the credentials file name, just run:
 
 Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailServiceProvider"` and modify the config file `config/gmail.php`.
 
+###Available Scopes
+
+* all *(this one doesn't exists on Gmail Scopes, I added it.)*
+* compose         
+* insert          
+* labels          
+* metadata        
+* modify          
+* readonly        
+* send            
+* settings_basic  
+* settings_sharing
+
+[More about Gmail API scopes](https://developers.google.com/gmail/api/auth/scopes)
+
 # Example
 
 ## Welcome Blade:

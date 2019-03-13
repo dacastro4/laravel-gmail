@@ -4,13 +4,15 @@ namespace Dacastro4\LaravelGmail\Services;
 
 use Dacastro4\LaravelGmail\LaravelGmailClass;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
+use Dacastro4\LaravelGmail\Traits\Filterable;
 use Dacastro4\LaravelGmail\Traits\SendsParameters;
 use Google_Service_Gmail;
 
 class Message
 {
 
-	use SendsParameters;
+	use SendsParameters,
+		Filterable;
 
 	public $service;
 
@@ -110,111 +112,6 @@ class Message
 		$message = $this->service->users_messages->get( 'me', $id );
 
 		return new Mail( $message );
-	}
-
-	/**
-	 * Filter to get only unread emalis
-	 *
-	 * @return $this
-	 */
-	public function unread()
-	{
-		$this->add( 'is:unread' );
-
-		return $this;
-	}
-
-	/**
-	 * Filter to get only unread emalis
-	 *
-	 * @param $query
-	 *
-	 * @return $this
-	 */
-	public function subject( $query )
-	{
-		$this->add( "[{$query}]" );
-
-		return $this;
-	}
-
-	/**
-	 * Filter to get only emails from a specific email address
-	 *
-	 * @param $email
-	 *
-	 * @return $this
-	 */
-	public function from( $email )
-	{
-		$this->add( "from:{$email}" );
-
-		return $this;
-	}
-
-	/**
-	 * Filter to get only emails from a specific email address
-	 *
-	 * @param $email
-	 *
-	 * @return $this
-	 */
-	public function to( $email )
-	{
-		$this->add( "to:{$email}" );
-
-		return $this;
-	}
-
-	/**
-	 * add an array of from addresses
-	 *
-	 * @param $emails
-	 *
-	 * @return $this
-	 */
-	public function fromThese( $emails )
-	{
-		$emailsCount = count( $emails );
-		for ( $i = 0; $i < $emailsCount; $i ++ ) {
-			! $i ? $this->add( "{from:$emails[$i]" ) : $i == $emailsCount - 1 ? $this->add( "from:$emails[$i]}" ) : $this->from( $emails[ $i ] );
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Filters emails by tag
-	 * Example:
-	 * * starred
-	 * * inbox
-	 * * spam
-	 * * chats
-	 * * sent
-	 * * draft
-	 * * trash
-	 *
-	 * @param $box
-	 *
-	 * @return Message
-	 */
-	public function in( $box = 'inbox' )
-	{
-		$this->add( "in:{$box}" );
-
-		return $this;
-	}
-
-	/**
-	 * Determines if the email has attachments
-	 *
-	 * @return $this
-	 */
-	public function hasAttachment()
-	{
-		$this->add( 'has:attachment' );
-
-		return $this;
 	}
 
 	/**

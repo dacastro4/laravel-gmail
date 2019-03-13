@@ -266,6 +266,14 @@ To get all unread emails: `LaravelGmail::message()->unread()->all()`
 
 `message()->hasAttachment()`
 
+`message()->subject($subject)`
+
+`->after($date)` and `->before($date)`
+
+`message()->raw($query)` for customized queries
+
+All the possible filters are in the [Filterable Trait](https://github.com/dacastro4/laravel-gmail/blob/master/src/Traits/Filterable.php)
+
 Of course you can use as a fluent api.
 
 ``` php

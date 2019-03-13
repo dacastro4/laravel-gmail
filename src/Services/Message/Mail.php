@@ -17,8 +17,8 @@ use Illuminate\Support\Collection;
 class Mail extends GmailConnection
 {
 	use HasDecodableBody,
-	Modifiable,
-	Replyable {
+		Modifiable,
+		Replyable {
 		Replyable::__construct as private __rConstruct;
 		Modifiable::__construct as private __mConstruct;
 	}
@@ -79,13 +79,8 @@ class Mail extends GmailConnection
 				$message = $this->service->users_messages->get( 'me', $message->getId() );
 			}
 
-			$this->id = $message->getId();
-			$this->internalDate = $message->getInternalDate();
-			$this->labels = $message->getLabelIds();
-			$this->size = $message->getSizeEstimate();
-			$this->threatId = $message->getThreadId();
-			$this->payload = $message->getPayload();
-			
+			$this->setMessage( $message );
+
 		}
 	}
 
@@ -351,7 +346,6 @@ class Mail extends GmailConnection
 	{
 		$body = $this->payload->getParts();
 
-
 		if ( $this->hasAttachments() ) {
 			//Get the first attachment that is the main body
 			$body = isset( $body[ 0 ] ) ? $body[ 0 ] : [];
@@ -367,12 +361,13 @@ class Mail extends GmailConnection
 			}
 		}
 
-		return isset($part) ? $part : null;
+		return isset( $part ) ? $part : null;
 
 	}
 
 	/**
 	 * Returns a specific body part from an email
+	 *
 	 * @param string $type
 	 *
 	 * @return null|string
@@ -465,17 +460,17 @@ class Mail extends GmailConnection
 	 */
 	public function using( $token )
 	{
-		$this->setToken($token);
+		$this->setToken( $token );
 
 		return $this;
 	}
 
 
-
 	/* added by buckfuddey */
 
-	public function hasNoParts(){
-		if (empty($this->payload->getParts())) {
+	public function hasNoParts()
+	{
+		if ( empty( $this->payload->getParts() ) ) {
 			return true;
 		} else {
 			return false;
@@ -483,80 +478,94 @@ class Mail extends GmailConnection
 	}
 
 
-	public function extractFromBody(){
+	public function extractFromBody()
+	{
 
-		if ($this->hasNoParts()) {
+		if ( $this->hasNoParts() ) {
 			$type = $this->payload->getMimeType();
 			$body = $this->payload->getBody();
-			if ($type == 'text/html' || $type == 'text/plain') {
-				$this->bodyArr[$type] = $this->getDecodedBody($body->getData());
+			if ( $type == 'text/html' || $type == 'text/plain' ) {
+				$this->bodyArr[ $type ] = $this->getDecodedBody( $body->getData() );
 			}
-			if ($body->getAttachmentId()) {
-				$this->attachmentData[] = array(
-					'id' => $body->getAttachmentId(),
-					'mimeType' => $type
-				);
+			if ( $body->getAttachmentId() ) {
+				$this->attachmentData[] = [
+					'id'       => $body->getAttachmentId(),
+					'mimeType' => $type,
+				];
 			}
 		} else {
 			$parts = $this->payload->getParts();
-			foreach ($parts as $part) {
-				if (empty($part->getParts())) {
+			foreach ( $parts as $part ) {
+				if ( empty( $part->getParts() ) ) {
 					$type = $part->getMimeType();
 					$body = $part->getBody();
-					if ($type == 'text/html' || $type == 'text/plain') {
-						if (isset($this->messageBodyArr[$type])) {
-							$this->messageBodyArr[$type] .= $this->getDecodedBody($body->getData());
+					if ( $type == 'text/html' || $type == 'text/plain' ) {
+						if ( isset( $this->messageBodyArr[ $type ] ) ) {
+							$this->messageBodyArr[ $type ] .= $this->getDecodedBody( $body->getData() );
 						} else {
-							$this->messageBodyArr[$type] = $this->getDecodedBody($body->getData());
+							$this->messageBodyArr[ $type ] = $this->getDecodedBody( $body->getData() );
 						}
 					}
 
-					if ($body->getAttachmentId()) {
-						$this->attachmentData[] = array(
-							'id' => $body->getAttachmentId(),
-							'fileName'  => $part->getFilename(),
-							'mimeType' => $type
-						);						
-					}				
+					if ( $body->getAttachmentId() ) {
+						$this->attachmentData[] = [
+							'id'       => $body->getAttachmentId(),
+							'fileName' => $part->getFilename(),
+							'mimeType' => $type,
+						];
+					}
 				} else {
 					$subParts = $part->getParts();
-					$this->traverseData($subParts);
+					$this->traverseData( $subParts );
 				}
-			}
-		}		
-	}
-
-	public function traverseData($parts){
-		foreach ($parts as $part) {			
-			if (empty($part->getParts())) {
-				$type = $part->getMimeType();
-				$body = $part->getBody();
-				if ($type == 'text/html' || $type == 'text/plain') {
-					if (isset($this->messageBodyArr[$type])) {
-						$this->messageBodyArr[$type] .= $this->getDecodedBody($body->getData());
-					} else {
-						$this->messageBodyArr[$type] = $this->getDecodedBody($body->getData());
-					}						
-				}
-
-				if ($body->getAttachmentId()) {
-					$this->attachmentData[] = array(
-						'id' => $body->getAttachmentId(),
-						'fileName'  => $part->getFilename(),
-						'mimeType' => $type
-					);
-
-				}
-			} else {
-				$subParts = $part->getParts();
-				$this->traverseData($subParts);
 			}
 		}
 	}
 
-	public function getDecodedBody( $content ) {
+	public function traverseData( $parts )
+	{
+		foreach ( $parts as $part ) {
+			if ( empty( $part->getParts() ) ) {
+				$type = $part->getMimeType();
+				$body = $part->getBody();
+				if ( $type == 'text/html' || $type == 'text/plain' ) {
+					if ( isset( $this->messageBodyArr[ $type ] ) ) {
+						$this->messageBodyArr[ $type ] .= $this->getDecodedBody( $body->getData() );
+					} else {
+						$this->messageBodyArr[ $type ] = $this->getDecodedBody( $body->getData() );
+					}
+				}
+
+				if ( $body->getAttachmentId() ) {
+					$this->attachmentData[] = [
+						'id'       => $body->getAttachmentId(),
+						'fileName' => $part->getFilename(),
+						'mimeType' => $type,
+					];
+
+				}
+			} else {
+				$subParts = $part->getParts();
+				$this->traverseData( $subParts );
+			}
+		}
+	}
+
+	public function getDecodedBody( $content )
+	{
 		$content = str_replace( '_', '/', str_replace( '-', '+', $content ) );
+
 		return base64_decode( $content );
+	}
+
+	protected function setMessage( \Google_Service_Gmail_Message $message )
+	{
+		$this->id = $message->getId();
+		$this->internalDate = $message->getInternalDate();
+		$this->labels = $message->getLabelIds();
+		$this->size = $message->getSizeEstimate();
+		$this->threatId = $message->getThreadId();
+		$this->payload = $message->getPayload();
 	}
 
 }

@@ -494,7 +494,6 @@ class Mail extends GmailConnection
 			if ($body->getAttachmentId()) {
 				$this->attachmentData[] = array(
 					'id' => $body->getAttachmentId(),
-					'fileName' => $part->getFilename(),
 					'mimeType' => $type
 				);
 			}

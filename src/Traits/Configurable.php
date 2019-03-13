@@ -53,6 +53,7 @@ trait Configurable
 			'client_secret' => $this->_config[ 'gmail.client_secret' ],
 			'client_id'     => $this->_config[ 'gmail.client_id' ],
 			'redirect_uri'  => url( $this->_config[ 'gmail.redirect_url' ] ),
+			'state'         => isset($this->_config[ 'state' ]) ? $this->_config[ 'state' ] : null,
 		];
 	}
 
@@ -88,7 +89,7 @@ trait Configurable
 	private function mapScopes()
 	{
 		$scopes = array_merge( $this->_config[ 'gmail.scopes' ], $this->additionalScopes );
-		$scopes = array_unique(array_filter($scopes));
+		$scopes = array_unique( array_filter( $scopes ) );
 		$mappedScopes = [];
 
 		if ( ! empty( $scopes ) ) {

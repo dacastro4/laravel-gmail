@@ -153,4 +153,6 @@ trait Filterable
 
 		return $this;
 	}
+
+	public abstract function add( $query, $column = 'q' );
 }

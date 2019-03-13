@@ -280,13 +280,15 @@ trait Replyable
 	/**
 	 * Sends a new email
 	 *
-	 * @return Mail
+	 * @return self|Mail
 	 */
 	public function send()
 	{
 		$body = $this->getMessageBody();
 
-		return new Mail( $this->service->users_messages->send( 'me', $body, $this->parameters ) );
+		$this->setMessage( $this->service->users_messages->send( 'me', $body, $this->parameters ) );
+
+		return $this;
 	}
 
 	/**
@@ -378,4 +380,6 @@ trait Replyable
 	public abstract function getId();
 
 	public abstract function getSubject();
+
+	protected abstract function setMessage( $message );
 }

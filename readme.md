@@ -25,7 +25,7 @@ You need to create an application in the [Google Console](https://console.develo
 
 Add dacastro4/laravel-gmail to composer.json.
 
-`"dacastro4/laravel-gmail": "^0.4"`
+`"dacastro4/laravel-gmail": "^0.6"`
 
 Run composer update to pull down the latest version.
 
@@ -66,7 +66,7 @@ To modify the scopes and the credentials file name, just run:
 
 Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailServiceProvider"` and modify the config file `config/gmail.php`.
 
-###Available Scopes
+### Available Scopes
 
 * all *(this one doesn't exists on Gmail Scopes, I added it.)*
 * compose         
@@ -265,6 +265,14 @@ To get all unread emails: `LaravelGmail::message()->unread()->all()`
 `message()->in( $box = 'inbox' )`
 
 `message()->hasAttachment()`
+
+`message()->subject($subject)`
+
+`->after($date)` and `->before($date)`
+
+`message()->raw($query)` for customized queries
+
+All the possible filters are in the [Filterable Trait](https://github.com/dacastro4/laravel-gmail/blob/master/src/Traits/Filterable.php)
 
 Of course you can use as a fluent api.
 

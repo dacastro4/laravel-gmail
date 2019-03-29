@@ -3,6 +3,7 @@
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Google_Service_Gmail;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Trait Configurable
@@ -83,7 +84,7 @@ trait Configurable
 
 	private function getFileName()
 	{
-		return $this->_config[ 'gmail.credentials_file_name' ];
+		return Auth::check() ? Auth::user()->id : $this->_config[ 'gmail.credentials_file_name' ];
 	}
 
 	private function mapScopes()

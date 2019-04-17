@@ -167,8 +167,15 @@ class GmailConnection extends Google_Client
 	 */
 	public function saveAccessToken( array $config )
 	{
+		$userId = auth()->id();
 		$fileName = $this->getFileName();
-		$file = "gmail/tokens/$fileName.json";
+		$allowMultipleCredentials = $this->_config[ 'gmail.allow_multiple_credentials' ];
+        	
+		if ($userId && $allowMultipleCredentials) {
+			$file = sprintf('gmail/tokens/%s-%s.json', $fileName, $userId);
+		} else {
+			$file = "gmail/tokens/$fileName.json";
+		}
 
 		if ( Storage::disk( 'local' )->exists( $file ) ) {
 			Storage::disk( 'local' )->delete( $file );

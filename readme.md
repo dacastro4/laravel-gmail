@@ -9,8 +9,6 @@
 [![Beerpay](https://beerpay.io/dacastro4/laravel-gmail/badge.svg)](https://beerpay.io/dacastro4/laravel-gmail)
 
 
-*Work in progress!!*
-
 # Gmail
 Gmail API for Laravel 5
 
@@ -25,7 +23,7 @@ You need to create an application in the [Google Console](https://console.develo
 
 Add dacastro4/laravel-gmail to composer.json.
 
-`"dacastro4/laravel-gmail": "^0.6"`
+`"dacastro4/laravel-gmail": "^1.0"`
 
 Run composer update to pull down the latest version.
 
@@ -51,6 +49,14 @@ Now add the alias.
 
 For laravel >=5.5 that's all. This package supports Laravel new [Package Discovery](https://laravel.com/docs/5.5/packages#package-discovery).
 
+# Migration from 0.6 to 1.0
+The only changed made was the multi credentials feature.
+- Change your composer.json from `"dacastro4/laravel-gmail": "^0.6"` to `"dacastro4/laravel-gmail": "^1.0"`
+
+If you don't want the multi user credentials, you don't have to do anything else, if you do, you're going to have to 
+login again to create a new credentials file per user.
+
+
 # Configuration
 
 You only have to set the following variables on your `.env` file and you'll be on your way:
@@ -60,11 +66,16 @@ GOOGLE_PROJECT_ID=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=
+GOOGLE_ALLOW_MULTITPLE_CREDENTIALS
 ```
 
 To modify the scopes and the credentials file name, just run:
 
 Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailServiceProvider"` and modify the config file `config/gmail.php`.
+
+### Allow multi user credentials
+To allow multi user credentials change `allow_multiple_credentials` to `true` in your config file or set the .env variable 
+`GOOGLE_ALLOW_MULTITPLE_CREDENTIALS` to true if you're not using the config file.
 
 ### Available Scopes
 
@@ -80,6 +91,8 @@ Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailS
 * settings_sharing
 
 [More about Gmail API scopes](https://developers.google.com/gmail/api/auth/scopes)
+
+Note: To change the scopes, users have to logout and login again. 
 
 # Example
 

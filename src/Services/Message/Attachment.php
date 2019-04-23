@@ -88,7 +88,7 @@ class Attachment extends GmailConnection
 	 */
 	public function getMimeType()
 	{
-		return $this->getMimeType();
+		return $this->mimeType;
 	}
 
 	/**

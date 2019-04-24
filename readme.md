@@ -98,6 +98,20 @@ To allow encryption for json files change `allow_json_encrypt` to `true` in your
 
 Note: To change the scopes, users have to logout and login again. 
 
+#### Additional Scopes
+If for some reason you need to add additional scopes.
+
+Add additional scopes in URL Style in config/gmail.php
+
+```
+ 'additional_scopes' => [
+            'https://www.googleapis.com/auth/drive',
+            'https://www.googleapis.com/auth/documents',
+            'https://www.googleapis.com/auth/spreadsheets'
+    ],
+```
+
+
 # Example
 
 ## Welcome Blade:

@@ -41,6 +41,23 @@ return [
 		'metadata',
 	],
 
+    /*
+	|--------------------------------------------------------------------------
+	| Additional Scopes [URL Style]
+	|--------------------------------------------------------------------------
+	|
+	|   'additional_scopes' => [
+    |        'https://www.googleapis.com/auth/drive',
+    |        'https://www.googleapis.com/auth/documents'
+    |   ],
+	|
+	|
+	*/
+
+    'additional_scopes' => [
+
+    ],
+
 	'access_type' => 'offline',
 
 	'approval_prompt' => 'force',

@@ -113,7 +113,7 @@ trait Configurable
 			}
 		}
 
-		return $mappedScopes;
+		return  array_merge( $mappedScopes , $this->_config[ 'gmail.additional_scopes' ] );
 	}
 
 	private function scopeMap( $scope )

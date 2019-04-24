@@ -149,6 +149,8 @@ and after that you don't have to call it again.
 
 `LaravelGmail::redirect` You can use this as a direct method `<a href="{{ LaravelGmail::redirect() }}">Login</a>`
 
+`LaravelGmail::makeToken()` Set and Save AccessToken in json file (useful in the callback)
+
 `LaravelGmail::logout` Logs out the user
 
 `LaravelGmail::check` Checks if the user is logged in
@@ -156,6 +158,13 @@ and after that you don't have to call it again.
 
 ## Sending
 
+```
+use Dacastro4\LaravelGmail\Services\Message\Mail;
+
+...
+
+$mail = new Mail;
+``` 
 For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a string of email and name.
 
 
@@ -173,7 +182,7 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 
 `$mail->message( $message )` sets the body of the email
 
-`$mail->view( 'view.name' )` sets the body from a blade file
+`$mail->view( 'view.name', $dataArray )` sets the body from a blade file
 
 `$mail->attach( ...$path )` add file attachments to the email
 
@@ -247,6 +256,13 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 `$mail->getAttachmentsWithData()` Get a collection of all the attachments on the email including the data
 
 ## Attachment
+
+```
+use Dacastro4\LaravelGmail\Services\Message\Attachment
+...
+
+$attachment = new Attachment;
+``` 
 
 `$attachment->getId` Returns the ID of the attachment
 

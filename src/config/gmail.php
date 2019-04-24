@@ -56,7 +56,7 @@ return [
 	*/
 
 	'credentials_file_name' => env( 'GOOGLE_CREDENTIALS_NAME', 'gmail-json' ),
-	
+
 	/*
     	|--------------------------------------------------------------------------
     	| Allow Multiple Credentials
@@ -68,4 +68,16 @@ return [
     	*/
 
     	'allow_multiple_credentials' => env('GOOGLE_ALLOW_MULTIPLE_CREDENTIALS', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Allow Encryption for json Files
+    |--------------------------------------------------------------------------
+    |
+    |   Use Laravel Encrypt in json Files
+    |
+    |
+    */
+
+    'allow_json_encrypt' => env('GOOGLE_ALLOW_JSON_ENCRYPT', false),
 ];

@@ -170,7 +170,8 @@ class GmailConnection extends Google_Client
 		$userId = auth()->id();
 		$fileName = $this->getFileName();
 		$allowMultipleCredentials = $this->_config[ 'gmail.allow_multiple_credentials' ];
-        	
+        $allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
+
 		if ($userId && $allowMultipleCredentials) {
 			$file = sprintf('gmail/tokens/%s-%s.json', $fileName, $userId);
 		} else {
@@ -182,8 +183,12 @@ class GmailConnection extends Google_Client
 		}
 
 		$config[ 'email' ] = $this->emailAddress;
+        if($allowJsonEncrypt){
+            Storage::disk( 'local' )->put( $file, encrypt( json_encode( $config ) ) );
+        } else {
+            Storage::disk( 'local' )->put( $file, json_encode( $config ) );
+        }
 
-		Storage::disk( 'local' )->put( $file, json_encode( $config ) );
 	}
 
 	/**

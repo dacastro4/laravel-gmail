@@ -24,12 +24,19 @@ trait Configurable
 	{
 		$fileName = $this->getFileName();
 		$file = storage_path( "app/gmail/tokens/{$fileName}.json" );
-
+        $allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
 		if ( file_exists( $file ) ) {
-			$config = json_decode(
-				file_get_contents( $file ),
-				true
-			);
+		    if($allowJsonEncrypt){
+                $config = json_decode(
+                    decrypt( file_get_contents( $file ) ),
+                    true
+                );
+            } else {
+                $config = json_decode(
+                    file_get_contents( $file ),
+                    true
+                );
+            }
 
 			if ( $string ) {
 				if ( isset( $config[ $string ] ) ) {

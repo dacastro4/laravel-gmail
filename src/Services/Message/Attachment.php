@@ -49,7 +49,7 @@ class Attachment extends GmailConnection
 	 */
 	public function __construct( $singleMessageId, \Google_Service_Gmail_MessagePart $part )
 	{
-		parent::__construct(config());
+		parent::__construct( config() );
 
 		$this->service = new Google_Service_Gmail( $this );
 
@@ -131,7 +131,7 @@ class Attachment extends GmailConnection
 
 		$filename = $filename ?: $this->filename;
 
-		if ( is_null($path) ) {
+		if ( is_null( $path ) ) {
 			$path = '/';
 		} else {
 			if ( ! ends_with( '/', $path ) ) {
@@ -141,7 +141,7 @@ class Attachment extends GmailConnection
 
 		$filePathAndName = "{$path}{$filename}";
 
-		Storage::disk($disk)->put( $filePathAndName, $data );
+		Storage::disk( $disk )->put( $filePathAndName, $data );
 
 		return $filePathAndName;
 

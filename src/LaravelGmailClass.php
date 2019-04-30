@@ -13,8 +13,8 @@ class LaravelGmailClass extends GmailConnection
 
 	public function __construct( $config )
 	{
-		if(class_basename($config) === 'Application') {
-			$config = $config['config'];
+		if ( class_basename( $config ) === 'Application' ) {
+			$config = $config[ 'config' ];
 		}
 
 		parent::__construct( $config );

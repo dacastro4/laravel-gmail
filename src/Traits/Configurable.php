@@ -24,19 +24,19 @@ trait Configurable
 	{
 		$fileName = $this->getFileName();
 		$file = storage_path( "app/gmail/tokens/{$fileName}.json" );
-        $allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
+		$allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
 		if ( file_exists( $file ) ) {
-		    if($allowJsonEncrypt){
-                $config = json_decode(
-                    decrypt( file_get_contents( $file ) ),
-                    true
-                );
-            } else {
-                $config = json_decode(
-                    file_get_contents( $file ),
-                    true
-                );
-            }
+			if ( $allowJsonEncrypt ) {
+				$config = json_decode(
+					decrypt( file_get_contents( $file ) ),
+					true
+				);
+			} else {
+				$config = json_decode(
+					file_get_contents( $file ),
+					true
+				);
+			}
 
 			if ( $string ) {
 				if ( isset( $config[ $string ] ) ) {
@@ -60,7 +60,7 @@ trait Configurable
 			'client_secret' => $this->_config[ 'gmail.client_secret' ],
 			'client_id'     => $this->_config[ 'gmail.client_id' ],
 			'redirect_uri'  => url( $this->_config[ 'gmail.redirect_url' ] ),
-			'state'         => isset($this->_config[ 'state' ]) ? $this->_config[ 'state' ] : null,
+			'state'         => isset( $this->_config[ 'state' ] ) ? $this->_config[ 'state' ] : null,
 		];
 	}
 
@@ -94,9 +94,9 @@ trait Configurable
 		$credentialFilename = $this->_config[ 'gmail.credentials_file_name' ];
 		$allowMultipleCredentials = $this->_config[ 'gmail.allow_multiple_credentials' ];
 
-        	if ($userId && $allowMultipleCredentials) {
-            		return sprintf('%s-%s', $credentialFilename, $userId);
-        	}
+		if ( $userId && $allowMultipleCredentials ) {
+			return sprintf( '%s-%s', $credentialFilename, $userId );
+		}
 
 		return $credentialFilename;
 	}
@@ -113,7 +113,7 @@ trait Configurable
 			}
 		}
 
-		return  array_merge( $mappedScopes , $this->_config[ 'gmail.additional_scopes' ] );
+		return array_merge( $mappedScopes, $this->_config[ 'gmail.additional_scopes' ] );
 	}
 
 	private function scopeMap( $scope )

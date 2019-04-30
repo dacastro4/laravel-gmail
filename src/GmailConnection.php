@@ -27,7 +27,7 @@ class GmailConnection extends Google_Client
 	{
 		$this->app = Container::getInstance();
 
-		$this->configConstruct($config);
+		$this->configConstruct( $config );
 
 		$this->configuration = $config;
 
@@ -167,7 +167,6 @@ class GmailConnection extends Google_Client
 	 */
 	public function saveAccessToken( array $config )
 	{
-
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
         $allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
@@ -177,11 +176,12 @@ class GmailConnection extends Google_Client
 		}
 
 		$config[ 'email' ] = $this->emailAddress;
-        if($allowJsonEncrypt){
-            Storage::disk( 'local' )->put( $file, encrypt( json_encode( $config ) ) );
-        } else {
-            Storage::disk( 'local' )->put( $file, json_encode( $config ) );
-        }
+
+		if ( $allowJsonEncrypt ) {
+			Storage::disk( 'local' )->put( $file, encrypt( json_encode( $config ) ) );
+		} else {
+			Storage::disk( 'local' )->put( $file, json_encode( $config ) );
+		}
 
 	}
 
@@ -192,16 +192,19 @@ class GmailConnection extends Google_Client
 	{
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
-        $allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
+
+		$allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
 
 		if ( Storage::disk( 'local' )->exists( $file ) ) {
 			Storage::disk( 'local' )->delete( $file );
 		}
-        if($allowJsonEncrypt){
-            Storage::disk( 'local' )->put( $file, encrypt( json_encode( [] ) ) );
-        } else {
-            Storage::disk( 'local' )->put( $file, json_encode( [] ) );
-        }
+    
+		if ( $allowJsonEncrypt ) {
+			Storage::disk( 'local' )->put( $file, encrypt( json_encode( [] ) ) );
+		} else {
+			Storage::disk( 'local' )->put( $file, json_encode( [] ) );
+		}
+
 	}
 
 }

@@ -41,6 +41,23 @@ return [
 		'metadata',
 	],
 
+    /*
+	|--------------------------------------------------------------------------
+	| Additional Scopes [URL Style]
+	|--------------------------------------------------------------------------
+	|
+	|   'additional_scopes' => [
+	|        'https://www.googleapis.com/auth/drive',
+	|        'https://www.googleapis.com/auth/documents'
+	|   ],
+	|
+	|
+	*/
+
+    'additional_scopes' => [
+
+    ],
+
 	'access_type' => 'offline',
 
 	'approval_prompt' => 'force',
@@ -56,16 +73,28 @@ return [
 	*/
 
 	'credentials_file_name' => env( 'GOOGLE_CREDENTIALS_NAME', 'gmail-json' ),
-	
-	/*
-    	|--------------------------------------------------------------------------
-    	| Allow Multiple Credentials
-    	|--------------------------------------------------------------------------
-    	|
-    	|   Allow the application to store multiple credential json files.
-    	|
-    	|
-    	*/
 
-    	'allow_multiple_credentials' => env('GOOGLE_ALLOW_MULTIPLE_CREDENTIALS', false),
+	/*
+    |--------------------------------------------------------------------------
+    | Allow Multiple Credentials
+    |--------------------------------------------------------------------------
+    |
+    |   Allow the application to store multiple credential json files.
+    |
+    |
+    */
+
+    'allow_multiple_credentials' => env('GOOGLE_ALLOW_MULTIPLE_CREDENTIALS', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Allow Encryption for json Files
+    |--------------------------------------------------------------------------
+    |
+    |   Use Laravel Encrypt in json Files
+    |
+    |
+    */
+
+    'allow_json_encrypt' => env('GOOGLE_ALLOW_JSON_ENCRYPT', false),
 ];

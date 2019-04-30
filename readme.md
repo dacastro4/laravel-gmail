@@ -67,6 +67,7 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=
 GOOGLE_ALLOW_MULTITPLE_CREDENTIALS
+GOOGLE_ALLOW_JSON_ENCRYPT
 ```
 
 To modify the scopes and the credentials file name, just run:
@@ -76,6 +77,9 @@ Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailS
 ### Allow multi user credentials
 To allow multi user credentials change `allow_multiple_credentials` to `true` in your config file or set the .env variable 
 `GOOGLE_ALLOW_MULTITPLE_CREDENTIALS` to true if you're not using the config file.
+### Allow encryption for json files
+To allow encryption for json files change `allow_json_encrypt` to `true` in your config file or set the .env variable 
+`GOOGLE_ALLOW_JSON_ENCRYPT` to true if you're not using the config file.
 
 ### Available Scopes
 
@@ -93,6 +97,20 @@ To allow multi user credentials change `allow_multiple_credentials` to `true` in
 [More about Gmail API scopes](https://developers.google.com/gmail/api/auth/scopes)
 
 Note: To change the scopes, users have to logout and login again. 
+
+#### Additional Scopes
+If for some reason you need to add additional scopes.
+
+Add additional scopes in URL Style in config/gmail.php
+
+```
+ 'additional_scopes' => [
+            'https://www.googleapis.com/auth/drive',
+            'https://www.googleapis.com/auth/documents',
+            'https://www.googleapis.com/auth/spreadsheets'
+    ],
+```
+
 
 # Example
 
@@ -145,6 +163,8 @@ and after that you don't have to call it again.
 
 `LaravelGmail::redirect` You can use this as a direct method `<a href="{{ LaravelGmail::redirect() }}">Login</a>`
 
+`LaravelGmail::makeToken()` Set and Save AccessToken in json file (useful in the callback)
+
 `LaravelGmail::logout` Logs out the user
 
 `LaravelGmail::check` Checks if the user is logged in
@@ -152,6 +172,13 @@ and after that you don't have to call it again.
 
 ## Sending
 
+```
+use Dacastro4\LaravelGmail\Services\Message\Mail;
+
+...
+
+$mail = new Mail;
+``` 
 For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a string of email and name.
 
 
@@ -169,7 +196,7 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 
 `$mail->message( $message )` sets the body of the email
 
-`$mail->view( 'view.name' )` sets the body from a blade file
+`$mail->view( 'view.name', $dataArray )` sets the body from a blade file
 
 `$mail->attach( ...$path )` add file attachments to the email
 
@@ -243,6 +270,13 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 `$mail->getAttachmentsWithData()` Get a collection of all the attachments on the email including the data
 
 ## Attachment
+
+```
+use Dacastro4\LaravelGmail\Services\Message\Attachment
+...
+
+$attachment = new Attachment;
+``` 
 
 `$attachment->getId` Returns the ID of the attachment
 

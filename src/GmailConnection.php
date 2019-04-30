@@ -169,7 +169,7 @@ class GmailConnection extends Google_Client
 	{
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
-        $allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
+		$allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
 
 		if ( Storage::disk( 'local' )->exists( $file ) ) {
 			Storage::disk( 'local' )->delete( $file );
@@ -198,7 +198,7 @@ class GmailConnection extends Google_Client
 		if ( Storage::disk( 'local' )->exists( $file ) ) {
 			Storage::disk( 'local' )->delete( $file );
 		}
-    
+
 		if ( $allowJsonEncrypt ) {
 			Storage::disk( 'local' )->put( $file, encrypt( json_encode( [] ) ) );
 		} else {

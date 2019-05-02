@@ -27,8 +27,8 @@ trait ModifiesLabels
 	 */
 	public function addLabel( $labels )
 	{
-		if(is_string($labels)) {
-			$labels = [$labels];
+		if ( is_string( $labels ) ) {
+			$labels = [ $labels ];
 		}
 
 		$this->messageRequest->setAddLabelIds( $labels );
@@ -50,8 +50,8 @@ trait ModifiesLabels
 	 */
 	public function removeLabel( $labels )
 	{
-		if(is_string($labels)) {
-			$labels = [$labels];
+		if ( is_string( $labels ) ) {
+			$labels = [ $labels ];
 		}
 
 		$this->messageRequest->setRemoveLabelIds( $labels );

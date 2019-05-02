@@ -27,7 +27,7 @@ class GmailConnection extends Google_Client
 	{
 		$this->app = Container::getInstance();
 
-		$this->configConstruct($config);
+		$this->configConstruct( $config );
 
 		$this->configuration = $config;
 
@@ -167,27 +167,21 @@ class GmailConnection extends Google_Client
 	 */
 	public function saveAccessToken( array $config )
 	{
-		$userId = auth()->id();
 		$fileName = $this->getFileName();
-		$allowMultipleCredentials = $this->_config[ 'gmail.allow_multiple_credentials' ];
-        $allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
-
-		if ($userId && $allowMultipleCredentials) {
-			$file = sprintf('gmail/tokens/%s-%s.json', $fileName, $userId);
-		} else {
-			$file = "gmail/tokens/$fileName.json";
-		}
+		$file = "gmail/tokens/$fileName.json";
+		$allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
 
 		if ( Storage::disk( 'local' )->exists( $file ) ) {
 			Storage::disk( 'local' )->delete( $file );
 		}
 
 		$config[ 'email' ] = $this->emailAddress;
-        if($allowJsonEncrypt){
-            Storage::disk( 'local' )->put( $file, encrypt( json_encode( $config ) ) );
-        } else {
-            Storage::disk( 'local' )->put( $file, json_encode( $config ) );
-        }
+
+		if ( $allowJsonEncrypt ) {
+			Storage::disk( 'local' )->put( $file, encrypt( json_encode( $config ) ) );
+		} else {
+			Storage::disk( 'local' )->put( $file, json_encode( $config ) );
+		}
 
 	}
 
@@ -198,16 +192,19 @@ class GmailConnection extends Google_Client
 	{
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
-        $allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
+
+		$allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
 
 		if ( Storage::disk( 'local' )->exists( $file ) ) {
 			Storage::disk( 'local' )->delete( $file );
 		}
-        if($allowJsonEncrypt){
-            Storage::disk( 'local' )->put( $file, encrypt( json_encode( [] ) ) );
-        } else {
-            Storage::disk( 'local' )->put( $file, json_encode( [] ) );
-        }
+
+		if ( $allowJsonEncrypt ) {
+			Storage::disk( 'local' )->put( $file, encrypt( json_encode( [] ) ) );
+		} else {
+			Storage::disk( 'local' )->put( $file, json_encode( [] ) );
+		}
+
 	}
 
 }

@@ -15,7 +15,7 @@ trait SendsParameters
 	 */
 	public function add( $query, $column = 'q' )
 	{
-		$query = urlencode($query);
+		$query = urlencode( $query );
 
 		if ( isset( $this->params[ $column ] ) ) {
 			$this->params[ $column ] = "{$this->params[$column]} $query";

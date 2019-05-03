@@ -174,9 +174,9 @@ class GmailConnection extends Google_Client
 
             if(empty($config['email'])){
                 if ( $allowJsonEncrypt ) {
-                    $savedConfigToken = json_decode(decrypt(Storage::disk( 'local' )->get( $file )));
+                    $savedConfigToken = json_decode(decrypt(Storage::disk( 'local' )->get( $file )),true);
                 } else {
-                    $savedConfigToken = json_decode(Storage::disk( 'local' )->get( $file ));
+                    $savedConfigToken = json_decode(Storage::disk( 'local' )->get( $file ), true);
                 }
                 $config['email'] = $savedConfigToken['email'];
             }

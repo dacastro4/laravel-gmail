@@ -126,7 +126,7 @@ class GmailConnection extends Google_Client
 		if ( $this->isAccessTokenExpired() ) {
 			$this->fetchAccessTokenWithRefreshToken( $this->getRefreshToken() );
 			$token = $this->getAccessToken();
-			$this->setAccessToken( $token );
+            $this->setBothAccessToken( $token );
 		}
 	}
 
@@ -155,7 +155,7 @@ class GmailConnection extends Google_Client
 	 */
 	public function setBothAccessToken( $token )
 	{
-		parent::setAccessToken( $token );
+        $this->setAccessToken( $token );
 		$this->saveAccessToken( $token );
 	}
 

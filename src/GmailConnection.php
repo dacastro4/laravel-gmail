@@ -35,9 +35,8 @@ class GmailConnection extends Google_Client
 
 		$this->configApi();
 
-		if ( $this->check() ) {
-			$this->refreshTokenIfNeeded();
-		}
+		$this->refreshTokenIfNeeded();
+
 	}
 
 	public function getAccessToken()
@@ -79,7 +78,7 @@ class GmailConnection extends Google_Client
 	}
 
 	/**
-	 * Check
+	 * Checks if the user is logged in
 	 *
 	 * @return bool
 	 */
@@ -93,7 +92,7 @@ class GmailConnection extends Google_Client
 	 * Throws an AuthException when the auth file its empty or with the wrong token
 	 *
 	 *
-	 * @return bool
+     * @return bool Returns True if the access_token is expired.
 	 */
 	public function isAccessTokenExpired()
 	{

@@ -35,7 +35,9 @@ class GmailConnection extends Google_Client
 
 		$this->configApi();
 
-		$this->refreshTokenIfNeeded();
+		if($this->checkPreviouslyLoggedIn()){
+			$this->refreshTokenIfNeeded();
+		}
 
 	}
 

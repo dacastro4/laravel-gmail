@@ -78,7 +78,31 @@ class GmailConnection extends Google_Client
 	}
 
 	/**
-	 * Checks if the user is logged in
+	 * Check and return true if the user has previously logged in without checking if the token needs to refresh
+	 *
+	 * @return bool
+	 */
+	public function checkPreviouslyLoggedIn()
+	{
+		$fileName = $this->getFileName();
+		$file = "gmail/tokens/$fileName.json";
+		$allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
+
+		if ( Storage::disk( 'local' )->exists( $file ) ) {
+			if ( $allowJsonEncrypt ) {
+				$savedConfigToken = json_decode(decrypt(Storage::disk( 'local' )->get( $file )),true);
+			} else {
+				$savedConfigToken = json_decode(Storage::disk( 'local' )->get( $file ), true);
+			}
+
+			return !empty($savedConfigToken['access_token']);
+
+		}
+		return false;
+	}
+
+	/**
+	 * Check
 	 *
 	 * @return bool
 	 */

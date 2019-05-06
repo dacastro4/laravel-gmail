@@ -144,6 +144,8 @@ class GmailConnection extends Google_Client
 
 	/**
 	 * Refresh the auth token if needed
+	 *
+	 * @return mixed|null
 	 */
 	private function refreshTokenIfNeeded()
 	{
@@ -151,7 +153,9 @@ class GmailConnection extends Google_Client
 			$this->fetchAccessTokenWithRefreshToken( $this->getRefreshToken() );
 			$token = $this->getAccessToken();
             $this->setBothAccessToken( $token );
+            return $token;
 		}
+		return $this->token;
 	}
 
 	/**
@@ -193,6 +197,7 @@ class GmailConnection extends Google_Client
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
 		$allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
+        $config[ 'email' ] = $this->emailAddress;
 
         if ( Storage::disk( 'local' )->exists( $file ) ) {
 
@@ -207,8 +212,6 @@ class GmailConnection extends Google_Client
 
             Storage::disk( 'local' )->delete( $file );
         }
-
-		$config[ 'email' ] = $this->emailAddress;
 
 		if ( $allowJsonEncrypt ) {
 			Storage::disk( 'local' )->put( $file, encrypt( json_encode( $config ) ) );

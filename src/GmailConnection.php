@@ -62,6 +62,7 @@ class GmailConnection extends Google_Client
 				$me = $this->getProfile();
 				if ( property_exists( $me, 'emailAddress' ) ) {
 					$this->emailAddress = $me->emailAddress;
+					$accessToken[ 'email' ] = $me->emailAddress;
 				}
 				$this->setBothAccessToken( $accessToken );
 

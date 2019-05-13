@@ -45,13 +45,13 @@ class Attachment extends GmailConnection
 	 * Attachment constructor.
 	 *
 	 * @param $singleMessageId
-	 * @param \Google_Service_Gmail_MessagePart $part
+	 * @param  \Google_Service_Gmail_MessagePart  $part
 	 */
-	public function __construct( $singleMessageId, \Google_Service_Gmail_MessagePart $part )
+	public function __construct($singleMessageId, \Google_Service_Gmail_MessagePart $part)
 	{
-		parent::__construct( config() );
+		parent::__construct(config());
 
-		$this->service = new Google_Service_Gmail( $this );
+		$this->service = new Google_Service_Gmail($this);
 
 		$body = $part->getBody();
 		$this->id = $body->getAttachmentId();
@@ -102,48 +102,48 @@ class Attachment extends GmailConnection
 	}
 
 	/**
-	 * @throws \Exception
-	 */
-	public function getData()
-	{
-		$attachment = $this->service->users_messages_attachments->get( 'me', $this->messageId, $this->id );
-
-		return $attachment->getData();
-	}
-
-	/**
-	 * @param string $path
-	 * @param string|null $filename
+	 * @param  string  $path
+	 * @param  string|null  $filename
 	 *
-	 * @param string $disk
+	 * @param  string  $disk
 	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function saveAttachmentTo( $path = null, $filename = null, $disk = 'local' )
+	public function saveAttachmentTo($path = null, $filename = null, $disk = 'local')
 	{
 
-		$data = $this->getDecodedBody( $this->getData() );
+		$data = $this->getDecodedBody($this->getData());
 
-		if ( ! $data ) {
-			throw new \Exception( 'Could not get the attachment.' );
+		if (!$data) {
+			throw new \Exception('Could not get the attachment.');
 		}
 
 		$filename = $filename ?: $this->filename;
 
-		if ( is_null( $path ) ) {
+		if (is_null($path)) {
 			$path = '/';
 		} else {
-			if ( ! ends_with( '/', $path ) ) {
+			if (!ends_with('/', $path)) {
 				$path = "{$path}/";
 			}
 		}
 
 		$filePathAndName = "{$path}{$filename}";
 
-		Storage::disk( $disk )->put( $filePathAndName, $data );
+		Storage::disk($disk)->put($filePathAndName, $data);
 
 		return $filePathAndName;
 
+	}
+
+	/**
+	 * @throws \Exception
+	 */
+	public function getData()
+	{
+		$attachment = $this->service->users_messages_attachments->get('me', $this->messageId, $this->id);
+
+		return $attachment->getData();
 	}
 }

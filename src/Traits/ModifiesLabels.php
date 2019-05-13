@@ -8,9 +8,8 @@ use Google_Service_Gmail_ModifyMessageRequest;
 trait ModifiesLabels
 {
 
-	private $messageRequest;
-
 	public $service;
+	private $messageRequest;
 
 	public function __construct()
 	{
@@ -20,46 +19,23 @@ trait ModifiesLabels
 	/**
 	 * Adds labels to the email
 	 *
-	 * @param string|array $labels
+	 * @param  string|array  $labels
 	 *
 	 * @return Mail|string
 	 * @throws \Exception
 	 */
-	public function addLabel( $labels )
+	public function addLabel($labels)
 	{
-		if ( is_string( $labels ) ) {
-			$labels = [ $labels ];
+		if (is_string($labels)) {
+			$labels = [$labels];
 		}
 
-		$this->messageRequest->setAddLabelIds( $labels );
+		$this->messageRequest->setAddLabelIds($labels);
 
 		try {
 			return $this->modify();
-		} catch ( \Exception $e ) {
-			throw new \Exception( "Couldn't add labels: {$e->getMessage()}" );
-		}
-	}
-
-	/**
-	 * Removes labels from the email
-	 *
-	 * @param string|array $labels
-	 *
-	 * @return Mail|string
-	 * @throws \Exception
-	 */
-	public function removeLabel( $labels )
-	{
-		if ( is_string( $labels ) ) {
-			$labels = [ $labels ];
-		}
-
-		$this->messageRequest->setRemoveLabelIds( $labels );
-
-		try {
-			return $this->modify();
-		} catch ( \Exception $e ) {
-			throw new \Exception( "Couldn't remove labels: {$e->getMessage()}" );
+		} catch (\Exception $e) {
+			throw new \Exception("Couldn't add labels: {$e->getMessage()}");
 		}
 	}
 
@@ -70,8 +46,31 @@ trait ModifiesLabels
 	 */
 	private function modify()
 	{
-		return new Mail( $this->service->users_messages->modify( 'me', $this->getId(), $this->messageRequest ) );
+		return new Mail($this->service->users_messages->modify('me', $this->getId(), $this->messageRequest));
 	}
 
 	public abstract function getId();
+
+	/**
+	 * Removes labels from the email
+	 *
+	 * @param  string|array  $labels
+	 *
+	 * @return Mail|string
+	 * @throws \Exception
+	 */
+	public function removeLabel($labels)
+	{
+		if (is_string($labels)) {
+			$labels = [$labels];
+		}
+
+		$this->messageRequest->setRemoveLabelIds($labels);
+
+		try {
+			return $this->modify();
+		} catch (\Exception $e) {
+			throw new \Exception("Couldn't remove labels: {$e->getMessage()}");
+		}
+	}
 }

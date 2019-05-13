@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Redirect;
 class LaravelGmailClass extends GmailConnection
 {
 
-	public function __construct( $config )
+	public function __construct($config)
 	{
-		if ( class_basename( $config ) === 'Application' ) {
-			$config = $config[ 'config' ];
+		if (class_basename($config) === 'Application') {
+			$config = $config['config'];
 		}
 
-		parent::__construct( $config );
+		parent::__construct($config);
 	}
 
 	/**
@@ -24,11 +24,11 @@ class LaravelGmailClass extends GmailConnection
 	 */
 	public function message()
 	{
-		if ( ! $this->getToken() ) {
-			throw new AuthException( 'No credentials found.' );
+		if (!$this->getToken()) {
+			throw new AuthException('No credentials found.');
 		}
 
-		return new Message( $this );
+		return new Message($this);
 	}
 
 	/**
@@ -38,7 +38,12 @@ class LaravelGmailClass extends GmailConnection
 	 */
 	public function user()
 	{
-		return $this->config( 'email' );
+		return $this->config('email');
+	}
+
+	public function redirect()
+	{
+		return Redirect::to($this->getAuthUrl());
 	}
 
 	/**
@@ -49,11 +54,6 @@ class LaravelGmailClass extends GmailConnection
 	public function getAuthUrl()
 	{
 		return $this->createAuthUrl();
-	}
-
-	public function redirect()
-	{
-		return Redirect::to( $this->getAuthUrl() );
 	}
 
 	public function logout()

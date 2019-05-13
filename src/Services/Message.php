@@ -30,38 +30,11 @@ class Message
 	/**
 	 * Message constructor.
 	 *
-	 * @param LaravelGmailClass $client
+	 * @param  LaravelGmailClass  $client
 	 */
-	public function __construct( LaravelGmailClass $client )
+	public function __construct(LaravelGmailClass $client)
 	{
-		$this->service = new Google_Service_Gmail( $client );
-	}
-
-	/**
-	 * Returns a collection of Mail instances
-	 *
-	 * @param null|string $pageToken
-	 *
-	 * @return \Illuminate\Support\Collection
-	 */
-	public function all( $pageToken = null )
-	{
-		if ( ! is_null( $pageToken ) ) {
-			$this->add( $pageToken, 'pageToken' );
-		}
-
-		$messages = [];
-		$response = $this->service->users_messages->listUsersMessages( 'me', $this->params );
-
-		$this->pageToken = $response->getNextPageToken();
-
-		$allMessages = $response->getMessages();
-
-		foreach ( $allMessages as $message ) {
-			$messages[] = new Mail( $message, $this->preload );
-		}
-
-		return collect( $messages );
+		$this->service = new Google_Service_Gmail($client);
 	}
 
 	/**
@@ -71,11 +44,38 @@ class Message
 	 */
 	public function next()
 	{
-		if ( $this->pageToken ) {
-			return $this->all( $this->pageToken );
+		if ($this->pageToken) {
+			return $this->all($this->pageToken);
 		} else {
-			return collect( [] );
+			return collect([]);
 		}
+	}
+
+	/**
+	 * Returns a collection of Mail instances
+	 *
+	 * @param  null|string  $pageToken
+	 *
+	 * @return \Illuminate\Support\Collection
+	 */
+	public function all($pageToken = null)
+	{
+		if (!is_null($pageToken)) {
+			$this->add($pageToken, 'pageToken');
+		}
+
+		$messages = [];
+		$response = $this->service->users_messages->listUsersMessages('me', $this->params);
+
+		$this->pageToken = $response->getNextPageToken();
+
+		$allMessages = $response->getMessages();
+
+		foreach ($allMessages as $message) {
+			$messages[] = new Mail($message, $this->preload);
+		}
+
+		return collect($messages);
 	}
 
 	/**
@@ -91,13 +91,13 @@ class Message
 	/**
 	 * Limit the messages coming from the query
 	 *
-	 * @param int $number
+	 * @param  int  $number
 	 *
 	 * @return Message
 	 */
-	public function take( $number )
+	public function take($number)
 	{
-		$this->params[ 'maxResults' ] = abs( (int) $number );
+		$this->params['maxResults'] = abs((int) $number);
 
 		return $this;
 	}
@@ -107,19 +107,19 @@ class Message
 	 *
 	 * @return Mail
 	 */
-	public function get( $id )
+	public function get($id)
 	{
-		$message = $this->service->users_messages->get( 'me', $id );
+		$message = $this->service->users_messages->get('me', $id);
 
-		return new Mail( $message );
+		return new Mail($message);
 	}
 
 	/**
 	 * Preload the information on each Mail objects.
 	 * If is not preload you will have to call the load method from the Mail class
+	 * @return $this
 	 * @see Mail::load()
 	 *
-	 * @return $this
 	 */
 	public function preload()
 	{

@@ -10,11 +10,11 @@ trait HasDecodableBody
 	 *
 	 * @return string
 	 */
-	public function getDecodedBody( $content )
+	public function getDecodedBody($content)
 	{
-		$content = str_replace( '_', '/', str_replace( '-', '+', $content ) );
+		$content = str_replace('_', '/', str_replace('-', '+', $content));
 
-		return base64_decode( $content );
+		return base64_decode($content);
 	}
 
 }

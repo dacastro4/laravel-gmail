@@ -31,8 +31,8 @@ trait Modifiable
 	public function markAsRead()
 	{
 		try {
-			return $this->removeLabel( 'UNREAD' );
-		} catch ( \Exception $e ) {
+			return $this->removeLabel('UNREAD');
+		} catch (\Exception $e) {
 			return "Couldn't mark email as read: {$e->getMessage()}";
 		}
 	}
@@ -46,9 +46,9 @@ trait Modifiable
 	public function markAsUnread()
 	{
 		try {
-			return $this->addLabel( 'UNREAD' );
-		} catch ( \Exception $e ) {
-			throw new \Exception( "Couldn't mark email as unread: {$e->getMessage()}" );
+			return $this->addLabel('UNREAD');
+		} catch (\Exception $e) {
+			throw new \Exception("Couldn't mark email as unread: {$e->getMessage()}");
 		}
 	}
 
@@ -59,9 +59,9 @@ trait Modifiable
 	public function markAsImportant()
 	{
 		try {
-			return $this->addLabel( 'IMPORTANT' );
-		} catch ( \Exception $e ) {
-			throw new \Exception( "Couldn't remove mark email as important.: {$e->getMessage()}" );
+			return $this->addLabel('IMPORTANT');
+		} catch (\Exception $e) {
+			throw new \Exception("Couldn't remove mark email as important.: {$e->getMessage()}");
 		}
 	}
 
@@ -72,9 +72,9 @@ trait Modifiable
 	public function markAsNotImportant()
 	{
 		try {
-			return $this->removeLabel( 'IMPORTANT' );
-		} catch ( \Exception $e ) {
-			throw new \Exception( "Couldn't mark email as unread: {$e->getMessage()}" );
+			return $this->removeLabel('IMPORTANT');
+		} catch (\Exception $e) {
+			throw new \Exception("Couldn't mark email as unread: {$e->getMessage()}");
 		}
 	}
 
@@ -85,9 +85,9 @@ trait Modifiable
 	public function addStar()
 	{
 		try {
-			return $this->addLabel( 'STARRED' );
-		} catch ( \Exception $e ) {
-			throw new \Exception( "Couldn't remove mark email as important.: {$e->getMessage()}" );
+			return $this->addLabel('STARRED');
+		} catch (\Exception $e) {
+			throw new \Exception("Couldn't remove mark email as important.: {$e->getMessage()}");
 		}
 	}
 
@@ -98,9 +98,9 @@ trait Modifiable
 	public function removeStar()
 	{
 		try {
-			return $this->removeLabel( 'STARRED' );
-		} catch ( \Exception $e ) {
-			throw new \Exception( "Couldn't mark email as unread: {$e->getMessage()}" );
+			return $this->removeLabel('STARRED');
+		} catch (\Exception $e) {
+			throw new \Exception("Couldn't mark email as unread: {$e->getMessage()}");
 		}
 	}
 
@@ -112,18 +112,18 @@ trait Modifiable
 	public function sendToTrash()
 	{
 		try {
-			return $this->addLabel( 'TRASH' );
-		} catch ( \Exception $e ) {
-			return new \Exception( "Couldn't mark email as trash: {$e->getMessage()}" );
+			return $this->addLabel('TRASH');
+		} catch (\Exception $e) {
+			return new \Exception("Couldn't mark email as trash: {$e->getMessage()}");
 		}
 	}
 
 	public function removeFromTrash()
 	{
 		try {
-			return $this->removeLabel( 'TRASH' );
-		} catch ( \Exception $e ) {
-			return new \Exception( "Couldn't untrash the email: {$e->getMessage()}" );
+			return $this->removeLabel('TRASH');
+		} catch (\Exception $e) {
+			return new \Exception("Couldn't untrash the email: {$e->getMessage()}");
 		}
 	}
 }

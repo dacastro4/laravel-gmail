@@ -117,13 +117,13 @@ trait Replyable
 	 * If $name is passed and the first parameter is a string, this name will be
 	 * associated with the address.
 	 *
-	 * @param string|array $to
+	 * @param  string|array  $to
 	 *
-	 * @param string|null $name
+	 * @param  string|null  $name
 	 *
 	 * @return Replyable
 	 */
-	public function to( $to, $name = null )
+	public function to($to, $name = null)
 	{
 		$this->to = $to;
 		$this->nameTo = $name;
@@ -131,7 +131,7 @@ trait Replyable
 		return $this;
 	}
 
-	public function from( $from, $name = null )
+	public function from($from, $name = null)
 	{
 		$this->from = $from;
 		$this->nameFrom = $name;
@@ -140,41 +140,63 @@ trait Replyable
 	}
 
 	/**
-	 * @param array|string $cc
+	 * @param  array|string  $cc
 	 *
-	 * @param string|null $name
+	 * @param  string|null  $name
 	 *
 	 * @return Replyable
 	 */
-	public function cc( $cc, $name = null )
+	public function cc($cc, $name = null)
 	{
-		$this->cc = $this->emailList( $cc, $name );
+		$this->cc = $this->emailList($cc, $name);
 		$this->nameCc = $name;
 
 		return $this;
 	}
 
+	private function emailList($list, $name = null)
+	{
+		if (is_array($list)) {
+			return $this->convertEmailList($list, $name);
+		} else {
+			return $list;
+		}
+	}
+
+	private function convertEmailList($emails, $name = null)
+	{
+		$newList = [];
+		$c = 0;
+		foreach ($emails as $key => $email) {
+			$emailName = isset($name[$c]) ? $name[$c] : explode('@', $email)[0];
+			$newList[$email] = $emailName;
+			$c = $c + 1;
+		}
+
+		return $newList;
+	}
+
 	/**
-	 * @param array|string $bcc
+	 * @param  array|string  $bcc
 	 *
-	 * @param string|null $name
+	 * @param  string|null  $name
 	 *
 	 * @return Replyable
 	 */
-	public function bcc( $bcc, $name = null )
+	public function bcc($bcc, $name = null)
 	{
-		$this->bcc = $this->emailList( $bcc, $name );
+		$this->bcc = $this->emailList($bcc, $name);
 		$this->nameBcc = $name;
 
 		return $this;
 	}
 
 	/**
-	 * @param string $subject
+	 * @param  string  $subject
 	 *
 	 * @return Replyable
 	 */
-	public function subject( $subject )
+	public function subject($subject)
 	{
 		$this->subject = $subject;
 
@@ -182,26 +204,26 @@ trait Replyable
 	}
 
 	/**
-	 * @param string $view
-	 * @param array $data
-	 * @param array $mergeData
+	 * @param  string  $view
+	 * @param  array  $data
+	 * @param  array  $mergeData
 	 *
 	 * @return Replyable
 	 * @throws \Throwable
 	 */
-	public function view( $view, $data = [], $mergeData = [] )
+	public function view($view, $data = [], $mergeData = [])
 	{
-		$this->message = view( $view, $data, $mergeData )->render();
+		$this->message = view($view, $data, $mergeData)->render();
 
 		return $this;
 	}
 
 	/**
-	 * @param string $message
+	 * @param  string  $message
 	 *
 	 * @return Replyable
 	 */
-	public function message( $message )
+	public function message($message)
 	{
 		$this->message = $message;
 
@@ -211,21 +233,21 @@ trait Replyable
 	/**
 	 * Attaches new file to the email from the Storage folder
 	 *
-	 * @param array $files comma separated of files
+	 * @param  array  $files  comma separated of files
 	 *
 	 * @return Replyable
 	 * @throws \Exception
 	 */
-	public function attach( ...$files )
+	public function attach(...$files)
 	{
 
-		foreach ( $files as $file ) {
+		foreach ($files as $file) {
 
-			if ( ! file_exists( $file ) ) {
-				throw new FileNotFoundException( $file );
+			if (!file_exists($file)) {
+				throw new FileNotFoundException($file);
 			}
 
-			array_push( $this->attachments, $file );
+			array_push($this->attachments, $file);
 		}
 
 		return $this;
@@ -234,11 +256,11 @@ trait Replyable
 	/**
 	 * The value is an integer where 1 is the highest priority and 5 is the lowest.
 	 *
-	 * @param int $priority
+	 * @param  int  $priority
 	 *
 	 * @return Replyable
 	 */
-	public function priority( $priority )
+	public function priority($priority)
 	{
 		$this->priority = $priority;
 
@@ -246,11 +268,11 @@ trait Replyable
 	}
 
 	/**
-	 * @param array $parameters
+	 * @param  array  $parameters
 	 *
 	 * @return Replyable
 	 */
-	public function optionalParameters( array $parameters )
+	public function optionalParameters(array $parameters)
 	{
 		$this->parameters = $parameters;
 
@@ -265,16 +287,84 @@ trait Replyable
 	 */
 	public function reply()
 	{
-		if ( ! $this->getId() ) {
-			throw new \Exception( 'This is a new email. Use send().' );
+		if (!$this->getId()) {
+			throw new \Exception('This is a new email. Use send().');
 		}
 
 		$this->setReplyThreat();
 		$this->setReplySubject();
 		$body = $this->getMessageBody();
-		$body->setThreadId( $this->getThreatId() );
+		$body->setThreadId($this->getThreatId());
 
-		return new Mail( $this->service->users_messages->send( 'me', $body, $this->parameters ) );
+		return new Mail($this->service->users_messages->send('me', $body, $this->parameters));
+	}
+
+	public abstract function getId();
+
+	private function setReplyThreat()
+	{
+		$threatId = $this->getThreatId();
+		if ($threatId) {
+			$this->setHeader('In-Reply-To', $this->getHeader('In-Reply-To'));
+			$this->setHeader('References', $this->getHeader('References'));
+			$this->setHeader('Message-ID', $this->getHeader('Message-ID'));
+		}
+	}
+
+	public abstract function getThreatId();
+
+	/**
+	 * Add a header to the email
+	 *
+	 * @param  string  $header
+	 * @param  string  $value
+	 */
+	public function setHeader($header, $value)
+	{
+		$headers = $this->swiftMessage->getHeaders();
+
+		$headers->addTextHeader($header, $value);
+
+	}
+
+	private function setReplySubject()
+	{
+		if (!$this->subject) {
+			$this->subject = $this->getSubject();
+		}
+	}
+
+	public abstract function getSubject();
+
+	/**
+	 * @return Google_Service_Gmail_Message
+	 */
+	private function getMessageBody()
+	{
+		$body = new Google_Service_Gmail_Message();
+
+		$this->swiftMessage
+			->setSubject($this->subject)
+			->setFrom($this->from, $this->nameFrom)
+			->setTo($this->to, $this->nameTo)
+			->setCc($this->cc, $this->nameCc)
+			->setBcc($this->bcc, $this->nameBcc)
+			->setBody($this->message, 'text/html')
+			->setPriority($this->priority);
+
+		foreach ($this->attachments as $file) {
+			$this->swiftMessage
+				->attach(Swift_Attachment::fromPath($file));
+		}
+
+		$body->setRaw($this->base64_encode($this->swiftMessage->toString()));
+
+		return $body;
+	}
+
+	private function base64_encode($data)
+	{
+		return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
 	}
 
 	/**
@@ -286,100 +376,10 @@ trait Replyable
 	{
 		$body = $this->getMessageBody();
 
-		$this->setMessage( $this->service->users_messages->send( 'me', $body, $this->parameters ) );
+		$this->setMessage($this->service->users_messages->send('me', $body, $this->parameters));
 
 		return $this;
 	}
 
-	/**
-	 * Add a header to the email
-	 *
-	 * @param string $header
-	 * @param string $value
-	 */
-	public function setHeader( $header, $value )
-	{
-		$headers = $this->swiftMessage->getHeaders();
-
-		$headers->addTextHeader( $header, $value );
-
-	}
-
-	/**
-	 * @return Google_Service_Gmail_Message
-	 */
-	private function getMessageBody()
-	{
-		$body = new Google_Service_Gmail_Message();
-
-		$this->swiftMessage
-			->setSubject( $this->subject )
-			->setFrom( $this->from, $this->nameFrom )
-			->setTo( $this->to, $this->nameTo )
-			->setCc( $this->cc, $this->nameCc )
-			->setBcc( $this->bcc, $this->nameBcc )
-			->setBody( $this->message, 'text/html' )
-			->setPriority( $this->priority );
-
-		foreach ( $this->attachments as $file ) {
-			$this->swiftMessage
-				->attach( Swift_Attachment::fromPath( $file ) );
-		}
-
-		$body->setRaw( $this->base64_encode( $this->swiftMessage->toString() ) );
-
-		return $body;
-	}
-
-	private function base64_encode( $data )
-	{
-		return rtrim( strtr( base64_encode( $data ), '+/', '-_' ), '=' );
-	}
-
-	private function emailList( $list, $name = null )
-	{
-		if ( is_array( $list ) ) {
-			return $this->convertEmailList( $list, $name );
-		} else {
-			return $list;
-		}
-	}
-
-	private function convertEmailList( $emails, $name = null )
-	{
-		$newList = [];
-		$c = 0;
-		foreach ( $emails as $key => $email ) {
-			$emailName = isset( $name[ $c ] ) ? $name[ $c ] : explode( '@', $email )[ 0 ];
-			$newList[ $email ] = $emailName;
-			$c = $c + 1;
-		}
-
-		return $newList;
-	}
-
-	private function setReplySubject()
-	{
-		if ( ! $this->subject ) {
-			$this->subject = $this->getSubject();
-		}
-	}
-
-	private function setReplyThreat()
-	{
-		$threatId = $this->getThreatId();
-		if ( $threatId ) {
-			$this->setHeader( 'In-Reply-To', $this->getHeader( 'In-Reply-To' ) );
-			$this->setHeader( 'References', $this->getHeader( 'References' ) );
-			$this->setHeader( 'Message-ID', $this->getHeader( 'Message-ID' ) );
-		}
-	}
-
-	public abstract function getThreatId();
-
-	public abstract function getId();
-
-	public abstract function getSubject();
-
-	protected abstract function setMessage( $message );
+	protected abstract function setMessage($message);
 }

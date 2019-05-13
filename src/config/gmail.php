@@ -28,10 +28,10 @@ return [
 	|
 	*/
 
-	'project_id'    => env( 'GOOGLE_PROJECT_ID' ),
-	'client_id'     => env( 'GOOGLE_CLIENT_ID' ),
-	'client_secret' => env( 'GOOGLE_CLIENT_SECRET' ),
-	'redirect_url'  => env( 'GOOGLE_REDIRECT_URI', '/' ),
+	'project_id' => env('GOOGLE_PROJECT_ID'),
+	'client_id' => env('GOOGLE_CLIENT_ID'),
+	'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+	'redirect_url' => env('GOOGLE_REDIRECT_URI', '/'),
 
 	'state' => null,
 
@@ -41,7 +41,7 @@ return [
 		'metadata',
 	],
 
-    /*
+	/*
 	|--------------------------------------------------------------------------
 	| Additional Scopes [URL Style]
 	|--------------------------------------------------------------------------
@@ -54,9 +54,9 @@ return [
 	|
 	*/
 
-    'additional_scopes' => [
+	'additional_scopes' => [
 
-    ],
+	],
 
 	'access_type' => 'offline',
 
@@ -72,29 +72,29 @@ return [
 	|
 	*/
 
-	'credentials_file_name' => env( 'GOOGLE_CREDENTIALS_NAME', 'gmail-json' ),
+	'credentials_file_name' => env('GOOGLE_CREDENTIALS_NAME', 'gmail-json'),
 
 	/*
-    |--------------------------------------------------------------------------
-    | Allow Multiple Credentials
-    |--------------------------------------------------------------------------
-    |
-    |   Allow the application to store multiple credential json files.
-    |
-    |
-    */
+	|--------------------------------------------------------------------------
+	| Allow Multiple Credentials
+	|--------------------------------------------------------------------------
+	|
+	|   Allow the application to store multiple credential json files.
+	|
+	|
+	*/
 
-    'allow_multiple_credentials' => env('GOOGLE_ALLOW_MULTIPLE_CREDENTIALS', false),
+	'allow_multiple_credentials' => env('GOOGLE_ALLOW_MULTIPLE_CREDENTIALS', false),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Allow Encryption for json Files
-    |--------------------------------------------------------------------------
-    |
-    |   Use Laravel Encrypt in json Files
-    |
-    |
-    */
+	/*
+	|--------------------------------------------------------------------------
+	| Allow Encryption for json Files
+	|--------------------------------------------------------------------------
+	|
+	|   Use Laravel Encrypt in json Files
+	|
+	|
+	*/
 
-    'allow_json_encrypt' => env('GOOGLE_ALLOW_JSON_ENCRYPT', false),
+	'allow_json_encrypt' => env('GOOGLE_ALLOW_JSON_ENCRYPT', false),
 ];

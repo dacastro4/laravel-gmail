@@ -35,9 +35,10 @@ class GmailConnection extends Google_Client
 
 		$this->configApi();
 
-		if ( $this->check() ) {
+		if($this->checkPreviouslyLoggedIn()){
 			$this->refreshTokenIfNeeded();
 		}
+
 	}
 
 	public function getAccessToken()
@@ -61,6 +62,7 @@ class GmailConnection extends Google_Client
 				$me = $this->getProfile();
 				if ( property_exists( $me, 'emailAddress' ) ) {
 					$this->emailAddress = $me->emailAddress;
+					$accessToken[ 'email' ] = $me->emailAddress;
 				}
 				$this->setBothAccessToken( $accessToken );
 
@@ -79,6 +81,30 @@ class GmailConnection extends Google_Client
 	}
 
 	/**
+	 * Check and return true if the user has previously logged in without checking if the token needs to refresh
+	 *
+	 * @return bool
+	 */
+	public function checkPreviouslyLoggedIn()
+	{
+		$fileName = $this->getFileName();
+		$file = "gmail/tokens/$fileName.json";
+		$allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
+
+		if ( Storage::disk( 'local' )->exists( $file ) ) {
+			if ( $allowJsonEncrypt ) {
+				$savedConfigToken = json_decode(decrypt(Storage::disk( 'local' )->get( $file )),true);
+			} else {
+				$savedConfigToken = json_decode(Storage::disk( 'local' )->get( $file ), true);
+			}
+
+			return !empty($savedConfigToken['access_token']);
+
+		}
+		return false;
+	}
+
+	/**
 	 * Check
 	 *
 	 * @return bool
@@ -93,7 +119,7 @@ class GmailConnection extends Google_Client
 	 * Throws an AuthException when the auth file its empty or with the wrong token
 	 *
 	 *
-	 * @return bool
+     * @return bool Returns True if the access_token is expired.
 	 */
 	public function isAccessTokenExpired()
 	{
@@ -121,14 +147,18 @@ class GmailConnection extends Google_Client
 
 	/**
 	 * Refresh the auth token if needed
+	 *
+	 * @return mixed|null
 	 */
 	private function refreshTokenIfNeeded()
 	{
 		if ( $this->isAccessTokenExpired() ) {
 			$this->fetchAccessTokenWithRefreshToken( $this->getRefreshToken() );
 			$token = $this->getAccessToken();
-			$this->setAccessToken( $token );
+            $this->setBothAccessToken( $token );
+            return $token;
 		}
+		return $this->token;
 	}
 
 	/**
@@ -156,7 +186,7 @@ class GmailConnection extends Google_Client
 	 */
 	public function setBothAccessToken( $token )
 	{
-		parent::setAccessToken( $token );
+        $this->setAccessToken( $token );
 		$this->saveAccessToken( $token );
 	}
 
@@ -170,12 +200,21 @@ class GmailConnection extends Google_Client
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
 		$allowJsonEncrypt = $this->_config[ 'gmail.allow_json_encrypt' ];
+        $config[ 'email' ] = $this->emailAddress;
 
-		if ( Storage::disk( 'local' )->exists( $file ) ) {
-			Storage::disk( 'local' )->delete( $file );
-		}
+        if ( Storage::disk( 'local' )->exists( $file ) ) {
 
-		$config[ 'email' ] = $this->emailAddress;
+            if(empty($config['email'])){
+                if ( $allowJsonEncrypt ) {
+                    $savedConfigToken = json_decode(decrypt(Storage::disk( 'local' )->get( $file )),true);
+                } else {
+                    $savedConfigToken = json_decode(Storage::disk( 'local' )->get( $file ), true);
+                }
+                $config['email'] = $savedConfigToken['email'];
+            }
+
+            Storage::disk( 'local' )->delete( $file );
+        }
 
 		if ( $allowJsonEncrypt ) {
 			Storage::disk( 'local' )->put( $file, encrypt( json_encode( $config ) ) );

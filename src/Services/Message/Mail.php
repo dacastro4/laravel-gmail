@@ -46,7 +46,7 @@ class Mail extends GmailConnection
 	/**
 	 * @var
 	 */
-	public $threatId;
+	public $threadId;
 
 	/**
 	 * @var \Google_Service_Gmail_MessagePart
@@ -90,7 +90,7 @@ class Mail extends GmailConnection
 		$this->internalDate = $message->getInternalDate();
 		$this->labels = $message->getLabelIds();
 		$this->size = $message->getSizeEstimate();
-		$this->threatId = $message->getThreadId();
+		$this->threadId = $message->getThreadId();
 		$this->payload = $message->getPayload();
 	}
 
@@ -126,13 +126,13 @@ class Mail extends GmailConnection
 	}
 
 	/**
-	 * Returns threat ID of the email
+	 * Returns thread ID of the email
 	 *
 	 * @return string
 	 */
-	public function getThreatId()
+	public function getThreadId()
 	{
-		return $this->threatId;
+		return $this->threadId;
 	}
 
 	/**

@@ -3,6 +3,7 @@
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Google_Service_Gmail;
+use Storage;
 
 /**
  * Trait Configurable
@@ -22,19 +23,13 @@ trait Configurable
 	public function config($string = null)
 	{
 		$fileName = $this->getFileName();
-		$file = storage_path("app/gmail/tokens/{$fileName}.json");
+		$file = "gmail/tokens/$fileName.json";
 		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
-		if (file_exists($file)) {
+		if (Storage::disk('local')->exists($file)) {
 			if ($allowJsonEncrypt) {
-				$config = json_decode(
-					decrypt(file_get_contents($file)),
-					true
-				);
+				$config = json_decode(decrypt(Storage::disk('local')->get($file)), true);
 			} else {
-				$config = json_decode(
-					file_get_contents($file),
-					true
-				);
+				$config = json_decode(Storage::disk('local')->get($file), true);
 			}
 
 			if ($string) {

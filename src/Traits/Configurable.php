@@ -22,14 +22,16 @@ trait Configurable
 
 	public function config($string = null)
 	{
+		$disk = Storage::disk('local');
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
 		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
-		if (Storage::disk('local')->exists($file)) {
+
+		if ($disk->exists($file)) {
 			if ($allowJsonEncrypt) {
-				$config = json_decode(decrypt(Storage::disk('local')->get($file)), true);
+				$config = json_decode(decrypt($disk->get($file)), true);
 			} else {
-				$config = json_decode(Storage::disk('local')->get($file), true);
+				$config = json_decode($disk->get($file), true);
 			}
 
 			if ($string) {

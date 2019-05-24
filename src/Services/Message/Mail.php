@@ -315,22 +315,22 @@ class Mail extends GmailConnection
 	 *
 	 * @return null|string
 	 */
-    public function getBody($type = 'text/plain')
-    {
-        $part = $this->getBodyPart($type);
+	public function getBody($type = 'text/plain')
+	{
+		$part = $this->getBodyPart($type);
 
-        if ($part) {
-            $body = $part->getBody();
+		if ($part) {
+			$body = $part->getBody();
 
-            return $body->getData();
+			return $body->getData();
 
-        //if there are no parts in payload, try to get data from body->data
-        }elseif($this->payload->body->data) {
-            return $this->payload->body->data;
-        }
+			//if there are no parts in payload, try to get data from body->data
+		} elseif ($this->payload->body->data) {
+			return $this->payload->body->data;
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 	/**
 	 * @param  string  $type

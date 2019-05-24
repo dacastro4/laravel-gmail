@@ -23,7 +23,7 @@ You need to create an application in the [Google Console](https://console.develo
 
 Add dacastro4/laravel-gmail to composer.json.
 
-`"dacastro4/laravel-gmail": "^1.0"`
+`"dacastro4/laravel-gmail": "^1.1"`
 
 Run composer update to pull down the latest version.
 

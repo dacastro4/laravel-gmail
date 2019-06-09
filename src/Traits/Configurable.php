@@ -49,7 +49,7 @@ trait Configurable
 
 	private function getFileName()
 	{
-		$userId = auth()->id();
+		$userId = ($this->userId) ? $this->userId : auth()->id;
 		$credentialFilename = $this->_config['gmail.credentials_file_name'];
 		$allowMultipleCredentials = $this->_config['gmail.allow_multiple_credentials'];
 

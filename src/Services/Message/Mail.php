@@ -49,6 +49,11 @@ class Mail extends GmailConnection
 	public $threatId;
 
 	/**
+	 * @var
+	 */
+	public $userId;
+
+	/**
 	 * @var \Google_Service_Gmail_MessagePart
 	 */
 	public $payload;
@@ -63,11 +68,12 @@ class Mail extends GmailConnection
 	 *
 	 * @param  \Google_Service_Gmail_Message  $message
 	 * @param  bool  $preload
+	 * @param  int 	$userId
 	 *
 	 */
-	public function __construct(\Google_Service_Gmail_Message $message = null, $preload = false)
+	public function __construct(\Google_Service_Gmail_Message $message = null, $preload = false, $userId = null)
 	{
-
+		$this->userId = $userId;
 		$this->service = new Google_Service_Gmail($this);
 
 		$this->__rConstruct();

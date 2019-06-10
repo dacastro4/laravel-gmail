@@ -291,27 +291,27 @@ trait Replyable
 			throw new \Exception('This is a new email. Use send().');
 		}
 
-		$this->setReplyThreat();
+		$this->setReplyThread();
 		$this->setReplySubject();
 		$body = $this->getMessageBody();
-		$body->setThreadId($this->getThreatId());
+		$body->setThreadId($this->getThreadId());
 
 		return new Mail($this->service->users_messages->send('me', $body, $this->parameters));
 	}
 
 	public abstract function getId();
 
-	private function setReplyThreat()
+	private function setReplyThread()
 	{
-		$threatId = $this->getThreatId();
-		if ($threatId) {
+		$threadId = $this->getThreadId();
+		if ($threadId) {
 			$this->setHeader('In-Reply-To', $this->getHeader('In-Reply-To'));
 			$this->setHeader('References', $this->getHeader('References'));
 			$this->setHeader('Message-ID', $this->getHeader('Message-ID'));
 		}
 	}
 
-	public abstract function getThreatId();
+	public abstract function getThreadId();
 
 	/**
 	 * Add a header to the email

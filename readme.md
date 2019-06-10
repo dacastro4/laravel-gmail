@@ -66,7 +66,7 @@ GOOGLE_PROJECT_ID=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=
-GOOGLE_ALLOW_MULTITPLE_CREDENTIALS
+GOOGLE_ALLOW_MULTIPLE_CREDENTIALS
 GOOGLE_ALLOW_JSON_ENCRYPT
 ```
 
@@ -76,7 +76,7 @@ Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailS
 
 ### Allow multi user credentials
 To allow multi user credentials change `allow_multiple_credentials` to `true` in your config file or set the .env variable 
-`GOOGLE_ALLOW_MULTITPLE_CREDENTIALS` to true if you're not using the config file.
+`GOOGLE_ALLOW_MULTIPLE_CREDENTIALS` to true if you're not using the config file.
 ### Allow encryption for json files
 To allow encryption for json files change `allow_json_encrypt` to `true` in your config file or set the .env variable 
 `GOOGLE_ALLOW_JSON_ENCRYPT` to true if you're not using the config file.

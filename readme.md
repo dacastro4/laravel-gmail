@@ -352,6 +352,13 @@ Example:
                 ->all()
 ```
 
+### Frequent Issues
+
+#### Login Required
+
+If you're getting the `Login Required` error, try creating the `gmail-json.json` file under `/storage/app/gmail/tokens/`.
+
+
 ## Support on Beerpay
 Hey dude! Help me out for a couple of :beers:!
 

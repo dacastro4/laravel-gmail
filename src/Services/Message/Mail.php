@@ -5,6 +5,7 @@ namespace Dacastro4\LaravelGmail\Services\Message;
 use Carbon\Carbon;
 use Dacastro4\LaravelGmail\GmailConnection;
 use Dacastro4\LaravelGmail\Traits\HasDecodableBody;
+use Dacastro4\LaravelGmail\Traits\HasParts;
 use Dacastro4\LaravelGmail\Traits\Modifiable;
 use Dacastro4\LaravelGmail\Traits\Replyable;
 use Google_Service_Gmail;
@@ -18,10 +19,11 @@ class Mail extends GmailConnection
 {
 	use HasDecodableBody,
 		Modifiable,
+        HasParts,
 		Replyable {
-		Replyable::__construct as private __rConstruct;
-		Modifiable::__construct as private __mConstruct;
-	}
+		    Replyable::__construct as private __rConstruct;
+		    Modifiable::__construct as private __mConstruct;
+	    }
 
 	/**
 	 * @var
@@ -43,20 +45,23 @@ class Mail extends GmailConnection
 	 */
 	public $size;
 
-	/**
+    /**
 	 * @var
 	 */
 	public $threatId;
 
-	/**
+    /**
 	 * @var \Google_Service_Gmail_MessagePart
 	 */
 	public $payload;
-
-	/**
+    /**
 	 * @var Google_Service_Gmail
 	 */
 	public $service;
+    /**
+     * @var
+     */
+	private $allParts;
 
 	/**
 	 * SingleMessage constructor.
@@ -68,7 +73,7 @@ class Mail extends GmailConnection
 	public function __construct(\Google_Service_Gmail_Message $message = null, $preload = false)
 	{
 
-		$this->service = new Google_Service_Gmail($this);
+	    $this->service = new Google_Service_Gmail($this);
 
 		$this->__rConstruct();
 		$this->__mConstruct();
@@ -317,68 +322,55 @@ class Mail extends GmailConnection
 	 */
 	public function getBody($type = 'text/plain')
 	{
-		$part = $this->getBodyPart($type);
-
-		if ($part) {
-			$body = $part->getBody();
-
-			return $body->getData();
-
-			//if there are no parts in payload, try to get data from body->data
-		} elseif ($this->payload->body->data) {
-			return $this->payload->body->data;
-		}
-
-		return null;
-	}
-
-	/**
-	 * @param  string  $type
-	 *
-	 * @return \Google_Service_Gmail_MessagePart|null
-	 */
-	private function getBodyPart($type = 'text/plain')
-	{
-		$body = $this->payload->getParts();
-
-		if ($this->hasAttachments()) {
-			//Get the first attachment that is the main body
-			$body = isset($body[0]) ? $body[0] : [];
-			$parts = $body->getParts();
-		} else {
-			$parts = $body;
-		}
-
-		/** @var \Google_Service_Gmail_MessagePart $part */
-		foreach ($parts as $part) {
-			if ($part->getMimeType() === $type) {
-				break;
-			}
-		}
-
-		return isset($part) ? $part : null;
+        $parts = $this->getAllParts(collect([$this->payload]));
+        foreach ($parts as $part)
+        {
+            if ($part->mimeType == $type)
+            {
+                return $part->body->data;
+            //if there are no parts in payload, try to get data from body->data
+            }elseif ($this->payload->body->data)
+            {
+                return $this->payload->body->data;
+            }
+        }
+        return null;
 
 	}
 
 	/**
-	 * @return boolean
+	 * @return boolean. True if message has at least one attachment.
 	 */
 	public function hasAttachments()
 	{
-		$attachments = 0;
-		$parts = $this->payload->getParts();
-
-		/**  @var \Google_Service_Gmail_MessagePart $part */
-		foreach ($parts as $part) {
-			$body = $part->getBody();
-			if ($body->getAttachmentId()) {
-				$attachments++;
-				break;
-			}
-		}
-
-		return !!$attachments;
+        $parts = $this->getAllParts(collect([$this->payload]));
+	    foreach ($parts as $part)
+        {
+            if(!empty($part->body->attachmentId))
+            {
+                return true;
+            }
+        }
+        return false;
 	}
+
+    /**
+     * @return Integer. Number of attachments of the message.
+     */
+    public function countAttachments()
+    {
+        $numberOfAttachments = 0;
+        $parts = $this->getAllParts(collect([$this->payload]));
+        foreach ($parts as $part)
+        {
+            if(!empty($part->body->attachmentId))
+            {
+                $numberOfAttachments++;
+            }
+        }
+        return $numberOfAttachments;
+    }
+
 
 	public function getDecodedBody($content)
 	{
@@ -419,7 +411,9 @@ class Mail extends GmailConnection
 	/**
 	 * Returns a collection of attachments
 	 *
-	 * @param  bool  $preload  Preload the attachment's data
+	 * @param  bool  $preload  Preload only the attachment's 'data'.
+     * But does not load the other attachment info like filename, mimetype, etc..
+     * Maybe would be better to push the data to the other info? So ot would all be together.
 	 *
 	 * @return Collection
 	 * @throws \Exception
@@ -427,15 +421,12 @@ class Mail extends GmailConnection
 	public function getAttachments($preload = false)
 	{
 		$attachments = new Collection([]);
-		$parts = $this->payload->getParts();
-
-		/** @var \Google_Service_Gmail_MessagePart $part */
-		foreach ($parts as $part) {
-
-			$body = $part->getBody();
-
-			if ($body->getAttachmentId()) {
-				$attachment = (new Attachment($this->getId(), $part));
+        $parts = $this->getAllParts(collect([$this->payload]));
+		foreach ($parts as $part)
+		{
+            if(!empty($part->body->attachmentId))
+            {
+				$attachment = (new Attachment($part->body->attachmentId, $part));
 				if ($preload) {
 					$attachment = $attachment->getData();
 				}
@@ -489,86 +480,115 @@ class Mail extends GmailConnection
 		return $this;
 	}
 
-	public function extractFromBody()
-	{
 
-		if ($this->hasNoParts()) {
-			$type = $this->payload->getMimeType();
-			$body = $this->payload->getBody();
-			if ($type == 'text/html' || $type == 'text/plain') {
-				$this->bodyArr[$type] = $this->getDecodedBody($body->getData());
-			}
-			if ($body->getAttachmentId()) {
-				$this->attachmentData[] = [
-					'id' => $body->getAttachmentId(),
-					'mimeType' => $type,
-				];
-			}
-		} else {
-			$parts = $this->payload->getParts();
-			foreach ($parts as $part) {
-				if (empty($part->getParts())) {
-					$type = $part->getMimeType();
-					$body = $part->getBody();
-					if ($type == 'text/html' || $type == 'text/plain') {
-						if (isset($this->messageBodyArr[$type])) {
-							$this->messageBodyArr[$type] .= $this->getDecodedBody($body->getData());
-						} else {
-							$this->messageBodyArr[$type] = $this->getDecodedBody($body->getData());
-						}
-					}
+    /**
+     * checks if message has at least one part without itarating through all parts
+     *
+     * @return bool
+     */
+    public function hasParts()
+    {
+        if($this->iterateParts(
+            collect([$this->payload]), $returnOnFirstFound = true)
+        ){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
-					if ($body->getAttachmentId()) {
-						$this->attachmentData[] = [
-							'id' => $body->getAttachmentId(),
-							'fileName' => $part->getFilename(),
-							'mimeType' => $type,
-						];
-					}
-				} else {
-					$subParts = $part->getParts();
-					$this->traverseData($subParts);
-				}
-			}
-		}
-	}
+    /**
+     * checks if message has no parts withour iterating through all parts
+     *
+     * @return bool
+     */
+    public function hasNoParts()
+    {
+        if ($this->hasParts())
+        {
+            return false;
+        }else{
+            return true;
+        }
+    }
 
-	public function hasNoParts()
-	{
-		if (empty($this->payload->getParts())) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 
-	public function traverseData($parts)
-	{
-		foreach ($parts as $part) {
-			if (empty($part->getParts())) {
-				$type = $part->getMimeType();
-				$body = $part->getBody();
-				if ($type == 'text/html' || $type == 'text/plain') {
-					if (isset($this->messageBodyArr[$type])) {
-						$this->messageBodyArr[$type] .= $this->getDecodedBody($body->getData());
-					} else {
-						$this->messageBodyArr[$type] = $this->getDecodedBody($body->getData());
-					}
-				}
 
-				if ($body->getAttachmentId()) {
-					$this->attachmentData[] = [
-						'id' => $body->getAttachmentId(),
-						'fileName' => $part->getFilename(),
-						'mimeType' => $type,
-					];
 
-				}
-			} else {
-				$subParts = $part->getParts();
-				$this->traverseData($subParts);
-			}
-		}
-	}
 
+    //unused function? Could be removed?
+    public function extractFromBody()
+    {
+
+        if ($this->hasNoParts()) {
+            $type = $this->payload->getMimeType();
+            $body = $this->payload->getBody();
+            if ($type == 'text/html' || $type == 'text/plain') {
+                $this->bodyArr[$type] = $this->getDecodedBody($body->getData());
+            }
+            if ($body->getAttachmentId()) {
+                $this->attachmentData[] = [
+                    'id' => $body->getAttachmentId(),
+                    'mimeType' => $type,
+                ];
+            }
+        } else {
+            $parts = $this->payload->getParts();
+            foreach ($parts as $part) {
+                if (empty($part->getParts())) {
+                    $type = $part->getMimeType();
+                    $body = $part->getBody();
+                    if ($type == 'text/html' || $type == 'text/plain') {
+                        if (isset($this->messageBodyArr[$type])) {
+                            $this->messageBodyArr[$type] .= $this->getDecodedBody($body->getData());
+                        } else {
+                            $this->messageBodyArr[$type] = $this->getDecodedBody($body->getData());
+                        }
+                    }
+
+                    if ($body->getAttachmentId()) {
+                        $this->attachmentData[] = [
+                            'id' => $body->getAttachmentId(),
+                            'fileName' => $part->getFilename(),
+                            'mimeType' => $type,
+                        ];
+                    }
+                } else {
+                    $subParts = $part->getParts();
+                    $this->traverseData($subParts);
+                }
+            }
+        }
+    }
+
+
+    //unused function? Could be removed?
+    public function traverseData($parts)
+    {
+        foreach ($parts as $part) {
+            if (empty($part->getParts())) {
+                $type = $part->getMimeType();
+                $body = $part->getBody();
+                if ($type == 'text/html' || $type == 'text/plain') {
+                    if (isset($this->messageBodyArr[$type])) {
+                        $this->messageBodyArr[$type] .= $this->getDecodedBody($body->getData());
+                    } else {
+                        $this->messageBodyArr[$type] = $this->getDecodedBody($body->getData());
+                    }
+                }
+
+                if ($body->getAttachmentId()) {
+                    $this->attachmentData[] = [
+                        'id' => $body->getAttachmentId(),
+                        'fileName' => $part->getFilename(),
+                        'mimeType' => $type,
+                    ];
+
+                }
+            } else {
+                $subParts = $part->getParts();
+                $this->traverseData($subParts);
+            }
+        }
+    }
 }

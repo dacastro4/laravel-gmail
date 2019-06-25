@@ -175,13 +175,26 @@ class Mail extends GmailConnection
 	}
 
 	/**
+	 * Returns the subject of the email
+	 *
+	 * @return array|string
+	 */
+	public function getReplyTo()
+	{
+		$replyTo = $this->getHeader('Reply-To');
+
+		return $this->getFrom($replyTo ? $replyTo : $this->getHeader('From'));
+	}
+
+	/**
 	 * Returns array of name and email of each recipient
 	 *
+	 * @param  null  $email
 	 * @return array
 	 */
-	public function getFrom()
+	public function getFrom($email = null)
 	{
-		$from = $this->getHeader('From');
+		$from = $email ? $email : $this->getHeader('From');
 
 		preg_match('/<(.*)>/', $from, $matches);
 
@@ -460,6 +473,11 @@ class Mail extends GmailConnection
 		return $this->id;
 	}
 
+
+	public function getUser()
+	{
+		return $this->config('email');
+	}
 
 	/* added by buckfuddey */
 

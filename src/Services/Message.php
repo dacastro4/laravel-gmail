@@ -20,6 +20,8 @@ class Message
 
 	public $pageToken;
 
+	public $client;
+
 	/**
 	 * Optional parameter for getting single and multiple emails
 	 *
@@ -34,6 +36,7 @@ class Message
 	 */
 	public function __construct(LaravelGmailClass $client)
 	{
+		$this->client = $client;
 		$this->service = new Google_Service_Gmail($client);
 	}
 
@@ -126,5 +129,10 @@ class Message
 		$this->preload = true;
 
 		return $this;
+	}
+
+	public function getUser()
+	{
+		return $this->client->user();
 	}
 }

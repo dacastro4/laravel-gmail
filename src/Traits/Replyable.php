@@ -293,6 +293,8 @@ trait Replyable
 
 		$this->setReplyThread();
 		$this->setReplySubject();
+		$this->setReplyTo();
+		$this->setReplyFrom();
 		$body = $this->getMessageBody();
 		$body->setThreadId($this->getThreadId());
 
@@ -334,7 +336,28 @@ trait Replyable
 		}
 	}
 
+	private function setReplyTo()
+	{
+		if (!$this->to) {
+			$replyTo = $this->getReplyTo();
+
+			$this->to = $replyTo['email'];
+			$this->nameTo = $replyTo['name'];
+		}
+	}
+
+	private function setReplyFrom()
+	{
+		if (!$this->from) {
+			$this->from = $this->getUser();
+		}
+	}
+
 	public abstract function getSubject();
+
+	public abstract function getReplyTo();
+
+	public abstract function getUser();
 
 	/**
 	 * @return Google_Service_Gmail_Message
@@ -364,7 +387,7 @@ trait Replyable
 
 	private function base64_encode($data)
 	{
-		return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+		return rtrim(strtr(base64_encode($data), ['+' => '-', '/' => '_']), '=');
 	}
 
 	/**

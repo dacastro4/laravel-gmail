@@ -74,8 +74,12 @@ class Message
 
 		$allMessages = $response->getMessages();
 
-		foreach ($allMessages as $message) {
-			$messages[] = new Mail($message, $this->preload);
+		if(!$this->preload) {
+			foreach ($allMessages as $message) {
+				$messages[] = new Mail($message, $this->preload);
+			}
+		} else {
+			$messages = $this->batchRequest($allMessages);
 		}
 
 		return collect($messages);
@@ -112,9 +116,37 @@ class Message
 	 */
 	public function get($id)
 	{
-		$message = $this->service->users_messages->get('me', $id);
+		$message = $this->getRequest($id);
 
 		return new Mail($message);
+	}
+
+	/**
+	 * Creates a batch request to get all emails in a single call
+	 *
+	 * @param $allMessages
+	 *
+	 * @return array|null
+	 */
+	public function batchRequest($allMessages)
+	{
+		$this->client->setUseBatch(true);
+
+		$batch = $this->service->createBatch();
+
+		foreach ($allMessages as $key => $message) {
+			$batch->add($this->getRequest($message->getId()), $key);
+		}
+
+		$messagesBatch = $batch->execute();
+
+		$messages = [];
+
+		foreach ($messagesBatch as $message) {
+			$messages[] = new Mail($message);
+		}
+
+		return $messages;
 	}
 
 	/**
@@ -134,5 +166,15 @@ class Message
 	public function getUser()
 	{
 		return $this->client->user();
+	}
+
+	/**
+	 * @param $id
+	 *
+	 * @return \Google_Service_Gmail_Message
+	 */
+	private function getRequest($id)
+	{
+		return $this->service->users_messages->get('me', $id);
 	}
 }

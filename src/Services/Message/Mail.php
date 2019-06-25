@@ -63,7 +63,7 @@ class Mail extends GmailConnection
 	 *
 	 * @param  \Google_Service_Gmail_Message  $message
 	 * @param  bool  $preload
-	 *
+	 * @param  bool  $setMessage
 	 */
 	public function __construct(\Google_Service_Gmail_Message $message = null, $preload = false)
 	{
@@ -81,6 +81,9 @@ class Mail extends GmailConnection
 
 			$this->setMessage($message);
 
+			if($preload) {
+				$this->setMetadata();
+			}
 		}
 	}
 
@@ -92,6 +95,16 @@ class Mail extends GmailConnection
 		$this->size = $message->getSizeEstimate();
 		$this->threadId = $message->getThreadId();
 		$this->payload = $message->getPayload();
+	}
+
+	protected function setMetadata()
+	{
+		$this->to = $this->getTo();
+		$from = $this->getFrom();
+		$this->from = isset($from['email']) ? $from['email'] : null;
+		$this->nameFrom = isset($from['email']) ? $from['email'] : null;
+
+		$this->subject = $this->getSubject();
 	}
 
 	/**

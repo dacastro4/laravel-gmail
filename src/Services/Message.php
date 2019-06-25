@@ -74,7 +74,7 @@ class Message
 
 		$allMessages = $response->getMessages();
 
-		if(!$this->preload) {
+		if (!$this->preload) {
 			foreach ($allMessages as $message) {
 				$messages[] = new Mail($message, $this->preload);
 			}
@@ -96,7 +96,7 @@ class Message
 	}
 
 	/**
-	 * Limit the messages coming from the query
+	 * Limit the messages coming from the queryxw
 	 *
 	 * @param  int  $number
 	 *

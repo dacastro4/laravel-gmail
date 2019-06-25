@@ -166,11 +166,11 @@ trait Replyable
 	private function convertEmailList($emails, $name = null)
 	{
 		$newList = [];
-		$c = 0;
+		$count = 0;
 		foreach ($emails as $key => $email) {
-			$emailName = isset($name[$c]) ? $name[$c] : explode('@', $email)[0];
+			$emailName = isset($name[$count]) ? $name[$count] : explode('@', $email)[0];
 			$newList[$email] = $emailName;
-			$c = $c + 1;
+			$count = $count + 1;
 		}
 
 		return $newList;

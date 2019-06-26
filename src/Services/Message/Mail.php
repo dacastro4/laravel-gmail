@@ -202,7 +202,7 @@ class Mail extends GmailConnection
 	/**
 	 * Returns array of name and email of each recipient
 	 *
-	 * @param  null  $email
+	 * @param  string|null  $email
 	 * @return array
 	 */
 	public function getFrom($email = null)

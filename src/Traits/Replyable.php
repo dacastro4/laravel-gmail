@@ -166,11 +166,11 @@ trait Replyable
 	private function convertEmailList($emails, $name = null)
 	{
 		$newList = [];
-		$c = 0;
+		$count = 0;
 		foreach ($emails as $key => $email) {
-			$emailName = isset($name[$c]) ? $name[$c] : explode('@', $email)[0];
+			$emailName = isset($name[$count]) ? $name[$count] : explode('@', $email)[0];
 			$newList[$email] = $emailName;
-			$c = $c + 1;
+			$count = $count + 1;
 		}
 
 		return $newList;
@@ -291,27 +291,29 @@ trait Replyable
 			throw new \Exception('This is a new email. Use send().');
 		}
 
-		$this->setReplyThreat();
+		$this->setReplyThread();
 		$this->setReplySubject();
+		$this->setReplyTo();
+		$this->setReplyFrom();
 		$body = $this->getMessageBody();
-		$body->setThreadId($this->getThreatId());
+		$body->setThreadId($this->getThreadId());
 
 		return new Mail($this->service->users_messages->send('me', $body, $this->parameters));
 	}
 
 	public abstract function getId();
 
-	private function setReplyThreat()
+	private function setReplyThread()
 	{
-		$threatId = $this->getThreatId();
-		if ($threatId) {
+		$threadId = $this->getThreadId();
+		if ($threadId) {
 			$this->setHeader('In-Reply-To', $this->getHeader('In-Reply-To'));
 			$this->setHeader('References', $this->getHeader('References'));
 			$this->setHeader('Message-ID', $this->getHeader('Message-ID'));
 		}
 	}
 
-	public abstract function getThreatId();
+	public abstract function getThreadId();
 
 	/**
 	 * Add a header to the email
@@ -334,7 +336,28 @@ trait Replyable
 		}
 	}
 
+	private function setReplyTo()
+	{
+		if (!$this->to) {
+			$replyTo = $this->getReplyTo();
+
+			$this->to = $replyTo['email'];
+			$this->nameTo = $replyTo['name'];
+		}
+	}
+
+	private function setReplyFrom()
+	{
+		if (!$this->from) {
+			$this->from = $this->getUser();
+		}
+	}
+
 	public abstract function getSubject();
+
+	public abstract function getReplyTo();
+
+	public abstract function getUser();
 
 	/**
 	 * @return Google_Service_Gmail_Message
@@ -364,7 +387,7 @@ trait Replyable
 
 	private function base64_encode($data)
 	{
-		return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+		return rtrim(strtr(base64_encode($data), ['+' => '-', '/' => '_']), '=');
 	}
 
 	/**

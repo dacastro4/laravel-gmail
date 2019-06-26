@@ -38,7 +38,6 @@ return [
 	'scopes' => [
 		'readonly',
 		'modify',
-		'metadata',
 	],
 
 	/*

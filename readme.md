@@ -23,7 +23,7 @@ You need to create an application in the [Google Console](https://console.develo
 
 Add dacastro4/laravel-gmail to composer.json.
 
-`"dacastro4/laravel-gmail": "^1.2"`
+`"dacastro4/laravel-gmail": "^2.0"`
 
 Run composer update to pull down the latest version.
 
@@ -48,6 +48,23 @@ Now add the alias.
 ```
 
 For laravel >=5.5 that's all. This package supports Laravel new [Package Discovery](https://laravel.com/docs/5.5/packages#package-discovery).
+
+# Migration from 1.0 to 2.0
+The only changed made was the multi credentials feature.
+- Change your composer.json from `"dacastro4/laravel-gmail": "^1.0"` to `"dacastro4/laravel-gmail": "^2.0"`
+
+I had to change version because of a typo and that might break apps calling those attributes.
+
+All variable with the word "threat" was change to "thread" (yeah, I know.. sorry)
+Ex:
+ 
+ Mail Class
+    `$threatId` => `$threadId`
+ 
+ Replyable Class
+    `$mail->setReplyThreat()` => `$mail->setReplyThread()`    
+
+and so on.
 
 # Migration from 0.6 to 1.0
 The only changed made was the multi credentials feature.

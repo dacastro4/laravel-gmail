@@ -65,11 +65,6 @@ class Mail extends GmailConnection
 	public $service;
 
 	/**
-	 * @var
-	 */
-	private $allParts;
-
-	/**
 	 * SingleMessage constructor.
 	 *
 	 * @param  \Google_Service_Gmail_Message  $message
@@ -342,22 +337,27 @@ class Mail extends GmailConnection
 	 * @param  string  $type
 	 *
 	 * @return null|string
+	 * @throws \Exception
 	 */
 	public function getBody($type = 'text/plain')
 	{
 		$parts = $this->getAllParts($this->collectedPayload);
 
-		if (!$parts->isEmpty()) {
-			foreach ($parts as $part) {
-				if ($part->mimeType == $type) {
-					return $part->body->data;
-					//if there are no parts in payload, try to get data from body->data
-				} elseif ($this->payload->body->data) {
-					return $this->payload->body->data;
+		try {
+			if (!$parts->isEmpty()) {
+				foreach ($parts as $part) {
+					if ($part->mimeType == $type) {
+						return $part->body->data;
+						//if there are no parts in payload, try to get data from body->data
+					} elseif ($this->payload->body->data) {
+						return $this->payload->body->data;
+					}
 				}
+			} else {
+				return $this->payload->body->data;
 			}
-		} else {
-			return $this->payload->body->data;
+		} catch (\Exception $exception) {
+			throw new \Exception("Preload or load the single message before getting the body.");
 		}
 
 		return null;

@@ -157,7 +157,9 @@ class GmailConnection extends Google_Client
 				} else {
 					$savedConfigToken = json_decode($disk->get($file), true);
 				}
-				$config['email'] = $savedConfigToken['email'];
+				if(isset( $savedConfigToken['email'])) {
+					$config['email'] = $savedConfigToken['email'];
+				}
 			}
 
 			$disk->delete($file);
@@ -182,10 +184,12 @@ class GmailConnection extends Google_Client
 			$code = (string) $request->input('code', null);
 			if (!is_null($code) && !empty($code)) {
 				$accessToken = $this->fetchAccessTokenWithAuthCode($code);
-				$me = $this->getProfile();
-				if (property_exists($me, 'emailAddress')) {
-					$this->emailAddress = $me->emailAddress;
-					$accessToken['email'] = $me->emailAddress;
+				if($this->haveReadScope()) {
+					$me = $this->getProfile();
+					if (property_exists($me, 'emailAddress')) {
+						$this->emailAddress = $me->emailAddress;
+						$accessToken['email'] = $me->emailAddress;
+					}
 				}
 				$this->setBothAccessToken($accessToken);
 
@@ -249,6 +253,13 @@ class GmailConnection extends Google_Client
 			$disk->put($file, json_encode([]));
 		}
 
+	}
+
+	private function haveReadScope()
+	{
+		$scopes = $this->getUserScopes();
+
+		return in_array(Google_Service_Gmail::GMAIL_READONLY, $scopes);
 	}
 
 }

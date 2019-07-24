@@ -69,7 +69,6 @@ class Message
 
 		$messages = [];
 		$response = $this->service->users_messages->listUsersMessages('me', $this->params);
-
 		$this->pageToken = $response->getNextPageToken();
 
 		$allMessages = $response->getMessages();

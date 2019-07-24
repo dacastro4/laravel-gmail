@@ -7,7 +7,6 @@ use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Dacastro4\LaravelGmail\Traits\Filterable;
 use Dacastro4\LaravelGmail\Traits\SendsParameters;
 use Google_Service_Gmail;
-use Illuminate\Support\Debug\Dumper;
 
 class Message
 {
@@ -70,7 +69,6 @@ class Message
 
 		$messages = [];
 		$response = $this->service->users_messages->listUsersMessages('me', $this->params);
-
 		$this->pageToken = $response->getNextPageToken();
 
 		$allMessages = $response->getMessages();

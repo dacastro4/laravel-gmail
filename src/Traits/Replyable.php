@@ -350,6 +350,9 @@ trait Replyable
 	{
 		if (!$this->from) {
 			$this->from = $this->getUser();
+			if(!$this->from) {
+				throw new \Exception('Reply from is not defined');
+			}
 		}
 	}
 

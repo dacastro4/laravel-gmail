@@ -57,7 +57,7 @@ class Mail extends GmailConnection
 	 */
 	public $payload;
 
-	public $collectedPayload;
+	public $parts;
 
 	/**
 	 * @var Google_Service_Gmail
@@ -105,7 +105,7 @@ class Mail extends GmailConnection
 		$this->size = $message->getSizeEstimate();
 		$this->threadId = $message->getThreadId();
 		$this->payload = $message->getPayload();
-		$this->collectedPayload = collect($this->payload);
+		$this->parts = collect($this->payload->getParts());
 	}
 
 	/**
@@ -341,7 +341,7 @@ class Mail extends GmailConnection
 	 */
 	public function getBody($type = 'text/plain')
 	{
-		$parts = $this->getAllParts($this->collectedPayload);
+		$parts = $this->getAllParts($this->parts);
 
 		try {
 			if (!$parts->isEmpty()) {
@@ -370,7 +370,7 @@ class Mail extends GmailConnection
 	 */
 	public function hasAttachments()
 	{
-		$parts = $this->getAllParts($this->collectedPayload);
+		$parts = $this->getAllParts($this->parts);
 		$has = false;
 
 		foreach ($parts as $part) {
@@ -391,7 +391,7 @@ class Mail extends GmailConnection
 	public function countAttachments()
 	{
 		$numberOfAttachments = 0;
-		$parts = $this->getAllParts($this->collectedPayload);
+		$parts = $this->getAllParts($this->parts);
 
 		foreach ($parts as $part) {
 			if (!empty($part->body->attachmentId)) {
@@ -460,7 +460,7 @@ class Mail extends GmailConnection
 	public function getAttachments($preload = false)
 	{
 		$attachments = new Collection();
-		$parts = $this->getAllParts($this->collectedPayload);
+		$parts = $this->getAllParts($this->parts);
 
 		foreach ($parts as $part) {
 			if (!empty($part->body->attachmentId)) {
@@ -530,7 +530,7 @@ class Mail extends GmailConnection
 	 */
 	public function hasParts()
 	{
-		return !!$this->iterateParts($this->collectedPayload, $returnOnFirstFound = true);
+		return !!$this->iterateParts($this->parts, $returnOnFirstFound = true);
 	}
 
 	/**

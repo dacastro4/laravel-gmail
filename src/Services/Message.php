@@ -81,7 +81,13 @@ class Message
 			$messages = $this->batchRequest($allMessages);
 		}
 
-		return collect($messages);
+		$all = collect($messages);
+
+		$all->next = function() {
+			$this->next();
+		};
+
+		return $all;
 	}
 
 	/**

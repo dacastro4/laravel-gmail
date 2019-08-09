@@ -7,6 +7,12 @@ use Illuminate\Support\Collection;
 trait HasParts
 {
 	/**
+	 * LOL
+	 * @var Collection
+	 */
+	private $allParts;
+
+	/**
 	 * Find all Parts of a message.
 	 * Necessary to reset the $allParts Varibale.
 	 *
@@ -16,7 +22,9 @@ trait HasParts
 	 */
 	private function getAllParts($partsContainer)
 	{
-		return $this->iterateParts($partsContainer);
+		$this->iterateParts($partsContainer);
+
+		return collect($this->allParts);
 	}
 
 
@@ -32,8 +40,17 @@ trait HasParts
 
 	private function iterateParts($partsContainer, $returnOnFirstFound = false)
 	{
-		$allParts = [];
-		$parts = $partsContainer->pluck('parts');
+		$parts = [];
+
+		$plunk = $partsContainer->pluck('parts')->flatten()->filter();
+
+		if ($plunk->count()) {
+			$parts = $plunk;
+		} else {
+			if ($partsContainer->count()) {
+				$parts = $partsContainer;
+			}
+		}
 
 		if ($parts) {
 			foreach ($parts as $part) {
@@ -42,14 +59,10 @@ trait HasParts
 						return true;
 					}
 
-					$allParts[] = $part;
-					$part = collect($part);
-					$this->iterateParts($part);
+					$this->allParts[] = $part;
+					$this->iterateParts(collect($part));
 				}
 			}
-
 		}
-
-		return (collect($allParts))->flatten();
 	}
 }

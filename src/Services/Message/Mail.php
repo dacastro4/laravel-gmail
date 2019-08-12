@@ -9,6 +9,7 @@ use Dacastro4\LaravelGmail\Traits\HasParts;
 use Dacastro4\LaravelGmail\Traits\Modifiable;
 use Dacastro4\LaravelGmail\Traits\Replyable;
 use Google_Service_Gmail;
+use Google_Service_Gmail_MessagePart;
 use Illuminate\Support\Collection;
 
 /**
@@ -373,8 +374,9 @@ class Mail extends GmailConnection
 		$parts = $this->getAllParts($this->parts);
 		$has = false;
 
+		/** @var Google_Service_Gmail_MessagePart $part */
 		foreach ($parts as $part) {
-			if (!empty($part->body->attachmentId)) {
+			if (!empty($part->body->attachmentId) && $part->getFilename() != null && strlen($part->getFilename()) > 0) {
 				$has = true;
 				break;
 			}

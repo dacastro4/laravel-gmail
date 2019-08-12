@@ -2,6 +2,7 @@
 
 namespace Dacastro4\LaravelGmail\Traits;
 
+use Google_Service_Gmail_MessagePart;
 use Illuminate\Support\Collection;
 
 trait HasParts
@@ -42,10 +43,10 @@ trait HasParts
 	{
 		$parts = [];
 
-		$plunk = $partsContainer->pluck('parts')->flatten()->filter();
+		$plucked = $partsContainer->flatten()->filter();
 
-		if ($plunk->count()) {
-			$parts = $plunk;
+		if ($plucked->count()) {
+			$parts = $plucked;
 		} else {
 			if ($partsContainer->count()) {
 				$parts = $partsContainer;
@@ -53,14 +54,15 @@ trait HasParts
 		}
 
 		if ($parts) {
+			/** @var Google_Service_Gmail_MessagePart $part */
 			foreach ($parts as $part) {
 				if ($part) {
 					if ($returnOnFirstFound) {
 						return true;
 					}
 
-					$this->allParts[] = $part;
-					$this->iterateParts(collect($part));
+					$this->allParts[$part->getPartId()] = $part;
+					$this->iterateParts(collect($part->getParts()), false);
 				}
 			}
 		}

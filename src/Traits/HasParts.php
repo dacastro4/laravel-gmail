@@ -62,7 +62,7 @@ trait HasParts
 					}
 
 					$this->allParts[$part->getPartId()] = $part;
-					$this->iterateParts(collect($part->getParts()), false);
+					$this->iterateParts(collect($part->getParts()));
 				}
 			}
 		}

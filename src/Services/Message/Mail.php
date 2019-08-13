@@ -68,8 +68,8 @@ class Mail extends GmailConnection
 	/**
 	 * SingleMessage constructor.
 	 *
-	 * @param  \Google_Service_Gmail_Message  $message
-	 * @param  bool  $preload
+	 * @param \Google_Service_Gmail_Message $message
+	 * @param bool $preload
 	 */
 	public function __construct(\Google_Service_Gmail_Message $message = null, $preload = false)
 	{
@@ -96,7 +96,7 @@ class Mail extends GmailConnection
 	/**
 	 * Sets data from mail
 	 *
-	 * @param  \Google_Service_Gmail_Message  $message
+	 * @param \Google_Service_Gmail_Message $message
 	 */
 	protected function setMessage(\Google_Service_Gmail_Message $message)
 	{
@@ -106,7 +106,9 @@ class Mail extends GmailConnection
 		$this->size = $message->getSizeEstimate();
 		$this->threadId = $message->getThreadId();
 		$this->payload = $message->getPayload();
-		$this->parts = collect($this->payload->getParts());
+		if ($this->payload) {
+			$this->parts = collect($this->payload->getParts());
+		}
 	}
 
 	/**
@@ -198,7 +200,7 @@ class Mail extends GmailConnection
 	/**
 	 * Returns array of name and email of each recipient
 	 *
-	 * @param  string|null  $email
+	 * @param string|null $email
 	 * @return array
 	 */
 	public function getFrom($email = null)
@@ -210,7 +212,7 @@ class Mail extends GmailConnection
 		$name = preg_replace('/ <(.*)>/', '', $from);
 
 		return [
-			'name' => $name,
+			'name'  => $name,
 			'email' => isset($matches[1]) ? $matches[1] : null,
 		];
 	}
@@ -258,7 +260,7 @@ class Mail extends GmailConnection
 	/**
 	 * Returns an array of emails from an string in RFC 822 format
 	 *
-	 * @param  string  $emails  email list in RFC 822 format
+	 * @param string $emails email list in RFC 822 format
 	 *
 	 * @return array
 	 */
@@ -321,7 +323,7 @@ class Mail extends GmailConnection
 	}
 
 	/**
-	 * @param  bool  $raw
+	 * @param bool $raw
 	 *
 	 * @return string
 	 */
@@ -335,7 +337,7 @@ class Mail extends GmailConnection
 	/**
 	 * Returns a specific body part from an email
 	 *
-	 * @param  string  $type
+	 * @param string $type
 	 *
 	 * @return null|string
 	 * @throws \Exception
@@ -428,7 +430,7 @@ class Mail extends GmailConnection
 	/**
 	 * Gets the HTML body
 	 *
-	 * @param  bool  $raw
+	 * @param bool $raw
 	 *
 	 * @return string
 	 */
@@ -453,7 +455,7 @@ class Mail extends GmailConnection
 	/**
 	 * Returns a collection of attachments
 	 *
-	 * @param  bool  $preload  Preload only the attachment's 'data'.
+	 * @param bool $preload Preload only the attachment's 'data'.
 	 * But does not load the other attachment info like filename, mimetype, etc..
 	 *
 	 * @return Collection
@@ -514,7 +516,7 @@ class Mail extends GmailConnection
 	/**
 	 * Sets the access token in case we wanna use a different token
 	 *
-	 * @param  string  $token
+	 * @param string $token
 	 *
 	 * @return Mail
 	 */

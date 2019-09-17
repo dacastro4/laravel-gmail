@@ -2,6 +2,8 @@
 
 namespace Dacastro4\LaravelGmail\Traits;
 
+use Illuminate\Support\Arr;
+
 trait SendsParameters
 {
 
@@ -18,7 +20,7 @@ trait SendsParameters
 		if (isset($this->params[$column])) {
 			$this->params[$column] = "{$this->params[$column]} $query";
 		} else {
-			$this->params = array_add($this->params, $column, $query);
+			$this->params = Arr::add($this->params, $column, $query);
 		}
 
 	}

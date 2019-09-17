@@ -55,7 +55,7 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function fromThese($emails)
+	public function fromThese(array $emails)
 	{
 		$emailsCount = count($emails);
 		for ($i = 0; $i < $emailsCount; $i++) {
@@ -72,7 +72,7 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function from($email)
+	public function from(string $email)
 	{
 		$this->add("from:{$email}");
 
@@ -86,7 +86,7 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function after($date)
+	public function after(string $date)
 	{
 		$this->add("after:{$date}");
 
@@ -100,7 +100,7 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function before($date)
+	public function before(string $date)
 	{
 		$this->add("before:{$date}");
 
@@ -115,7 +115,7 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function raw($query)
+	public function raw(string $query)
 	{
 		$this->add($query);
 

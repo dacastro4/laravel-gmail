@@ -18,7 +18,7 @@ trait Filterable
 		return $this;
 	}
 
-	public abstract function add($query, $column = 'q');
+	public abstract function add($query, $column = 'q', $encode = true);
 
 	/**
 	 * Filter to get only unread emalis
@@ -55,7 +55,7 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function fromThese(array $emails)
+	public function fromThese($emails)
 	{
 		$emailsCount = count($emails);
 		for ($i = 0; $i < $emailsCount; $i++) {
@@ -72,7 +72,7 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function from(string $email)
+	public function from($email)
 	{
 		$this->add("from:{$email}");
 
@@ -86,7 +86,7 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function after(string $date)
+	public function after($date)
 	{
 		$this->add("after:{$date}");
 
@@ -100,7 +100,7 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function before(string $date)
+	public function before($date)
 	{
 		$this->add("before:{$date}");
 
@@ -115,9 +115,9 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function raw(string $query)
+	public function raw($query)
 	{
-		$this->add($query);
+		$this->add($query, 'q', false);
 
 		return $this;
 	}

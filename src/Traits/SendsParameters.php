@@ -8,20 +8,30 @@ trait SendsParameters
 {
 
 	/**
-	 * Adds parameters to the parameters property which is used to send additional parameters in the request.
+	 * Adds values to the property which is used to send additional parameters in the request.
 	 *
 	 * @param $query
-	 * @param  string  $column
+	 * @param string $column
+	 * @param bool $encode
 	 */
-	public function add($query, $column = 'q', $encode = true)
+	public function add( $query, $column = 'q', $encode = true )
 	{
-		$query = $encode ? urlencode($query) : $query;
+		$query = $encode ? urlencode( $query ) : $query;
 
-		if (isset($this->params[$column])) {
-			$this->params[$column] = "{$this->params[$column]} $query";
+		if ( isset( $this->params[$column] ) ) {
+			if ( $column === 'pageToken' ) {
+				$this->params[$column] = $query;
+			} else {
+				$this->params[$column] = "{$this->params[$column]} $query";
+			}
 		} else {
-			$this->params = Arr::add($this->params, $column, $query);
+			$this->params = Arr::add( $this->params, $column, $query );
 		}
 
+	}
+
+	public function addPageToken( $token )
+	{
+		$this->params[ 'pageToken' ] = $token;
 	}
 }

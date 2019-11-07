@@ -44,22 +44,24 @@ class Message
 	 * Returns next page if available of messages or an empty collection
 	 *
 	 * @return \Illuminate\Support\Collection
+	 * @throws \Google_Exception
 	 */
 	public function next()
 	{
 		if ($this->pageToken) {
 			return $this->all($this->pageToken);
 		} else {
-			return collect([]);
+			return new MessageCollection([], $this);
 		}
 	}
 
 	/**
 	 * Returns a collection of Mail instances
 	 *
-	 * @param  null|string  $pageToken
+	 * @param null|string $pageToken
 	 *
 	 * @return \Illuminate\Support\Collection
+	 * @throws \Google_Exception
 	 */
 	public function all($pageToken = null)
 	{
@@ -68,8 +70,8 @@ class Message
 		}
 
 		$messages = [];
-		$response = $this->service->users_messages->listUsersMessages('me', $this->params);
-		$this->pageToken = $response->getNextPageToken();
+		$response = $this->getMessagesResponse();
+		$this->pageToken = method_exists( $response, 'getNextPageToken' ) ? $response->getNextPageToken() : null;
 
 		$allMessages = $response->getMessages();
 
@@ -81,11 +83,7 @@ class Message
 			$messages = $this->batchRequest($allMessages);
 		}
 
-		$all = collect($messages);
-
-		$all->next = function() {
-			$this->next();
-		};
+		$all = new MessageCollection($messages, $this);
 
 		return $all;
 	}
@@ -181,5 +179,23 @@ class Message
 	private function getRequest($id)
 	{
 		return $this->service->users_messages->get('me', $id);
+	}
+
+	/**
+	 * @return \Google_Service_Gmail_ListMessagesResponse|object
+	 * @throws \Google_Exception
+	 */
+	private function getMessagesResponse()
+	{
+//		dd($this->params);
+		$responseOrRequest = $this->service->users_messages->listUsersMessages( 'me', $this->params );
+
+		if ( get_class( $responseOrRequest ) === "GuzzleHttp\Psr7\Request" ) {
+			$response = $this->service->getClient()->execute( $responseOrRequest, 'Google_Service_Gmail_ListMessagesResponse' );
+
+			return $response;
+		}
+
+		return $responseOrRequest;
 	}
 }

@@ -187,7 +187,6 @@ class Message
 	 */
 	private function getMessagesResponse()
 	{
-//		dd($this->params);
 		$responseOrRequest = $this->service->users_messages->listUsersMessages( 'me', $this->params );
 
 		if ( get_class( $responseOrRequest ) === "GuzzleHttp\Psr7\Request" ) {

@@ -143,6 +143,8 @@ class Message
 
 		$messagesBatch = $batch->execute();
 
+		$this->client->setUseBatch(false);
+
 		$messages = [];
 
 		foreach ($messagesBatch as $message) {

@@ -5,19 +5,24 @@ namespace Dacastro4\LaravelGmail\Services\Message;
 use Carbon\Carbon;
 use Dacastro4\LaravelGmail\GmailConnection;
 use Dacastro4\LaravelGmail\Traits\HasDecodableBody;
+use Dacastro4\LaravelGmail\Traits\HasParts;
 use Dacastro4\LaravelGmail\Traits\Modifiable;
 use Dacastro4\LaravelGmail\Traits\Replyable;
 use Google_Service_Gmail;
+use Google_Service_Gmail_MessagePart;
 use Illuminate\Support\Collection;
 
 /**
  * Class SingleMessage
+ *
  * @package Dacastro4\LaravelGmail\services
  */
 class Mail extends GmailConnection
 {
+
 	use HasDecodableBody,
 		Modifiable,
+		HasParts,
 		Replyable {
 		Replyable::__construct as private __rConstruct;
 		Modifiable::__construct as private __mConstruct;
@@ -46,12 +51,14 @@ class Mail extends GmailConnection
 	/**
 	 * @var
 	 */
-	public $threatId;
+	public $threadId;
 
 	/**
 	 * @var \Google_Service_Gmail_MessagePart
 	 */
 	public $payload;
+
+	public $parts;
 
 	/**
 	 * @var Google_Service_Gmail
@@ -61,10 +68,9 @@ class Mail extends GmailConnection
 	/**
 	 * SingleMessage constructor.
 	 *
-	 * @param  \Google_Service_Gmail_Message  $message
-	 * @param  bool  $preload
+	 * @param \Google_Service_Gmail_Message $message
+	 * @param bool $preload
 	 * @param  int 	$userId
-	 *
 	 */
 	public function __construct(\Google_Service_Gmail_Message $message = null, $preload = false, $userId = null)
 	{
@@ -81,17 +87,41 @@ class Mail extends GmailConnection
 
 			$this->setMessage($message);
 
+			if ($preload) {
+				$this->setMetadata();
+			}
 		}
 	}
 
+	/**
+	 * Sets data from mail
+	 *
+	 * @param \Google_Service_Gmail_Message $message
+	 */
 	protected function setMessage(\Google_Service_Gmail_Message $message)
 	{
 		$this->id = $message->getId();
 		$this->internalDate = $message->getInternalDate();
 		$this->labels = $message->getLabelIds();
 		$this->size = $message->getSizeEstimate();
-		$this->threatId = $message->getThreadId();
+		$this->threadId = $message->getThreadId();
 		$this->payload = $message->getPayload();
+		if ($this->payload) {
+			$this->parts = collect($this->payload->getParts());
+		}
+	}
+
+	/**
+	 * Sets the metadata from Mail when preloaded
+	 */
+	protected function setMetadata()
+	{
+		$this->to = $this->getTo();
+		$from = $this->getFrom();
+		$this->from = isset($from['email']) ? $from['email'] : null;
+		$this->nameFrom = isset($from['email']) ? $from['email'] : null;
+
+		$this->subject = $this->getSubject();
 	}
 
 	/**
@@ -126,13 +156,13 @@ class Mail extends GmailConnection
 	}
 
 	/**
-	 * Returns threat ID of the email
+	 * Returns thread ID of the email
 	 *
 	 * @return string
 	 */
-	public function getThreatId()
+	public function getThreadId()
 	{
-		return $this->threatId;
+		return $this->threadId;
 	}
 
 	/**
@@ -143,25 +173,6 @@ class Mail extends GmailConnection
 	public function getHeaders()
 	{
 		return $this->buildHeaders($this->payload->getHeaders());
-	}
-
-	private function buildHeaders($emailHeaders)
-	{
-		$headers = [];
-
-		foreach ($emailHeaders as $header) {
-			/** @var \Google_Service_Gmail_MessagePartHeader $header */
-
-			$head = new \stdClass();
-
-			$head->key = $header->getName();
-			$head->value = $header->getValue();
-
-			$headers[] = $head;
-		}
-
-		return collect($headers);
-
 	}
 
 	/**
@@ -175,20 +186,33 @@ class Mail extends GmailConnection
 	}
 
 	/**
+	 * Returns the subject of the email
+	 *
+	 * @return array|string
+	 */
+	public function getReplyTo()
+	{
+		$replyTo = $this->getHeader('Reply-To');
+
+		return $this->getFrom($replyTo ? $replyTo : $this->getHeader('From'));
+	}
+
+	/**
 	 * Returns array of name and email of each recipient
 	 *
+	 * @param string|null $email
 	 * @return array
 	 */
-	public function getFrom()
+	public function getFrom($email = null)
 	{
-		$from = $this->getHeader('From');
+		$from = $email ? $email : $this->getHeader('From');
 
 		preg_match('/<(.*)>/', $from, $matches);
 
 		$name = preg_replace('/ <(.*)>/', '', $from);
 
 		return [
-			'name' => $name,
+			'name'  => $name,
 			'email' => isset($matches[1]) ? $matches[1] : null,
 		];
 	}
@@ -236,7 +260,7 @@ class Mail extends GmailConnection
 	/**
 	 * Returns an array of emails from an string in RFC 822 format
 	 *
-	 * @param  string  $emails  email list in RFC 822 format
+	 * @param string $emails email list in RFC 822 format
 	 *
 	 * @return array
 	 */
@@ -289,7 +313,9 @@ class Mail extends GmailConnection
 	}
 
 	/**
-	 * @return string base64 version of the body
+	 * Base64 version of the body
+	 *
+	 * @return string
 	 */
 	public function getRawPlainTextBody()
 	{
@@ -297,7 +323,7 @@ class Mail extends GmailConnection
 	}
 
 	/**
-	 * @param  bool  $raw
+	 * @param bool $raw
 	 *
 	 * @return string
 	 */
@@ -311,75 +337,81 @@ class Mail extends GmailConnection
 	/**
 	 * Returns a specific body part from an email
 	 *
-	 * @param  string  $type
+	 * @param string $type
 	 *
 	 * @return null|string
+	 * @throws \Exception
 	 */
 	public function getBody($type = 'text/plain')
 	{
-		$part = $this->getBodyPart($type);
+		$parts = $this->getAllParts($this->parts);
 
-		if ($part) {
-			$body = $part->getBody();
-
-			return $body->getData();
-
-			//if there are no parts in payload, try to get data from body->data
-		} elseif ($this->payload->body->data) {
-			return $this->payload->body->data;
+		try {
+			if (!$parts->isEmpty()) {
+				foreach ($parts as $part) {
+					if ($part->mimeType == $type) {
+						return $part->body->data;
+						//if there are no parts in payload, try to get data from body->data
+					} elseif ($this->payload->body->data) {
+						return $this->payload->body->data;
+					}
+				}
+			} else {
+				return $this->payload->body->data;
+			}
+		} catch (\Exception $exception) {
+			throw new \Exception("Preload or load the single message before getting the body.");
 		}
 
 		return null;
 	}
 
 	/**
-	 * @param  string  $type
+	 * True if message has at least one attachment.
 	 *
-	 * @return \Google_Service_Gmail_MessagePart|null
-	 */
-	private function getBodyPart($type = 'text/plain')
-	{
-		$body = $this->payload->getParts();
-
-		if ($this->hasAttachments()) {
-			//Get the first attachment that is the main body
-			$body = isset($body[0]) ? $body[0] : [];
-			$parts = $body->getParts();
-		} else {
-			$parts = $body;
-		}
-
-		/** @var \Google_Service_Gmail_MessagePart $part */
-		foreach ($parts as $part) {
-			if ($part->getMimeType() === $type) {
-				break;
-			}
-		}
-
-		return isset($part) ? $part : null;
-
-	}
-
-	/**
 	 * @return boolean
 	 */
 	public function hasAttachments()
 	{
-		$attachments = 0;
-		$parts = $this->payload->getParts();
+		$parts = $this->getAllParts($this->parts);
+		$has = false;
 
-		/**  @var \Google_Service_Gmail_MessagePart $part */
+		/** @var Google_Service_Gmail_MessagePart $part */
 		foreach ($parts as $part) {
-			$body = $part->getBody();
-			if ($body->getAttachmentId()) {
-				$attachments++;
+			if (!empty($part->body->attachmentId) && $part->getFilename() != null && strlen($part->getFilename()) > 0) {
+				$has = true;
 				break;
 			}
 		}
 
-		return !!$attachments;
+		return $has;
 	}
 
+	/**
+	 * Number of attachments of the message.
+	 *
+	 * @return int
+	 */
+	public function countAttachments()
+	{
+		$numberOfAttachments = 0;
+		$parts = $this->getAllParts($this->parts);
+
+		foreach ($parts as $part) {
+			if (!empty($part->body->attachmentId)) {
+				$numberOfAttachments++;
+			}
+		}
+
+		return $numberOfAttachments;
+	}
+
+	/**
+	 * Decodes the body from gmail to make it readable
+	 *
+	 * @param $content
+	 * @return bool|string
+	 */
 	public function getDecodedBody($content)
 	{
 		$content = str_replace('_', '/', str_replace('-', '+', $content));
@@ -396,7 +428,9 @@ class Mail extends GmailConnection
 	}
 
 	/**
-	 * @param  bool  $raw
+	 * Gets the HTML body
+	 *
+	 * @param bool $raw
 	 *
 	 * @return string
 	 */
@@ -408,6 +442,8 @@ class Mail extends GmailConnection
 	}
 
 	/**
+	 * Get a collection of attachments with full information
+	 *
 	 * @return Collection
 	 * @throws \Exception
 	 */
@@ -419,35 +455,30 @@ class Mail extends GmailConnection
 	/**
 	 * Returns a collection of attachments
 	 *
-	 * @param  bool  $preload  Preload the attachment's data
+	 * @param bool $preload Preload only the attachment's 'data'.
+	 * But does not load the other attachment info like filename, mimetype, etc..
 	 *
 	 * @return Collection
 	 * @throws \Exception
 	 */
 	public function getAttachments($preload = false)
 	{
-		$attachments = new Collection([]);
-		$parts = $this->payload->getParts();
+		$attachments = new Collection();
+		$parts = $this->getAllParts($this->parts);
 
-		/** @var \Google_Service_Gmail_MessagePart $part */
 		foreach ($parts as $part) {
+			if (!empty($part->body->attachmentId)) {
+				$attachment = (new Attachment($part->body->attachmentId, $part));
 
-			$body = $part->getBody();
-
-			if ($body->getAttachmentId()) {
-				$attachment = (new Attachment($this->getId(), $part));
 				if ($preload) {
 					$attachment = $attachment->getData();
 				}
-				$attachments->push(
-					$attachment
-				);
-			}
 
+				$attachments->push($attachment);
+			}
 		}
 
 		return $attachments;
-
 	}
 
 	/**
@@ -460,8 +491,15 @@ class Mail extends GmailConnection
 		return $this->id;
 	}
 
-
-	/* added by buckfuddey */
+	/**
+	 * Gets the user email from the config file
+	 *
+	 * @return mixed|null
+	 */
+	public function getUser()
+	{
+		return $this->config('email');
+	}
 
 	/**
 	 * Get's the gmail information from the Mail
@@ -478,7 +516,7 @@ class Mail extends GmailConnection
 	/**
 	 * Sets the access token in case we wanna use a different token
 	 *
-	 * @param  string  $token
+	 * @param string $token
 	 *
 	 * @return Mail
 	 */
@@ -489,86 +527,37 @@ class Mail extends GmailConnection
 		return $this;
 	}
 
-	public function extractFromBody()
+	/**
+	 * checks if message has at least one part without iterating through all parts
+	 *
+	 * @return bool
+	 */
+	public function hasParts()
 	{
-
-		if ($this->hasNoParts()) {
-			$type = $this->payload->getMimeType();
-			$body = $this->payload->getBody();
-			if ($type == 'text/html' || $type == 'text/plain') {
-				$this->bodyArr[$type] = $this->getDecodedBody($body->getData());
-			}
-			if ($body->getAttachmentId()) {
-				$this->attachmentData[] = [
-					'id' => $body->getAttachmentId(),
-					'mimeType' => $type,
-				];
-			}
-		} else {
-			$parts = $this->payload->getParts();
-			foreach ($parts as $part) {
-				if (empty($part->getParts())) {
-					$type = $part->getMimeType();
-					$body = $part->getBody();
-					if ($type == 'text/html' || $type == 'text/plain') {
-						if (isset($this->messageBodyArr[$type])) {
-							$this->messageBodyArr[$type] .= $this->getDecodedBody($body->getData());
-						} else {
-							$this->messageBodyArr[$type] = $this->getDecodedBody($body->getData());
-						}
-					}
-
-					if ($body->getAttachmentId()) {
-						$this->attachmentData[] = [
-							'id' => $body->getAttachmentId(),
-							'fileName' => $part->getFilename(),
-							'mimeType' => $type,
-						];
-					}
-				} else {
-					$subParts = $part->getParts();
-					$this->traverseData($subParts);
-				}
-			}
-		}
+		return !!$this->iterateParts($this->parts, $returnOnFirstFound = true);
 	}
 
-	public function hasNoParts()
+	/**
+	 * Gets all the headers from an email and returns a collections
+	 *
+	 * @param $emailHeaders
+	 * @return Collection
+	 */
+	private function buildHeaders($emailHeaders)
 	{
-		if (empty($this->payload->getParts())) {
-			return true;
-		} else {
-			return false;
+		$headers = [];
+
+		foreach ($emailHeaders as $header) {
+			/** @var \Google_Service_Gmail_MessagePartHeader $header */
+
+			$head = new \stdClass();
+
+			$head->key = $header->getName();
+			$head->value = $header->getValue();
+
+			$headers[] = $head;
 		}
+
+		return collect($headers);
 	}
-
-	public function traverseData($parts)
-	{
-		foreach ($parts as $part) {
-			if (empty($part->getParts())) {
-				$type = $part->getMimeType();
-				$body = $part->getBody();
-				if ($type == 'text/html' || $type == 'text/plain') {
-					if (isset($this->messageBodyArr[$type])) {
-						$this->messageBodyArr[$type] .= $this->getDecodedBody($body->getData());
-					} else {
-						$this->messageBodyArr[$type] = $this->getDecodedBody($body->getData());
-					}
-				}
-
-				if ($body->getAttachmentId()) {
-					$this->attachmentData[] = [
-						'id' => $body->getAttachmentId(),
-						'fileName' => $part->getFilename(),
-						'mimeType' => $type,
-					];
-
-				}
-			} else {
-				$subParts = $part->getParts();
-				$this->traverseData($subParts);
-			}
-		}
-	}
-
 }

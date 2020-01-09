@@ -15,8 +15,6 @@ trait Modifiable
 		ModifiesLabels::__construct as private __mlConstruct;
 	}
 
-	private $messageRequest;
-
 	public function __construct()
 	{
 		/** @scrutinizer ignore-call */

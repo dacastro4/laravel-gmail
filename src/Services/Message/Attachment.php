@@ -32,6 +32,14 @@ class Attachment extends GmailConnection
 	 */
 	public $size;
 	/**
+	 * @var
+	 */
+	public $headerDetails;
+	/**
+	 * @var
+	 */
+	private $headers;
+	/**
 	 * @var Google_Service_Gmail
 	 */
 	private $service;
@@ -59,6 +67,8 @@ class Attachment extends GmailConnection
 		$this->filename = $part->getFilename();
 		$this->mimeType = $part->getMimeType();
 		$this->messageId = $singleMessageId;
+		$headers = $part->getHeaders();
+		$this->headerDetails = $this->getHeaderDetails($headers);
 	}
 
 	/**
@@ -145,5 +155,22 @@ class Attachment extends GmailConnection
 		$attachment = $this->service->users_messages_attachments->get('me', $this->messageId, $this->id);
 
 		return $attachment->getData();
+	}
+
+	/**
+	 * Returns attachment headers
+	 * Contains Content-ID and X-Attachment-Id for embedded images
+	 *
+	 * @return array
+	 */
+	public function getHeaderDetails($headers)
+	{
+		$headerDetails = [];
+
+		foreach ($headers as $header) {
+			$headerDetails[$header->name] = $header->value;
+		}
+
+		return $headerDetails;
 	}
 }

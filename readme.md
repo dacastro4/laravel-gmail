@@ -10,20 +10,22 @@
 
 
 # Gmail
-Gmail API for Laravel 5
+Gmail API for Laravel 6
 
 You need to create an application in the [Google Console](https://console.developers.google.com/apis/credentials?project=robotic-jet-193118&authuser=1). Guidance [here](https://developers.google.com/gmail/api/quickstart/php#step_1_turn_on_the_api_name).
 
+if you need **Laravel 5** compatibility please use version `2.0.x`.
+
 # Requirements
 
-* PHP 5.6 or higher
-* Laravel 5
+* PHP 7.0 or higher
+* Laravel 6
 
 # Installation
 
 Add dacastro4/laravel-gmail to composer.json.
 
-`"dacastro4/laravel-gmail": "^1.1"`
+`"dacastro4/laravel-gmail": "^3.0"`
 
 Run composer update to pull down the latest version.
 
@@ -49,6 +51,27 @@ Now add the alias.
 
 For laravel >=5.5 that's all. This package supports Laravel new [Package Discovery](https://laravel.com/docs/5.5/packages#package-discovery).
 
+# Migration from 2.0 to 3.0
+
+Requires Laravel 6 and you only have to change the dependency to `"laravel/laravel": "^6.0"`
+
+# Migration from 1.0 to 2.0
+The only changed made was the multi credentials feature.
+- Change your composer.json from `"dacastro4/laravel-gmail": "^1.0"` to `"dacastro4/laravel-gmail": "^2.0"`
+
+I had to change version because of a typo and that might break apps calling those attributes.
+
+All variable with the word "threat" was change to "thread" (yeah, I know.. sorry)
+Ex:
+ 
+ Mail Class
+    `$threatId` => `$threadId`
+ 
+ Replyable Class
+    `$mail->setReplyThreat()` => `$mail->setReplyThread()`    
+
+and so on.
+
 # Migration from 0.6 to 1.0
 The only changed made was the multi credentials feature.
 - Change your composer.json from `"dacastro4/laravel-gmail": "^0.6"` to `"dacastro4/laravel-gmail": "^1.0"`
@@ -66,7 +89,7 @@ GOOGLE_PROJECT_ID=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=
-GOOGLE_ALLOW_MULTITPLE_CREDENTIALS
+GOOGLE_ALLOW_MULTIPLE_CREDENTIALS
 GOOGLE_ALLOW_JSON_ENCRYPT
 ```
 
@@ -76,7 +99,7 @@ Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailS
 
 ### Allow multi user credentials
 To allow multi user credentials change `allow_multiple_credentials` to `true` in your config file or set the .env variable 
-`GOOGLE_ALLOW_MULTITPLE_CREDENTIALS` to true if you're not using the config file.
+`GOOGLE_ALLOW_MULTIPLE_CREDENTIALS` to true if you're not using the config file.
 ### Allow encryption for json files
 To allow encryption for json files change `allow_json_encrypt` to `true` in your config file or set the .env variable 
 `GOOGLE_ALLOW_JSON_ENCRYPT` to true if you're not using the config file.
@@ -351,6 +374,13 @@ Example:
                 ->preload()
                 ->all()
 ```
+
+### Frequent Issues
+
+#### Login Required
+
+If you're getting the `Login Required` error, try creating the `gmail-json.json` file under `/storage/app/gmail/tokens/`.
+
 
 ## Support on Beerpay
 Hey dude! Help me out for a couple of :beers:!

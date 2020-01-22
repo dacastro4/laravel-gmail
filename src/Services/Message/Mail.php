@@ -226,6 +226,10 @@ class Mail extends GmailConnection
 	{
 		$from = $this->getHeader('From');
 
+		if (filter_var($from, FILTER_VALIDATE_EMAIL)) {
+			return $from;
+		}
+
 		preg_match('/<(.*)>/', $from, $matches);
 
 		return isset($matches[1]) ? $matches[1] : null;

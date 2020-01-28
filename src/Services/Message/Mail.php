@@ -261,6 +261,30 @@ class Mail extends GmailConnection
 		return $this->formatEmailList($allTo);
 	}
 
+    /**
+     * Returns array list of cc recipients
+     *
+     * @return array
+     */
+    public function getCc()
+    {
+        $allCc = $this->getHeader('Cc');
+
+        return $this->formatEmailList($allCc);
+    }
+
+    /**
+     * Returns array list of bcc recipients
+     *
+     * @return array
+     */
+    public function getBcc()
+    {
+        $allBcc = $this->getHeader('Bcc');
+
+        return $this->formatEmailList($allBcc);
+    }
+
 	/**
 	 * Returns an array of emails from an string in RFC 822 format
 	 *

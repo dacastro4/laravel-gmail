@@ -18,7 +18,7 @@ if you need **Laravel 5** compatibility please use version `2.0.x`.
 
 # Requirements
 
-* PHP 7.0 or higher
+* \>= PHP 7.0 <= PHP 7.3
 * Laravel 6
 
 # Installation

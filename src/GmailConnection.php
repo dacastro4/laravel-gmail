@@ -28,6 +28,8 @@ class GmailConnection extends Google_Client
 	{
 		$this->app = Container::getInstance();
 
+		$this->userId = $userId;
+
 		$this->configConstruct($config);
 
 		$this->configuration = $config;

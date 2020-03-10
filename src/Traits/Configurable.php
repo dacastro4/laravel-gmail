@@ -3,7 +3,8 @@
 namespace Ddomanskyi\LaravelGmail\Traits;
 
 use Google_Service_Gmail;
-use Storage;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
 
 /**
  * Trait Configurable
@@ -56,10 +57,10 @@ trait Configurable
 		} else {
 			$credentialFilename = $this->_config['gmail.credentials_file_name'];
 		}
-
+    
 		$allowMultipleCredentials = $this->_config['gmail.allow_multiple_credentials'];
 
-		if ($userId && $allowMultipleCredentials) {
+		if (isset($userId) && $allowMultipleCredentials) {
 			return sprintf('%s-%s', $credentialFilename, $userId);
 		}
 
@@ -107,7 +108,7 @@ trait Configurable
 
 	private function mapScopes()
 	{
-		$scopes = array_merge($this->_config['gmail.scopes'], $this->additionalScopes);
+		$scopes = array_merge($this->_config['gmail.scopes'] ?? [], $this->additionalScopes);
 		$scopes = array_unique(array_filter($scopes));
 		$mappedScopes = [];
 
@@ -117,7 +118,7 @@ trait Configurable
 			}
 		}
 
-		return array_merge($mappedScopes, $this->_config['gmail.additional_scopes']);
+		return array_merge($mappedScopes, $this->_config['gmail.additional_scopes'] ?? []);
 	}
 
 	private function scopeMap($scope)
@@ -135,7 +136,7 @@ trait Configurable
 			'settings_sharing' => Google_Service_Gmail::GMAIL_SETTINGS_SHARING,
 		];
 
-		return array_get($scopes, $scope);
+		return Arr::get($scopes, $scope);
 	}
 
 	public abstract function setAccessType($type);

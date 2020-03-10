@@ -6,6 +6,7 @@ use Ddomanskyi\LaravelGmail\GmailConnection;
 use Ddomanskyi\LaravelGmail\Traits\HasDecodableBody;
 use Google_Service_Gmail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Attachment extends GmailConnection
 {
@@ -134,7 +135,7 @@ class Attachment extends GmailConnection
 		if (is_null($path)) {
 			$path = '/';
 		} else {
-			if (!ends_with('/', $path)) {
+			if (!Str::endsWith('/', $path)) {
 				$path = "{$path}/";
 			}
 		}

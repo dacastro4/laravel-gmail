@@ -11,6 +11,7 @@ use Ddomanskyi\LaravelGmail\Traits\Replyable;
 use Google_Service_Gmail;
 use Google_Service_Gmail_MessagePart;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 /**
  * Class SingleMessage
@@ -70,10 +71,10 @@ class Mail extends GmailConnection
 	 *
 	 * @param \Google_Service_Gmail_Message $message
 	 * @param bool $preload
+	 * @param  int 	$userId
 	 */
 	public function __construct($tokenFile, \Google_Service_Gmail_Message $message = null, $preload = false)
 	{
-
 		$this->service = new Google_Service_Gmail($this);
 
 		$this->__rConstruct();
@@ -226,6 +227,10 @@ class Mail extends GmailConnection
 	{
 		$from = $this->getHeader('From');
 
+		if (filter_var($from, FILTER_VALIDATE_EMAIL)) {
+			return $from;
+		}
+
 		preg_match('/<(.*)>/', $from, $matches);
 
 		return isset($matches[1]) ? $matches[1] : null;
@@ -258,6 +263,30 @@ class Mail extends GmailConnection
 	}
 
 	/**
+	 * Returns array list of cc recipients
+	 *
+	 * @return array
+	 */
+	public function getCc()
+	{
+		$allCc = $this->getHeader('Cc');
+
+		return $this->formatEmailList($allCc);
+	}
+
+	/**
+	 * Returns array list of bcc recipients
+	 *
+	 * @return array
+	 */
+	public function getBcc()
+	{
+		$allBcc = $this->getHeader('Bcc');
+
+		return $this->formatEmailList($allBcc);
+	}
+
+	/**
 	 * Returns an array of emails from an string in RFC 822 format
 	 *
 	 * @param string $emails email list in RFC 822 format
@@ -279,7 +308,7 @@ class Mail extends GmailConnection
 
 			$name = preg_replace('/ <(.*)>/', '', $email);
 
-			if (starts_with($name, ' ')) {
+			if (Str::startsWith($name, ' ')) {
 				$name = substr($name, 1);
 			}
 

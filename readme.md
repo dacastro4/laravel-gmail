@@ -1,13 +1,16 @@
 # Laravel Gmail
 
-[![Build Status](https://scrutinizer-ci.com/g/dacastro4/laravel-gmail/badges/build.png?b=master)](https://scrutinizer-ci.com/g/dacastro4/laravel-gmail/build-status/master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/dacastro4/laravel-gmail/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/dacastro4/laravel-gmail/?branch=master)
-[![GitHub issues](https://img.shields.io/github/issues/dacastro4/laravel-gmail.svg)](https://github.com/dacastro4/laravel-gmail/issues)
-[![Total Downloads](https://poser.pugx.org/dacastro4/laravel-gmail/downloads)](https://packagist.org/packages/dacastro4/laravel-gmail)
-[![Monthly Downloads](https://poser.pugx.org/dacastro4/laravel-gmail/d/monthly)](https://packagist.org/packages/dacastro4/laravel-gmail)
-[![GitHub license](https://img.shields.io/github/license/dacastro4/laravel-gmail.svg)](https://github.com/dacastro4/laravel-gmail/blob/master/LICENSE)
-[![Beerpay](https://beerpay.io/dacastro4/laravel-gmail/badge.svg)](https://beerpay.io/dacastro4/laravel-gmail)
+Thanks to Dacastro4 (https://github.com/dacastro4/laravel-gmail/) for this package and to Igor Hmelevskoy (https://github.com/igorhmelevskoy) for improving this package to be able to use multiple gmail accounts at same time.
 
+# How to use multiple accounts
+
+```
+$mail = new Mail('filenamejson@gmail.com');
+$mail->to( "test@gmail.com", "Test Name");
+$mail->subject( "Test" );
+$mail->message( "my test message" );
+$mail->send();
+```
 
 # Gmail
 Gmail API for Laravel 6
@@ -23,21 +26,21 @@ if you need **Laravel 5** compatibility please use version `2.0.x`.
 
 # Installation
 
-Add dacastro4/laravel-gmail to composer.json.
+Add ddomanskyi/laravel-gmail-multiaccounts to composer.json.
 
-`"dacastro4/laravel-gmail": "^3.0"`
+`"ddomanskyi/laravel-gmail-multiaccounts": "^3.0"`
 
 Run composer update to pull down the latest version.
 
 Or run
 
-`composer require dacastro4/laravel-gmail`
+`composer require ddomanskyi/laravel-gmail-multiaccounts`
  
 Now open up `config/app.php` and add the service provider to your providers array.
 
 ``` php
 'providers' => [
-    Dacastro4\LaravelGmail\LaravelGmailServiceProvider::class,
+    Ddomanskyi\LaravelGmail\LaravelGmailServiceProvider::class,
 ]
 ```
 
@@ -45,7 +48,7 @@ Now add the alias.
 
 ``` php
 'aliases' => [
-    'LaravelGmail' => Dacastro4\LaravelGmail\Facade\LaravelGmail::class,
+    'LaravelGmail' => Ddomanskyi\LaravelGmail\Facade\LaravelGmail::class,
 ]
 ```
 
@@ -57,7 +60,7 @@ Requires Laravel 6 and you only have to change the dependency to `"laravel/larav
 
 # Migration from 1.0 to 2.0
 The only changed made was the multi credentials feature.
-- Change your composer.json from `"dacastro4/laravel-gmail": "^1.0"` to `"dacastro4/laravel-gmail": "^2.0"`
+- Change your composer.json from `"ddomanskyi/laravel-gmail-multiaccounts": "^1.0"` to `"ddomanskyi/laravel-gmail-multiaccounts": "^2.0"`
 
 I had to change version because of a typo and that might break apps calling those attributes.
 
@@ -74,7 +77,7 @@ and so on.
 
 # Migration from 0.6 to 1.0
 The only changed made was the multi credentials feature.
-- Change your composer.json from `"dacastro4/laravel-gmail": "^0.6"` to `"dacastro4/laravel-gmail": "^1.0"`
+- Change your composer.json from `"ddomanskyi/laravel-gmail-multiaccounts": "^0.6"` to `"ddomanskyi/laravel-gmail-multiaccounts": "^1.0"`
 
 If you don't want the multi user credentials, you don't have to do anything else, if you do, you're going to have to 
 login again to create a new credentials file per user.
@@ -95,7 +98,7 @@ GOOGLE_ALLOW_JSON_ENCRYPT
 
 To modify the scopes and the credentials file name, just run:
 
-Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailServiceProvider"` and modify the config file `config/gmail.php`.
+Run `php artisan vendor:publish --provider="Ddomanskyi\LaravelGmail\LaravelGmailServiceProvider"` and modify the config file `config/gmail.php`.
 
 ### Allow multi user credentials
 To allow multi user credentials change `allow_multiple_credentials` to `true` in your config file or set the .env variable 
@@ -196,7 +199,7 @@ and after that you don't have to call it again.
 ## Sending
 
 ```
-use Dacastro4\LaravelGmail\Services\Message\Mail;
+use Ddomanskyi\LaravelGmail\Services\Message\Mail;
 
 ...
 
@@ -295,7 +298,7 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 ## Attachment
 
 ```
-use Dacastro4\LaravelGmail\Services\Message\Attachment
+use Ddomanskyi\LaravelGmail\Services\Message\Attachment
 ...
 
 $attachment = new Attachment;
@@ -342,7 +345,7 @@ To get all unread emails: `LaravelGmail::message()->unread()->all()`
 
 `message()->raw($query)` for customized queries
 
-All the possible filters are in the [Filterable Trait](https://github.com/dacastro4/laravel-gmail/blob/master/src/Traits/Filterable.php)
+All the possible filters are in the [Filterable Trait](https://github.com/ddomanskyi/laravel-gmail-multiaccounts/blob/master/src/Traits/Filterable.php)
 
 Of course you can use as a fluent api.
 
@@ -385,4 +388,4 @@ If you're getting the `Login Required` error, try creating the `gmail-json.json`
 ## Support on Beerpay
 Hey dude! Help me out for a couple of :beers:!
 
-[![Beerpay](https://beerpay.io/dacastro4/laravel-gmail/badge.svg?style=beer-square)](https://beerpay.io/dacastro4/laravel-gmail)  [![Beerpay](https://beerpay.io/dacastro4/laravel-gmail/make-wish.svg?style=flat-square)](https://beerpay.io/dacastro4/laravel-gmail?focus=wish)
+[![Beerpay](https://beerpay.io/ddomanskyi/laravel-gmail-multiaccounts/badge.svg?style=beer-square)](https://beerpay.io/ddomanskyi/laravel-gmail-multiaccounts)  [![Beerpay](https://beerpay.io/ddomanskyi/laravel-gmail-multiaccounts/make-wish.svg?style=flat-square)](https://beerpay.io/ddomanskyi/laravel-gmail-multiaccounts?focus=wish)

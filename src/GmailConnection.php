@@ -30,6 +30,8 @@ class GmailConnection extends Google_Client
 
 		$this->userId = $userId;
 
+		$this->tokenFile = $tokenFile;
+
 		$this->configConstruct($config);
 
 		$this->configuration = $config;

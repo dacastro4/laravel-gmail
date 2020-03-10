@@ -23,12 +23,15 @@ class GmailConnection extends Google_Client
 	protected $token;
 	private $configuration;
 	public $userId;
+	public $tokenFile;
 
-	public function __construct($config = null, $userId = null)
+	public function __construct($config = null, $userId = null, $tokenFile = null)
 	{
 		$this->app = Container::getInstance();
 
 		$this->userId = $userId;
+
+		$this->tokenFile = $tokenFile;
 
 		$this->configConstruct($config);
 
@@ -146,6 +149,12 @@ class GmailConnection extends Google_Client
 	 */
 	public function saveAccessToken(array $config)
 	{
+		if (isset($config['email'])) {
+			$fileName = $config['email'];
+		} else {
+			$fileName = $this->tokenFile;
+		}
+
 		$disk = Storage::disk('local');
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";

@@ -1,6 +1,6 @@
 {
-  "name": "dacastro4/laravel-gmail",
-  "description": "Gmail API package for Laravel",
+  "name": "ddomanskyi/laravel-gmail-multiaccounts",
+  "description": "Gmail API package for Laravel from Dacastro4 (https://github.com/dacastro4/laravel-gmail/) with multiaccount handling imrpovement",
   "keywords": [
     "api",
     "laravel",
@@ -9,9 +9,9 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Daniel Castro",
-      "email": "danielcastro04@gmail.com",
-      "homepage": "https://danielcastro.me"
+      "name": "Denys Domanskyi",
+      "email": "domanskyidenys@gmail.com",
+      "homepage": "http://div-art.com"
     }
   ],
   "require": {
@@ -33,7 +33,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Dacastro4\\LaravelGmail\\": "src/"
+      "Ddomanskyi\\LaravelGmail\\": "src/"
     }
   },
   "autoload-dev": {
@@ -44,10 +44,10 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Dacastro4\\LaravelGmail\\LaravelGmailServiceProvider"
+        "Ddomanskyi\\LaravelGmail\\LaravelGmailServiceProvider"
       ],
       "aliases": {
-        "LaravelGmail": "Dacastro4\\LaravelGmail\\Facade\\LaravelGmail"
+        "LaravelGmail": "Ddomanskyi\\LaravelGmail\\Facade\\LaravelGmail"
       }
     }
   },

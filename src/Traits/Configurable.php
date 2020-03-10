@@ -1,6 +1,6 @@
 <?php
 
-namespace Dacastro4\LaravelGmail\Traits;
+namespace Ddomanskyi\LaravelGmail\Traits;
 
 use Google_Service_Gmail;
 use Illuminate\Support\Facades\Storage;
@@ -8,7 +8,7 @@ use Illuminate\Support\Arr;
 
 /**
  * Trait Configurable
- * @package Dacastro4\LaravelGmail\Traits
+ * @package Ddomanskyi\LaravelGmail\Traits
  */
 trait Configurable
 {

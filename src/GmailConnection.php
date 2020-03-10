@@ -1,8 +1,8 @@
 <?php
 
-namespace Dacastro4\LaravelGmail;
+namespace Ddomanskyi\LaravelGmail;
 
-use Dacastro4\LaravelGmail\Traits\Configurable;
+use Ddomanskyi\LaravelGmail\Traits\Configurable;
 use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Container\Container;

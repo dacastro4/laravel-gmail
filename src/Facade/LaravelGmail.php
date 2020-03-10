@@ -1,6 +1,6 @@
 <?php
 
-namespace Dacastro4\LaravelGmail\Facade;
+namespace Ddomanskyi\LaravelGmail\Facade;
 
 use Illuminate\Support\Facades\Facade;
 

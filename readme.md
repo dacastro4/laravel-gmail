@@ -20,7 +20,7 @@ if you need **Laravel 6** compatibility please use version `3.0.x`.
 # Requirements
 
 * \>= PHP 7.2.5 <= PHP 7.3
-* Laravel 6
+* Laravel 7
 
 # Installation
 

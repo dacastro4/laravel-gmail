@@ -59,7 +59,7 @@ trait Filterable
 	{
 		$emailsCount = count( $emails );
 		for ( $i = 0; $i < $emailsCount; $i ++ ) {
-			! $i ? $this->add( "{from:$emails[$i]" ) : $i == $emailsCount - 1 ? $this->add( "from:$emails[$i]}" ) : $this->from( $emails[ $i ] );
+			! $i ? $this->add( "{from:$emails[$i]" ) : ($i == $emailsCount - 1 ? $this->add( "from:$emails[$i]}" ) : $this->from( $emails[ $i ] ));
 		}
 
 		return $this;

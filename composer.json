@@ -16,7 +16,7 @@
   ],
   "require": {
     "php": "^7.2",
-    "google/apiclient": "^2.4",
+    "google/apiclient": "^2.5",
     "illuminate/auth": "~5.8|^6.0|^7.0",
     "illuminate/config": "~5.8|^6.0|^7.0",
     "illuminate/database": "~5.8|^6.0|^7.0",

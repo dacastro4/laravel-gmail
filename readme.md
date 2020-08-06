@@ -6,7 +6,6 @@
 [![Total Downloads](https://poser.pugx.org/dacastro4/laravel-gmail/downloads)](https://packagist.org/packages/dacastro4/laravel-gmail)
 [![Monthly Downloads](https://poser.pugx.org/dacastro4/laravel-gmail/d/monthly)](https://packagist.org/packages/dacastro4/laravel-gmail)
 [![GitHub license](https://img.shields.io/github/license/dacastro4/laravel-gmail.svg)](https://github.com/dacastro4/laravel-gmail/blob/master/LICENSE)
-[![Beerpay](https://beerpay.io/dacastro4/laravel-gmail/badge.svg)](https://beerpay.io/dacastro4/laravel-gmail)
 
 
 # Gmail

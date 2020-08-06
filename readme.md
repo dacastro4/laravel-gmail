@@ -385,9 +385,3 @@ Example:
 #### Login Required
 
 If you're getting the `Login Required` error, try creating the `gmail-json.json` file under `/storage/app/gmail/tokens/`.
-
-
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
-
-[![Beerpay](https://beerpay.io/dacastro4/laravel-gmail/badge.svg?style=beer-square)](https://beerpay.io/dacastro4/laravel-gmail)  [![Beerpay](https://beerpay.io/dacastro4/laravel-gmail/make-wish.svg?style=flat-square)](https://beerpay.io/dacastro4/laravel-gmail?focus=wish)

@@ -11,7 +11,7 @@
 # Gmail
 Gmail API for Laravel 7
 
-You need to create an application in the [Google Console](https://console.developers.google.com/apis/credentials?project=robotic-jet-193118&authuser=1). Guidance [here](https://developers.google.com/gmail/api/quickstart/php#step_1_turn_on_the_api_name).
+You need to create an application in the [Google Console](https://console.developers.google.com/apis/credentials). Guidance [here](https://developers.google.com/gmail/api/quickstart/php#step_1_turn_on_the_api_name).
 
 if you need **Laravel 5** compatibility please use version `2.0.x`.
 if you need **Laravel 6** compatibility please use version `3.0.x`.

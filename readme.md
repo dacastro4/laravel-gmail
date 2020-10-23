@@ -9,12 +9,13 @@
 
 
 # Gmail
-Gmail API for Laravel 7
+Gmail API for Laravel 8
 
 You need to create an application in the [Google Console](https://console.developers.google.com/apis/credentials). Guidance [here](https://developers.google.com/gmail/api/quickstart/php#step_1_turn_on_the_api_name).
 
 if you need **Laravel 5** compatibility please use version `2.0.x`.
 if you need **Laravel 6** compatibility please use version `3.0.x`.
+if you need **Laravel 7** compatibility please use version `4.0.x`.
 
 # Requirements
 
@@ -25,7 +26,7 @@ if you need **Laravel 6** compatibility please use version `3.0.x`.
 
 Add dacastro4/laravel-gmail to composer.json.
 
-`"dacastro4/laravel-gmail": "^4.0"`
+`"dacastro4/laravel-gmail": "^5.0"`
 
 Run composer update to pull down the latest version.
 
@@ -50,6 +51,11 @@ Now add the alias.
 ```
 
 For laravel >=5.5 that's all. This package supports Laravel new [Package Discovery](https://laravel.com/docs/5.5/packages#package-discovery).
+
+# Migration from 4.0 to 5.0
+
+Requires Laravel 8 and you have to change the dependency to `"laravel/laravel": "^8.0"`
+Please, follow [Upgrading To 8.0 From 6.x Guide](https://laravel.com/docs/8.x/upgrade)
 
 # Migration from 3.0 to 4.0
 

@@ -19,8 +19,8 @@ if you need **Laravel 7** compatibility please use version `4.0.x`.
 
 # Requirements
 
-* \>= PHP 7.2.5 <= PHP 7.3
-* Laravel 7
+* \>= PHP 7.3 <= PHP 7.4
+* Laravel 8
 
 # Installation
 

@@ -19,14 +19,14 @@ if you need **Laravel 7** compatibility please use version `4.0.x`.
 
 # Requirements
 
-* \>= PHP 7.3 <= PHP 7.4
+* PHP ^8.0
 * Laravel 8
 
 # Installation
 
 Add dacastro4/laravel-gmail to composer.json.
 
-`"dacastro4/laravel-gmail": "^5.0"`
+`"dacastro4/laravel-gmail": "^5.1"`
 
 Run composer update to pull down the latest version.
 
@@ -51,6 +51,8 @@ Now add the alias.
 ```
 
 For laravel >=5.5 that's all. This package supports Laravel new [Package Discovery](https://laravel.com/docs/5.5/packages#package-discovery).
+
+For <= PHP 7.4 compatibility use version `v5.0`
 
 # Migration from 4.0 to 5.0
 

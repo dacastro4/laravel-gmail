@@ -6,7 +6,7 @@ php:
   - 7.2
   - 7.3
   - 7.4
-  - 8.0
+  - 8.0.1
 
 install: travis_retry composer install --no-interaction --prefer-source
 

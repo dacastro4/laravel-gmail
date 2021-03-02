@@ -407,5 +407,5 @@ trait Replyable
 		return $this;
 	}
 
-	protected abstract function setMessage($message);
+	protected abstract function setMessage(\Google_Service_Gmail_Message $message);
 }

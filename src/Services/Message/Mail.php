@@ -37,6 +37,11 @@ class Mail extends GmailConnection
 	/**
 	 * @var
 	 */
+	public $userId;
+
+	/**
+	 * @var
+	 */
 	public $internalDate;
 
 	/**
@@ -86,12 +91,24 @@ class Mail extends GmailConnection
 				$message = $this->service->users_messages->get('me', $message->getId());
 			}
 
+			$this->setUserId($userId);
+
 			$this->setMessage($message);
 
 			if ($preload) {
 				$this->setMetadata();
 			}
 		}
+	}
+
+	/**
+	 * Set user Id
+	 *
+	 * @param int $userId
+	 */
+	protected function setUserId($userId)
+	{
+		$this->userId = $userId;
 	}
 
 	/**
@@ -497,7 +514,7 @@ class Mail extends GmailConnection
 
 		foreach ($parts as $part) {
 			if (!empty($part->body->attachmentId)) {
-				$attachment = (new Attachment($part->body->attachmentId, $part));
+				$attachment = (new Attachment($part->body->attachmentId, $part, $this->userId));
 
 				if ($preload) {
 					$attachment = $attachment->getData();

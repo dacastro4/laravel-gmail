@@ -77,7 +77,7 @@ class Message
 
 		if (!$this->preload) {
 			foreach ($allMessages as $message) {
-				$messages[] = new Mail($message, $this->preload);
+				$messages[] = new Mail($message, $this->preload, $this->client->userId);
 			}
 		} else {
 			$messages = $this->batchRequest($allMessages);
@@ -121,7 +121,7 @@ class Message
 	{
 		$message = $this->getRequest($id);
 
-		return new Mail($message);
+		return new Mail($message, false, $this->client->userId);
 	}
 
 	/**
@@ -148,7 +148,7 @@ class Message
 		$messages = [];
 
 		foreach ($messagesBatch as $message) {
-			$messages[] = new Mail($message);
+			$messages[] = new Mail($message, false, $this->client->userId);
 		}
 
 		return $messages;

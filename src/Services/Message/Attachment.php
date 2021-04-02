@@ -55,10 +55,12 @@ class Attachment extends GmailConnection
 	 *
 	 * @param $singleMessageId
 	 * @param  \Google_Service_Gmail_MessagePart  $part
+	 * @param  \Google_Service_Gmail_MessagePart  $part
+	 * @param  int 	$userId
 	 */
-	public function __construct($singleMessageId, \Google_Service_Gmail_MessagePart $part)
+	public function __construct($singleMessageId, \Google_Service_Gmail_MessagePart $part, $userId = null)
 	{
-		parent::__construct(config());
+		parent::__construct(config(), $userId);
 
 		$this->service = new Google_Service_Gmail($this);
 

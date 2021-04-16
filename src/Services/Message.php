@@ -80,7 +80,7 @@ class Message
 				$messages[] = new Mail($message, $this->preload, $this->client->userId);
 			}
 		} else {
-			$messages = $this->batchRequest($allMessages);
+			$messages = count($allMessages) > 0 ? $this->batchRequest($allMessages) : [];
 		}
 
 		$all = new MessageCollection($messages, $this);

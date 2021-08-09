@@ -58,34 +58,32 @@ class Message
 	/**
 	 * Returns a collection of Mail instances
 	 *
-	 * @param null|string $pageToken
+	 * @param  string|null  $pageToken
 	 *
 	 * @return \Illuminate\Support\Collection
 	 * @throws \Google_Exception
 	 */
-	public function all($pageToken = null)
+	public function all(string $pageToken = null)
 	{
 		if (!is_null($pageToken)) {
 			$this->add($pageToken, 'pageToken');
 		}
 
-		$messages = [];
+		$mails = [];
 		$response = $this->getMessagesResponse();
-		$this->pageToken = method_exists( $response, 'getNextPageToken' ) ? $response->getNextPageToken() : null;
+		$this->pageToken = method_exists($response, 'getNextPageToken') ? $response->getNextPageToken() : null;
 
-		$allMessages = $response->getMessages();
+		$messages = $response->getMessages();
 
 		if (!$this->preload) {
-			foreach ($allMessages as $message) {
-				$messages[] = new Mail($message, $this->preload, $this->client->userId);
+			foreach ($messages as $message) {
+				$mails[] = new Mail($message, $this->preload, $this->client->userId);
 			}
 		} else {
-			$messages = count($allMessages) > 0 ? $this->batchRequest($allMessages) : [];
+			$mails = count($messages) > 0 ? $this->batchRequest($messages) : [];
 		}
 
-		$all = new MessageCollection($messages, $this);
-
-		return $all;
+		return new MessageCollection($mails, $this);
 	}
 
 	/**
@@ -189,10 +187,11 @@ class Message
 	 */
 	private function getMessagesResponse()
 	{
-		$responseOrRequest = $this->service->users_messages->listUsersMessages( 'me', $this->params );
+		$responseOrRequest = $this->service->users_messages->listUsersMessages('me', $this->params);
 
-		if ( get_class( $responseOrRequest ) === "GuzzleHttp\Psr7\Request" ) {
-			$response = $this->service->getClient()->execute( $responseOrRequest, 'Google_Service_Gmail_ListMessagesResponse' );
+		if (get_class($responseOrRequest) === "GuzzleHttp\Psr7\Request") {
+			$response = $this->service->getClient()->execute($responseOrRequest,
+				'Google_Service_Gmail_ListMessagesResponse');
 
 			return $response;
 		}

@@ -69,23 +69,21 @@ class Message
 			$this->add($pageToken, 'pageToken');
 		}
 
-		$messages = [];
+		$mails = [];
 		$response = $this->getMessagesResponse();
 		$this->pageToken = method_exists( $response, 'getNextPageToken' ) ? $response->getNextPageToken() : null;
 
-		$allMessages = $response->getMessages();
+		$messages = $response->getMessages();
 
 		if (!$this->preload) {
-			foreach ($allMessages as $message) {
-				$messages[] = new Mail($message, $this->preload);
+			foreach ($messages as $message) {
+				$mails[] = new Mail($message, $this->preload, $this->client->userId);
 			}
 		} else {
-			$messages = $this->batchRequest($allMessages);
+			$mails = count($messages) > 0 ? $this->batchRequest($messages) : [];
 		}
 
-		$all = new MessageCollection($messages, $this);
-
-		return $all;
+		return new MessageCollection($mails, $this);
 	}
 
 	/**

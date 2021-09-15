@@ -19,7 +19,7 @@ if you need **Laravel 7** compatibility please use version `4.0.x`.
 
 # Requirements
 
-* PHP ^8.0
+* PHP ^7.4|^8.0
 * Laravel 8
 
 # Installation
@@ -204,6 +204,8 @@ and after that you don't have to call it again.
 `LaravelGmail::logout` Logs out the user
 
 `LaravelGmail::check` Checks if the user is logged in
+
+`LaravelGmail::setUserId($account_id)->makeToken()` Set and Save AccessToken for $account_id (added v5.1.2) 
 
 
 ## Sending

@@ -15,7 +15,7 @@
     }
   ],
   "require": {
-    "php": "^8.0",
+    "php": "^7.3|^8.0",
     "google/apiclient": "^2.5",
     "illuminate/auth": "~5.8|^6.0|^7.0|^8.0",
     "illuminate/config": "~5.8|^6.0|^7.0|^8.0",

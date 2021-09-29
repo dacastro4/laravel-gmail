@@ -265,4 +265,47 @@ class GmailConnection extends Google_Client
 		return in_array(Google_Service_Gmail::GMAIL_READONLY, $scopes);
 	}
 
+    /**
+     * users.stop receiving push notifications for the given user mailbox.
+     *
+     * @param  string  $userEmail  Email address
+     * @param  array  $optParams
+     * @return \Google_Service_Gmail_Stop
+     */
+    public function stopWatch($userEmail, $optParams = []): \Google_Service_Gmail_Stop
+    {
+        $service = new Google_Service_Gmail($this);
+
+        return $service->users->stop($userEmail, $optParams);
+    }
+
+    /**
+     * Set up or update a push notification watch on the given user mailbox.
+     *
+     * @param string $userEmail Email address
+     * @param Google_Service_Gmail_WatchRequest $postData
+     *
+     * @return \Google_Service_Gmail_WatchResponse
+     */
+    public function setWatch($userEmail, \Google_Service_Gmail_WatchRequest $postData): \Google_Service_Gmail_WatchResponse
+    {
+        $service = new Google_Service_Gmail($this);
+
+        return $service->users->watch($userEmail, $postData);
+    }
+
+    /**
+     * Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing historyId).
+     * @param $userEmail
+     * @param $params
+     * @return \Google\Service\Gmail\ListHistoryResponse
+     */
+    public function historyList($userEmail, $params)
+    {
+        $service = new Google_Service_Gmail($this);
+
+        return $service->users_history->listUsersHistory($userEmail, $params);
+    }
+
+
 }

@@ -272,7 +272,7 @@ class GmailConnection extends Google_Client
      * @param  array  $optParams
      * @return \Google_Service_Gmail_Stop
      */
-    public function stopWatch($userEmail, $optParams = []): \Google_Service_Gmail_Stop
+    public function stopWatch($userEmail, $optParams = [])
     {
         $service = new Google_Service_Gmail($this);
 

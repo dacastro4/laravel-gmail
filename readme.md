@@ -390,6 +390,42 @@ Example:
                 ->all()
 ```
 
+### Watch
+https://developers.google.com/gmail/api/reference/rest/v1/users/watch
+
+Example:
+
+``` php
+    $mailbox = new LaravelGmailClass(config(), $account->id);
+    
+    // One watch per account + need reinit every 24h+
+    $mailbox->stopWatch('example@gmail.com');
+
+    // Set watch for topic
+    $rq = new \Google_Service_Gmail_WatchRequest();
+    $rq->setTopicName('projects/YOUR_PROJECT_ID/topics/gmail');
+    $mailbox->setWatch('example@gmail.com', $rq);
+```
+
+
+### History
+https://developers.google.com/gmail/api/reference/rest/v1/users.history
+
+Example:
+
+``` php
+    $historyList = (new LaravelGmailClass(config(), $account->id))
+        ->historyList($data['emailAddress'], [
+            'startHistoryId' => $startHistoryId,
+        ]);
+    foreach ($historyList->history as $chunk) {
+        foreach ($chunk->messages as $msg) {
+            ...
+        }
+    }
+```
+
+
 ### Frequent Issues
 
 #### Login Required

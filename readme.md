@@ -19,7 +19,7 @@ if you need **Laravel 7** compatibility please use version `4.0.x`.
 
 # Requirements
 
-* PHP ^8.0
+* PHP ^7.4|^8.0
 * Laravel 8
 
 # Installation
@@ -205,6 +205,8 @@ and after that you don't have to call it again.
 
 `LaravelGmail::check` Checks if the user is logged in
 
+`LaravelGmail::setUserId($account_id)->makeToken()` Set and Save AccessToken for $account_id (added v5.1.2) 
+
 
 ## Sending
 
@@ -387,6 +389,42 @@ Example:
                 ->preload()
                 ->all()
 ```
+
+### Watch
+https://developers.google.com/gmail/api/reference/rest/v1/users/watch
+
+Example:
+
+``` php
+    $mailbox = new LaravelGmailClass(config(), $account->id);
+    
+    // One watch per account + need reinit every 24h+
+    $mailbox->stopWatch('example@gmail.com');
+
+    // Set watch for topic
+    $rq = new \Google_Service_Gmail_WatchRequest();
+    $rq->setTopicName('projects/YOUR_PROJECT_ID/topics/gmail');
+    $mailbox->setWatch('example@gmail.com', $rq);
+```
+
+
+### History
+https://developers.google.com/gmail/api/reference/rest/v1/users.history
+
+Example:
+
+``` php
+    $historyList = (new LaravelGmailClass(config(), $account->id))
+        ->historyList($data['emailAddress'], [
+            'startHistoryId' => $startHistoryId,
+        ]);
+    foreach ($historyList->history as $chunk) {
+        foreach ($chunk->messages as $msg) {
+            ...
+        }
+    }
+```
+
 
 ### Frequent Issues
 

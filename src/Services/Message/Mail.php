@@ -59,6 +59,11 @@ class Mail extends GmailConnection
 	 */
 	public $threadId;
 
+    /**
+     * @var
+     */
+    public $historyId;
+
 	/**
 	 * @var \Google_Service_Gmail_MessagePart
 	 */
@@ -71,7 +76,7 @@ class Mail extends GmailConnection
 	 */
 	public $service;
 
-	/**
+    /**
 	 * SingleMessage constructor.
 	 *
 	 * @param \Google_Service_Gmail_Message $message
@@ -123,6 +128,7 @@ class Mail extends GmailConnection
 		$this->labels = $message->getLabelIds();
 		$this->size = $message->getSizeEstimate();
 		$this->threadId = $message->getThreadId();
+		$this->historyId = $message->getHistoryId();
 		$this->payload = $message->getPayload();
 		if ($this->payload) {
 			$this->parts = collect($this->payload->getParts());
@@ -181,6 +187,16 @@ class Mail extends GmailConnection
 	public function getThreadId()
 	{
 		return $this->threadId;
+	}
+
+	/**
+	 * Returns history ID of the email
+	 *
+	 * @return string
+	 */
+	public function getHistoryId()
+	{
+		return $this->historyId;
 	}
 
 	/**

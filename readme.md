@@ -9,24 +9,25 @@
 
 
 # Gmail
-Gmail API for Laravel 8
+Gmail API for Laravel 9
 
 You need to create an application in the [Google Console](https://console.developers.google.com/apis/credentials). Guidance [here](https://developers.google.com/gmail/api/quickstart/php#step_1_turn_on_the_api_name).
 
 if you need **Laravel 5** compatibility please use version `2.0.x`.
 if you need **Laravel 6** compatibility please use version `3.0.x`.
 if you need **Laravel 7** compatibility please use version `4.0.x`.
+if you need **Laravel 8** compatibility please use version `5.0.x`.
 
 # Requirements
 
-* PHP ^7.4|^8.0
-* Laravel 8
+* PHP ^8.0
+* Laravel 9
 
 # Installation
 
 Add dacastro4/laravel-gmail to composer.json.
 
-`"dacastro4/laravel-gmail": "^5.1"`
+`"dacastro4/laravel-gmail": "^6.0"`
 
 Run composer update to pull down the latest version.
 
@@ -54,10 +55,15 @@ For laravel >=5.5 that's all. This package supports Laravel new [Package Discove
 
 For <= PHP 7.4 compatibility use version `v5.0`
 
+# Migration from 5.0 to 6.0
+
+Requires Laravel 9 and you have to change the dependency to `"laravel/laravel": "^9.0"`
+Please, follow [Upgrading To 9.0 From 8.x Guide](https://laravel.com/docs/9.x/upgrade)
+
 # Migration from 4.0 to 5.0
 
 Requires Laravel 8 and you have to change the dependency to `"laravel/laravel": "^8.0"`
-Please, follow [Upgrading To 8.0 From 6.x Guide](https://laravel.com/docs/8.x/upgrade)
+Please, follow [Upgrading To 8.0 From 7.x Guide](https://laravel.com/docs/8.x/upgrade)
 
 # Migration from 3.0 to 4.0
 

@@ -308,4 +308,17 @@ class GmailConnection extends Google_Client
     }
 
 
+	/**
+     * List the labels in the user's mailbox.
+     *
+     * @param $userEmail
+     *
+    * @return \Google\Service\Gmail\Google_Service_Gmail_ListLabelsResponse
+     */
+    public function labelsList($userEmail)
+    {
+        $service = new Google_Service_Gmail($this);
+
+        return $service->users_labels->listUsersLabels($userEmail);
+    }
 }

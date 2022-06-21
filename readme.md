@@ -34,7 +34,7 @@ Run composer update to pull down the latest version.
 Or run
 
 `composer require dacastro4/laravel-gmail`
- 
+
 Now open up `config/app.php` and add the service provider to your providers array.
 
 ``` php
@@ -82,12 +82,12 @@ I had to change version because of a typo and that might break apps calling thos
 
 All variable with the word "threat" was change to "thread" (yeah, I know.. sorry)
 Ex:
- 
+
  Mail Class
     `$threatId` => `$threadId`
- 
+
  Replyable Class
-    `$mail->setReplyThreat()` => `$mail->setReplyThread()`    
+    `$mail->setReplyThreat()` => `$mail->setReplyThread()`
 
 and so on.
 
@@ -95,7 +95,7 @@ and so on.
 The only changed made was the multi credentials feature.
 - Change your composer.json from `"dacastro4/laravel-gmail": "^0.6"` to `"dacastro4/laravel-gmail": "^1.0"`
 
-If you don't want the multi user credentials, you don't have to do anything else, if you do, you're going to have to 
+If you don't want the multi user credentials, you don't have to do anything else, if you do, you're going to have to
 login again to create a new credentials file per user.
 
 
@@ -117,28 +117,28 @@ To modify the scopes and the credentials file name, just run:
 Run `php artisan vendor:publish --provider="Dacastro4\LaravelGmail\LaravelGmailServiceProvider"` and modify the config file `config/gmail.php`.
 
 ### Allow multi user credentials
-To allow multi user credentials change `allow_multiple_credentials` to `true` in your config file or set the .env variable 
+To allow multi user credentials change `allow_multiple_credentials` to `true` in your config file or set the .env variable
 `GOOGLE_ALLOW_MULTIPLE_CREDENTIALS` to true if you're not using the config file.
 ### Allow encryption for json files
-To allow encryption for json files change `allow_json_encrypt` to `true` in your config file or set the .env variable 
+To allow encryption for json files change `allow_json_encrypt` to `true` in your config file or set the .env variable
 `GOOGLE_ALLOW_JSON_ENCRYPT` to true if you're not using the config file.
 
 ### Available Scopes
 
 * all *(this one doesn't exists on Gmail Scopes, I added it.)*
-* compose         
-* insert          
-* labels          
-* metadata        
-* modify          
-* readonly        
-* send            
-* settings_basic  
+* compose
+* insert
+* labels
+* metadata
+* modify
+* readonly
+* send
+* settings_basic
 * settings_sharing
 
 [More about Gmail API scopes](https://developers.google.com/gmail/api/auth/scopes)
 
-Note: To change the scopes, users have to logout and login again. 
+Note: To change the scopes, users have to logout and login again.
 
 #### Additional Scopes
 If for some reason you need to add additional scopes.
@@ -211,7 +211,7 @@ and after that you don't have to call it again.
 
 `LaravelGmail::check` Checks if the user is logged in
 
-`LaravelGmail::setUserId($account_id)->makeToken()` Set and Save AccessToken for $account_id (added v5.1.2) 
+`LaravelGmail::setUserId($account_id)->makeToken()` Set and Save AccessToken for $account_id (added v5.1.2)
 
 
 ## Sending
@@ -222,7 +222,7 @@ use Dacastro4\LaravelGmail\Services\Message\Mail;
 ...
 
 $mail = new Mail;
-``` 
+```
 For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a string of email and name.
 
 
@@ -313,6 +313,18 @@ For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a s
 
 `$mail->getAttachmentsWithData()` Get a collection of all the attachments on the email including the data
 
+`Listing`: List all the labels of the email
+
+https://developers.google.com/gmail/api/reference/rest/v1/users.labels/list
+
+Example:
+
+``` php
+    $mailbox = new LaravelGmailClass(config(), $account->id);
+    $labels = $mailbox->labelsList($authUser->email);
+```
+
+
 ## Attachment
 
 ```
@@ -320,7 +332,7 @@ use Dacastro4\LaravelGmail\Services\Message\Attachment
 ...
 
 $attachment = new Attachment;
-``` 
+```
 
 `$attachment->getId` Returns the ID of the attachment
 
@@ -330,9 +342,9 @@ $attachment = new Attachment;
 
 `$attachment->getSize` Returns the size of the attachment in bytes
 
-`$attachment->getData` Get the all the information from the attachment. If you call `getAttachmentsWithData` you won't need this method. 
+`$attachment->getData` Get the all the information from the attachment. If you call `getAttachmentsWithData` you won't need this method.
 
-`$attachment->saveAttachmentTo($path = null, $filename = null, $disk = 'local')` Saves the attachment on the storage folder. You can pass the path, name and disk to use. 
+`$attachment->saveAttachmentTo($path = null, $filename = null, $disk = 'local')` Saves the attachment on the storage folder. You can pass the path, name and disk to use.
 
 
 ## Messages
@@ -368,7 +380,7 @@ All the possible filters are in the [Filterable Trait](https://github.com/dacast
 Of course you can use as a fluent api.
 
 ``` php
-    
+
     LaravelGmail::message()
                 ->from('someone@gmail.com')
                 ->unread()
@@ -386,7 +398,7 @@ You can preload the body, header and the rest of every single email just by call
 Example:
 
 ``` php
-    
+
     LaravelGmail::message()
                 ->from('someone@gmail.com')
                 ->unread()
@@ -403,7 +415,7 @@ Example:
 
 ``` php
     $mailbox = new LaravelGmailClass(config(), $account->id);
-    
+
     // One watch per account + need reinit every 24h+
     $mailbox->stopWatch('example@gmail.com');
 

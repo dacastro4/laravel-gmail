@@ -307,10 +307,20 @@ trait Replyable
 	{
 		$threadId = $this->getThreadId();
 		if ($threadId) {
-			$this->setHeader('In-Reply-To', $this->getHeader('In-Reply-To'));
+			$this->setHeader('In-Reply-To', $this->getMessageIdHeader());
 			$this->setHeader('References', $this->getHeader('References'));
-			$this->setHeader('Message-ID', $this->getHeader('Message-ID'));
+			$this->setHeader('Message-ID', $this->getMessageIdHeader());
 		}
+	}
+	
+	private function getMessageIdHeader() {
+		if($this->getHeader('Message-ID')) {
+			return $this->getHeader('Message-ID');
+		}
+		if($this->getHeader('Message-Id')) {
+			return $this->getHeader('Message-Id');
+		}
+		return null;
 	}
 
 	public abstract function getThreadId();

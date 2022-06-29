@@ -340,6 +340,86 @@ Example:
     $mailbox->createLabel($userEmail, $label);
 ```
 
+`FirstOrCreateLabel`: Create new label on the email with the labelName if it doesn't exist
+
+https://developers.google.com/gmail/api/reference/rest/v1/users.labels/create
+
+Example:
+
+``` php
+    $mailbox = new LaravelGmailClass(config(), LaravelGmail::user());
+
+    $label = new \Google_Service_Gmail_Label($this);
+    $label->setMessageListVisibility('show'); `show || hide`
+    $label->setLabelListVisibility('labelShow'); `labelShow || labelShowIfUnread || labelHide`
+    $label->setName('labelName');
+    $mailbox->firstOrCreateLabel($userEmail, $label);
+```
+
+
+## Attachment
+
+```
+use Dacastro4\LaravelGmail\Services\Message\Attachment
+...
+
+$attachment = new Attachment;
+```
+
+`$attachment->getId` Returns the ID of the attachment
+
+`$attachment->getFileName` Returns the file name of the attachment
+
+`$attachment->getMimeType` Returns the mime type Ex: application/pdf
+
+`$attachment->getSize` Returns the size of the attachment in bytes
+
+`$attachment->getData` Get the all the information from the attachment. If you call `getAttachmentsWithData` you won't need this method.
+
+`$attachment->saveAttachmentTo($path = null, $filename = null, $disk = 'local')` Saves the attachment on the storage folder. You can pass the path, name and disk to use.
+
+
+## Messages
+
+`LaravelGmail::message()->all( $pageToken = null )` Returns all the emails from the inbox
+
+`LaravelGmail::message()->take(2)->all( $pageToken = null )` The `take` method limits the emails coming from the query by the number set
+
+`LaravelGmail::message()->get( $id )` Returns a single email with all the information
+
+### Modifiers
+
+You can modify your query with these methods. For example:
+
+To get all unread emails: `LaravelGmail::message()->unread()->all()`
+
+`message()->unread()`
+
+`message()->from( $email )`
+
+`message()->in( $box = 'inbox' )`
+
+`message()->hasAttachment()`
+
+`message()->subject($subject)`
+
+`->after($date)` and `->before($date)`
+
+`message()->raw($query)` for customized queries
+
+All the possible filters are in the [Filterable Trait](https://github.com/dacastro4/laravel-gmail/blob/master/src/Traits/Filterable.php)
+
+Of course you can use as a fluent api.
+
+``` php
+
+    LaravelGmail::message()
+                ->from('someone@gmail.com')
+                ->unread()
+                ->in('TRASH')
+                ->hasAttachment()
+                ->all()
+```
 
 ## Attachment
 

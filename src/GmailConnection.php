@@ -321,4 +321,18 @@ class GmailConnection extends Google_Client
 
         return $service->users_labels->listUsersLabels($userEmail);
     }
+
+	/**
+     * Create new label by name.
+     *
+     * @param $userEmail
+     * @param $label
+     *
+     * @return \Google\Service\Gmail\Google_Service_Gmail_Label
+     */
+    public function createLabel($userEmail, $label)
+    {
+		$service = new Google_Service_Gmail($this);
+		return $service->users_labels->create($userEmail, $label);
+    }
 }

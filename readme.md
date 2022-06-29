@@ -321,7 +321,23 @@ Example:
 
 ``` php
     $mailbox = new LaravelGmailClass(config(), $account->id);
-    $labels = $mailbox->labelsList($authUser->email);
+    $labels = $mailbox->labelsList($userEmail);
+```
+
+`Create`: Create new label on the email with the labelName
+
+https://developers.google.com/gmail/api/reference/rest/v1/users.labels/create
+
+Example:
+
+``` php
+    $mailbox = new LaravelGmailClass(config(), LaravelGmail::user());
+
+    $label = new \Google_Service_Gmail_Label($this);
+    $label->setMessageListVisibility('show'); `show || hide`
+    $label->setLabelListVisibility('labelShow'); `labelShow || labelShowIfUnread || labelHide`
+    $label->setName('labelName');
+    $mailbox->createLabel($userEmail, $label);
 ```
 
 

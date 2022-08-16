@@ -125,7 +125,7 @@ trait Replyable
 	 */
 	public function to($to, $name = null)
 	{
-		$this->to = $to;
+		$this->to = $this->emailList($to, $name);
 		$this->nameTo = $name;
 
 		return $this;

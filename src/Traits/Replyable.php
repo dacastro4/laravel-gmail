@@ -5,8 +5,7 @@ namespace Dacastro4\LaravelGmail\Traits;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
-use Swift_Attachment;
-use Swift_Message;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
@@ -16,7 +15,7 @@ trait Replyable
 {
 	use HasHeaders;
 
-	private $swiftMessage;
+	private $symfonyEmail;
 
 	/**
 	 * Gmail optional parameters
@@ -106,7 +105,7 @@ trait Replyable
 
 	public function __construct()
 	{
-		$this->swiftMessage = new Swift_Message();
+		$this->symfonyEmail = new Email();
 	}
 
 	/**
@@ -323,7 +322,7 @@ trait Replyable
 	 */
 	public function setHeader($header, $value)
 	{
-		$headers = $this->swiftMessage->getHeaders();
+		$headers = $this->symfonyEmail->getHeaders();
 
 		$headers->addTextHeader($header, $value);
 
@@ -369,21 +368,45 @@ trait Replyable
 	{
 		$body = new Google_Service_Gmail_Message();
 
-		$this->swiftMessage
-			->setSubject($this->subject)
-			->setFrom($this->from, $this->nameFrom)
-			->setTo($this->to, $this->nameTo)
-			->setCc($this->cc, $this->nameCc)
-			->setBcc($this->bcc, $this->nameBcc)
-			->setBody($this->message, 'text/html')
-			->setPriority($this->priority);
+        if ($this->from) {
+            $this->symfonyEmail->from($this->from, ($this->nameFrom ? $this->nameFrom : ''));
+        }
 
-		foreach ($this->attachments as $file) {
-			$this->swiftMessage
-				->attach(Swift_Attachment::fromPath($file));
-		}
+        if ($this->to) {
+            $this->symfonyEmail->to($this->to, ($this->nameTo ? $this->nameTo : ''));
+        }
 
-		$body->setRaw($this->base64_encode($this->swiftMessage->toString()));
+        if ($this->cc) {
+            if (is_array($this->cc)) {
+                foreach ($this->cc as $emailCc => $nameCc) {
+                    $this->symfonyEmail->addCc($emailCc, $nameCc);
+                }
+            } else {
+                $this->symfonyEmail->cc($this->cc, ($this->nameCc ? $this->nameCc : ''));
+            }
+        }
+
+        $bccString = "";
+        if ($this->bcc) {
+            if (is_array($this->bcc)) {
+                foreach ($this->bcc as $emailBcc => $nameBcc) {
+                    $bccString .= "Bcc: " . $nameBcc . " <" . $emailBcc . ">\r\n";
+                }
+            } else {
+                $bccString .= "Bcc: " . ( ! is_null($this->nameBcc) ? $this->nameBcc . " " : "") . "<" . $this->bcc . ">\r\n";
+            }
+        }
+
+        $this->symfonyEmail->subject($this->subject)
+            ->html($this->message)
+            ->priority($this->priority)
+        ;
+
+        foreach ($this->attachments as $file) {
+            $this->symfonyEmail->attachFromPath($file);
+        }
+
+        $body->setRaw($this->base64_encode($bccString . $this->symfonyEmail->toString()));
 
 		return $body;
 	}

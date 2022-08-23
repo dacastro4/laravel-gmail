@@ -393,7 +393,7 @@ trait Replyable
                     $bccString .= "Bcc: " . $nameBcc . " <" . $emailBcc . ">\r\n";
                 }
             } else {
-                $bccString .= "Bcc: " . ( ! is_null($this->nameBcc) ? $this->nameBcc . " " : "") . "<" . $this->bcc . ">\r\n";
+                $bccString .= "Bcc: " . ($this->nameBcc ? $this->nameBcc . " " : "") . "<" . $this->bcc . ">\r\n";
             }
         }
 

@@ -197,6 +197,12 @@ Note that if you don't preload the messages you have to do something like:
 ` $body = $message->load()->getSubject();`
 and after that you don't have to call it again.
 
+## Pagination
+Use `$messages->hasNextPage()` to check whether next page is available. 
+Use `$messages->next()` to get the next page results, which uses the same parameters (result per page, filters, etc.) when you loaded the first page. 
+Use `$messages->getPageToken()` to get the unique identifier for the next page token. This is useful in creating a unique idendifier when storing the result in cache. 
+Generally speaking, it is a bad practice to use API for pagination. It is slow and costly. Therefore, it is recommended to retrieve the cached result moving between pages and only flush the cache when have to. 
+
 # Documentation
 
 ## Basic

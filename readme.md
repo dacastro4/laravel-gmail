@@ -27,7 +27,7 @@ if you need **Laravel 8** compatibility please use version `5.0.x`.
 
 Add dacastro4/laravel-gmail to composer.json.
 
-`"dacastro4/laravel-gmail": "^6.0"`
+`"dacastro4/laravel-gmail": "^6.1"`
 
 Run composer update to pull down the latest version.
 

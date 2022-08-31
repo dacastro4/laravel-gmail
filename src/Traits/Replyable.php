@@ -5,6 +5,8 @@ namespace Dacastro4\LaravelGmail\Traits;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
+use Illuminate\Container\Container;
+use Illuminate\Mail\Markdown;
 use Swift_Attachment;
 use Swift_Message;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
@@ -217,6 +219,25 @@ trait Replyable
 
 		return $this;
 	}
+
+    /**
+     * loads markdown file for message body
+     *
+     * @throws \Throwable
+     * @return Replyable
+     */
+    public function markdown(string $markdown_view, array $data = [])
+    {
+        $markdown = Container::getInstance()->make(Markdown::class);
+
+        if (config('mail.markdown.theme')) {
+            $markdown->theme(config('mail.markdown.theme'));
+        }
+
+        $this->message = $markdown->render($markdown_view, $data);
+
+        return $this;
+    }
 
 	/**
 	 * @param  string  $message

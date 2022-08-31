@@ -17,9 +17,9 @@ class MessageCollection extends Collection
 	 * @param Message $message
 	 * @param array $items
 	 */
-	public function __construct( $items = [], Message $message = null )
+	public function __construct($items = [], Message $message = null)
 	{
-		parent::__construct( $items );
+		parent::__construct($items);
 		$this->message = $message;
 	}
 
@@ -40,7 +40,7 @@ class MessageCollection extends Collection
 
 	/**
 	 * Returns the page token or null
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getPageToken()

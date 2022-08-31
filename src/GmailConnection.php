@@ -123,7 +123,7 @@ class GmailConnection extends Google_Client
 	}
 
 	/**
-	 * @param  array|string  $token
+	 * @param array|string $token
 	 */
 	public function setAccessToken($token)
 	{
@@ -142,7 +142,7 @@ class GmailConnection extends Google_Client
 	/**
 	 * Save the credentials in a file
 	 *
-	 * @param  array  $config
+	 * @param array $config
 	 */
 	public function saveAccessToken(array $config)
 	{
@@ -160,7 +160,7 @@ class GmailConnection extends Google_Client
 				} else {
 					$savedConfigToken = json_decode($disk->get($file), true);
 				}
-				if(isset( $savedConfigToken['email'])) {
+				if (isset($savedConfigToken['email'])) {
 					$config['email'] = $savedConfigToken['email'];
 				}
 			}
@@ -184,10 +184,10 @@ class GmailConnection extends Google_Client
 	{
 		if (!$this->check()) {
 			$request = Request::capture();
-			$code = (string) $request->input('code', null);
+			$code = (string)$request->input('code', null);
 			if (!is_null($code) && !empty($code)) {
 				$accessToken = $this->fetchAccessTokenWithAuthCode($code);
-				if($this->haveReadScope()) {
+				if ($this->haveReadScope()) {
 					$me = $this->getProfile();
 					if (property_exists($me, 'emailAddress')) {
 						$this->emailAddress = $me->emailAddress;
@@ -265,47 +265,47 @@ class GmailConnection extends Google_Client
 		return in_array(Google_Service_Gmail::GMAIL_READONLY, $scopes);
 	}
 
-    /**
-     * users.stop receiving push notifications for the given user mailbox.
-     *
-     * @param  string  $userEmail  Email address
-     * @param  array  $optParams
-     * @return \Google_Service_Gmail_Stop
-     */
-    public function stopWatch($userEmail, $optParams = [])
-    {
-        $service = new Google_Service_Gmail($this);
+	/**
+	 * users.stop receiving push notifications for the given user mailbox.
+	 *
+	 * @param string $userEmail Email address
+	 * @param array $optParams
+	 * @return \Google_Service_Gmail_Stop
+	 */
+	public function stopWatch($userEmail, $optParams = [])
+	{
+		$service = new Google_Service_Gmail($this);
 
-        return $service->users->stop($userEmail, $optParams);
-    }
+		return $service->users->stop($userEmail, $optParams);
+	}
 
-    /**
-     * Set up or update a push notification watch on the given user mailbox.
-     *
-     * @param string $userEmail Email address
-     * @param Google_Service_Gmail_WatchRequest $postData
-     *
-     * @return \Google_Service_Gmail_WatchResponse
-     */
-    public function setWatch($userEmail, \Google_Service_Gmail_WatchRequest $postData): \Google_Service_Gmail_WatchResponse
-    {
-        $service = new Google_Service_Gmail($this);
+	/**
+	 * Set up or update a push notification watch on the given user mailbox.
+	 *
+	 * @param string $userEmail Email address
+	 * @param Google_Service_Gmail_WatchRequest $postData
+	 *
+	 * @return \Google_Service_Gmail_WatchResponse
+	 */
+	public function setWatch($userEmail, \Google_Service_Gmail_WatchRequest $postData): \Google_Service_Gmail_WatchResponse
+	{
+		$service = new Google_Service_Gmail($this);
 
-        return $service->users->watch($userEmail, $postData);
-    }
+		return $service->users->watch($userEmail, $postData);
+	}
 
-    /**
-     * Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing historyId).
-     * @param $userEmail
-     * @param $params
-     * @return \Google\Service\Gmail\ListHistoryResponse
-     */
-    public function historyList($userEmail, $params)
-    {
-        $service = new Google_Service_Gmail($this);
+	/**
+	 * Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing historyId).
+	 * @param $userEmail
+	 * @param $params
+	 * @return \Google\Service\Gmail\ListHistoryResponse
+	 */
+	public function historyList($userEmail, $params)
+	{
+		$service = new Google_Service_Gmail($this);
 
-        return $service->users_history->listUsersHistory($userEmail, $params);
-    }
+		return $service->users_history->listUsersHistory($userEmail, $params);
+	}
 
 
 }

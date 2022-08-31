@@ -17,7 +17,7 @@ trait HasParts
 	 * Find all Parts of a message.
 	 * Necessary to reset the $allParts Varibale.
 	 *
-	 * @param  collection  $partsContainer  . F.e. collect([$message->payload])
+	 * @param collection $partsContainer . F.e. collect([$message->payload])
 	 *
 	 * @return Collection of all 'parts' flattened
 	 */
@@ -33,8 +33,8 @@ trait HasParts
 	 * Recursive Method. Iterates through a collection,
 	 * finding all 'parts'.
 	 *
-	 * @param  collection  $partsContainer
-	 * @param  bool  $returnOnFirstFound
+	 * @param collection $partsContainer
+	 * @param bool $returnOnFirstFound
 	 *
 	 * @return Collection|boolean
 	 */

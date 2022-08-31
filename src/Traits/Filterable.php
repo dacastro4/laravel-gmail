@@ -13,12 +13,12 @@ trait Filterable
 	 */
 	public function unread()
 	{
-		$this->add( 'is:unread' );
+		$this->add('is:unread');
 
 		return $this;
 	}
 
-	public abstract function add( $query, $column = 'q', $encode = true );
+	public abstract function add($query, $column = 'q', $encode = true);
 
 	/**
 	 * Filter to get only unread emalis
@@ -27,9 +27,9 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function subject( $query )
+	public function subject($query)
 	{
-		$this->add( "[{$query}]" );
+		$this->add("[{$query}]");
 
 		return $this;
 	}
@@ -41,9 +41,9 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function to( $email )
+	public function to($email)
 	{
-		$this->add( "to:{$email}" );
+		$this->add("to:{$email}");
 
 		return $this;
 	}
@@ -55,11 +55,11 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function fromThese( array $emails )
+	public function fromThese(array $emails)
 	{
-		$emailsCount = count( $emails );
-		for ( $i = 0; $i < $emailsCount; $i ++ ) {
-			! $i ? $this->add( "{from:$emails[$i]" ) : ($i == $emailsCount - 1 ? $this->add( "from:$emails[$i]}" ) : $this->from( $emails[ $i ] ));
+		$emailsCount = count($emails);
+		for ($i = 0; $i < $emailsCount; $i++) {
+			!$i ? $this->add("{from:$emails[$i]") : ($i == $emailsCount - 1 ? $this->add("from:$emails[$i]}") : $this->from($emails[$i]));
 		}
 
 		return $this;
@@ -72,9 +72,9 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function from( $email )
+	public function from($email)
 	{
-		$this->add( "from:{$email}" );
+		$this->add("from:{$email}");
 
 		return $this;
 	}
@@ -86,9 +86,9 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function after( $date )
+	public function after($date)
 	{
-		$this->add( "after:{$date}" );
+		$this->add("after:{$date}");
 
 		return $this;
 	}
@@ -100,9 +100,9 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function before( $date )
+	public function before($date)
 	{
-		$this->add( "before:{$date}" );
+		$this->add("before:{$date}");
 
 		return $this;
 	}
@@ -115,9 +115,9 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function raw( $query )
+	public function raw($query)
 	{
-		$this->add( $query, 'q', false );
+		$this->add($query, 'q', false);
 
 		return $this;
 	}
@@ -137,9 +137,9 @@ trait Filterable
 	 *
 	 * @return self|Message
 	 */
-	public function in( $box = 'inbox' )
+	public function in($box = 'inbox')
 	{
-		$this->add( "in:{$box}" );
+		$this->add("in:{$box}");
 
 		return $this;
 	}
@@ -151,7 +151,7 @@ trait Filterable
 	 */
 	public function hasAttachment()
 	{
-		$this->add( 'has:attachment' );
+		$this->add('has:attachment');
 
 		return $this;
 	}

@@ -18,7 +18,7 @@ trait ModifiesLabels
 	/**
 	 * Adds labels to the email
 	 *
-	 * @param  string|array  $labels
+	 * @param string|array $labels
 	 *
 	 * @return Mail|string
 	 * @throws \Exception
@@ -53,7 +53,7 @@ trait ModifiesLabels
 	/**
 	 * Removes labels from the email
 	 *
-	 * @param  string|array  $labels
+	 * @param string|array $labels
 	 *
 	 * @return Mail|string
 	 * @throws \Exception

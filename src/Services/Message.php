@@ -32,7 +32,7 @@ class Message
 	/**
 	 * Message constructor.
 	 *
-	 * @param  LaravelGmailClass  $client
+	 * @param LaravelGmailClass $client
 	 */
 	public function __construct(LaravelGmailClass $client)
 	{
@@ -58,7 +58,7 @@ class Message
 	/**
 	 * Returns a collection of Mail instances
 	 *
-	 * @param  string|null  $pageToken
+	 * @param string|null $pageToken
 	 *
 	 * @return \Illuminate\Support\Collection
 	 * @throws \Google_Exception
@@ -99,13 +99,13 @@ class Message
 	/**
 	 * Limit the messages coming from the queryxw
 	 *
-	 * @param  int  $number
+	 * @param int $number
 	 *
 	 * @return Message
 	 */
 	public function take($number)
 	{
-		$this->params['maxResults'] = abs((int) $number);
+		$this->params['maxResults'] = abs((int)$number);
 
 		return $this;
 	}

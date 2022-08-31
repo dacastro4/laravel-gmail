@@ -10,7 +10,7 @@ trait HasHeaders
 	 *
 	 * @param $headerName
 	 *
-	 * @param  string  $regex  if this is set, value will be evaluated with the give regular expression.
+	 * @param string $regex if this is set, value will be evaluated with the give regular expression.
 	 *
 	 * @return null|string
 	 */

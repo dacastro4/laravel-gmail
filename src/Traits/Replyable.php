@@ -117,9 +117,9 @@ trait Replyable
 	 * If $name is passed and the first parameter is a string, this name will be
 	 * associated with the address.
 	 *
-	 * @param  string|array  $to
+	 * @param string|array $to
 	 *
-	 * @param  string|null  $name
+	 * @param string|null $name
 	 *
 	 * @return Replyable
 	 */
@@ -140,9 +140,9 @@ trait Replyable
 	}
 
 	/**
-	 * @param  array|string  $cc
+	 * @param array|string $cc
 	 *
-	 * @param  string|null  $name
+	 * @param string|null $name
 	 *
 	 * @return Replyable
 	 */
@@ -177,9 +177,9 @@ trait Replyable
 	}
 
 	/**
-	 * @param  array|string  $bcc
+	 * @param array|string $bcc
 	 *
-	 * @param  string|null  $name
+	 * @param string|null $name
 	 *
 	 * @return Replyable
 	 */
@@ -192,7 +192,7 @@ trait Replyable
 	}
 
 	/**
-	 * @param  string  $subject
+	 * @param string $subject
 	 *
 	 * @return Replyable
 	 */
@@ -204,9 +204,9 @@ trait Replyable
 	}
 
 	/**
-	 * @param  string  $view
-	 * @param  array  $data
-	 * @param  array  $mergeData
+	 * @param string $view
+	 * @param array $data
+	 * @param array $mergeData
 	 *
 	 * @return Replyable
 	 * @throws \Throwable
@@ -219,7 +219,7 @@ trait Replyable
 	}
 
 	/**
-	 * @param  string  $message
+	 * @param string $message
 	 *
 	 * @return Replyable
 	 */
@@ -233,7 +233,7 @@ trait Replyable
 	/**
 	 * Attaches new file to the email from the Storage folder
 	 *
-	 * @param  array  $files  comma separated of files
+	 * @param array $files comma separated of files
 	 *
 	 * @return Replyable
 	 * @throws \Exception
@@ -256,7 +256,7 @@ trait Replyable
 	/**
 	 * The value is an integer where 1 is the highest priority and 5 is the lowest.
 	 *
-	 * @param  int  $priority
+	 * @param int $priority
 	 *
 	 * @return Replyable
 	 */
@@ -268,7 +268,7 @@ trait Replyable
 	}
 
 	/**
-	 * @param  array  $parameters
+	 * @param array $parameters
 	 *
 	 * @return Replyable
 	 */
@@ -312,13 +312,14 @@ trait Replyable
 			$this->setHeader('Message-ID', $this->getMessageIdHeader());
 		}
 	}
-	
-	private function getMessageIdHeader() {
-		if($this->getHeader('Message-ID')) {
-			return $this->getHeader('Message-ID');
+
+	private function getMessageIdHeader()
+	{
+		if ($messageId = $this->getHeader('Message-ID')) {
+			return $messageId;
 		}
-		if($this->getHeader('Message-Id')) {
-			return $this->getHeader('Message-Id');
+		if ($messageId = $this->getHeader('Message-Id')) {
+			return $messageId;
 		}
 		return null;
 	}
@@ -328,8 +329,8 @@ trait Replyable
 	/**
 	 * Add a header to the email
 	 *
-	 * @param  string  $header
-	 * @param  string  $value
+	 * @param string $header
+	 * @param string $value
 	 */
 	public function setHeader($header, $value)
 	{
@@ -360,7 +361,7 @@ trait Replyable
 	{
 		if (!$this->from) {
 			$this->from = $this->getUser();
-			if(!$this->from) {
+			if (!$this->from) {
 				throw new \Exception('Reply from is not defined');
 			}
 		}

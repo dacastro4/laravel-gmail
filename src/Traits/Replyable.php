@@ -6,6 +6,8 @@ use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
 use Symfony\Component\Mime\Email;
+use Illuminate\Container\Container;
+use Illuminate\Mail\Markdown;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
@@ -124,7 +126,7 @@ trait Replyable
 	 */
 	public function to($to, $name = null)
 	{
-		$this->to = $to;
+		$this->to = $this->emailList($to, $name);
 		$this->nameTo = $name;
 
 		return $this;
@@ -217,6 +219,25 @@ trait Replyable
 		return $this;
 	}
 
+    /**
+     * loads markdown file for message body
+     *
+     * @throws \Throwable
+     * @return Replyable
+     */
+    public function markdown(string $markdown_view, array $data = [])
+    {
+        $markdown = Container::getInstance()->make(Markdown::class);
+
+        if (config('mail.markdown.theme')) {
+            $markdown->theme(config('mail.markdown.theme'));
+        }
+
+        $this->message = $markdown->render($markdown_view, $data);
+
+        return $this;
+    }
+
 	/**
 	 * @param  string  $message
 	 *
@@ -306,10 +327,20 @@ trait Replyable
 	{
 		$threadId = $this->getThreadId();
 		if ($threadId) {
-			$this->setHeader('In-Reply-To', $this->getHeader('In-Reply-To'));
+			$this->setHeader('In-Reply-To', $this->getMessageIdHeader());
 			$this->setHeader('References', $this->getHeader('References'));
-			$this->setHeader('Message-ID', $this->getHeader('Message-ID'));
+			$this->setHeader('Message-ID', $this->getMessageIdHeader());
 		}
+	}
+	
+	private function getMessageIdHeader() {
+		if($this->getHeader('Message-ID')) {
+			return $this->getHeader('Message-ID');
+		}
+		if($this->getHeader('Message-Id')) {
+			return $this->getHeader('Message-Id');
+		}
+		return null;
 	}
 
 	public abstract function getThreadId();

@@ -5,6 +5,7 @@ namespace Dacastro4\LaravelGmail\Traits;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Google_Service_Gmail;
 use Google_Service_Gmail_Message;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Illuminate\Container\Container;
 use Illuminate\Mail\Markdown;
@@ -401,47 +402,61 @@ trait Replyable
 	{
 		$body = new Google_Service_Gmail_Message();
 
-        if ($this->from) {
-            $this->symfonyEmail->from($this->from, ($this->nameFrom ? $this->nameFrom : ''));
-        }
+		$this->symfonyEmail
+			->from($this->fromAddress())
+			->to($this->toAddress())
+			->cc($this->returnCopies($this->cc))
+			->bcc($this->returnCopies($this->bcc))
+			->subject($this->subject)
+			->html($this->message)
+			->priority($this->priority);
 
-        if ($this->to) {
-            $this->symfonyEmail->to($this->to, ($this->nameTo ? $this->nameTo : ''));
-        }
+		foreach ($this->attachments as $file) {
+			$this->symfonyEmail->attachFromPath($file);
+		}
 
-        if ($this->cc) {
-            if (is_array($this->cc)) {
-                foreach ($this->cc as $emailCc => $nameCc) {
-                    $this->symfonyEmail->addCc($emailCc, $nameCc);
-                }
-            } else {
-                $this->symfonyEmail->cc($this->cc, ($this->nameCc ? $this->nameCc : ''));
-            }
-        }
-
-        $bccString = "";
-        if ($this->bcc) {
-            if (is_array($this->bcc)) {
-                foreach ($this->bcc as $emailBcc => $nameBcc) {
-                    $bccString .= "Bcc: " . $nameBcc . " <" . $emailBcc . ">\r\n";
-                }
-            } else {
-                $bccString .= "Bcc: " . ($this->nameBcc ? $this->nameBcc . " " : "") . "<" . $this->bcc . ">\r\n";
-            }
-        }
-
-        $this->symfonyEmail->subject($this->subject)
-            ->html($this->message)
-            ->priority($this->priority)
-        ;
-
-        foreach ($this->attachments as $file) {
-            $this->symfonyEmail->attachFromPath($file);
-        }
-
-        $body->setRaw($this->base64_encode($bccString . $this->symfonyEmail->toString()));
+		$body->setRaw($this->base64_encode($this->symfonyEmail->toString()));
 
 		return $body;
+	}
+
+	/**
+	 * @param array|string $cc
+	 * @return array|string
+	 */
+	public function returnCopies($cc)
+	{
+		if ($cc) {
+			$final = $this->cc;
+
+			if (is_array($this->cc)) {
+				foreach ($this->cc as $emailCc => $nameCc) {
+					$final[] = new Address($emailCc, $nameCc);
+				}
+			}
+
+			return $final;
+		}
+
+		return [];
+	}
+
+	public function toAddress()
+	{
+		if ($this->to) {
+			return new Address($this->to, $this->nameTo ?: '');
+		}
+
+		return [];
+	}
+
+	public function fromAddress()
+	{
+		if ($this->from) {
+			return new Address($this->from, $this->nameFrom ?: '');
+		}
+
+		return [];
 	}
 
 	private function base64_encode($data)

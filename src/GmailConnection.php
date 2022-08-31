@@ -3,18 +3,21 @@
 namespace Dacastro4\LaravelGmail;
 
 use Dacastro4\LaravelGmail\Traits\Configurable;
+use Dacastro4\LaravelGmail\Traits\HasLabels;
 use Google_Client;
 use Google_Service_Gmail;
+use Google_Service_Gmail_WatchRequest;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
 class GmailConnection extends Google_Client
 {
-
+	use HasLabels;
 	use Configurable {
 		__construct as configConstruct;
 	}
+
 
 	protected $emailAddress;
 	protected $refreshToken;
@@ -306,58 +309,4 @@ class GmailConnection extends Google_Client
 
 		return $service->users_history->listUsersHistory($userEmail, $params);
 	}
-
-
-	/**
-     * List the labels in the user's mailbox.
-     *
-     * @param $userEmail
-     *
-    * @return \Google\Service\Gmail\Google_Service_Gmail_ListLabelsResponse
-     */
-    public function labelsList($userEmail)
-    {
-        $service = new Google_Service_Gmail($this);
-
-        return $service->users_labels->listUsersLabels($userEmail);
-    }
-
-	/**
-     * Create new label by name.
-     *
-     * @param $userEmail
-     * @param $label
-     *
-     * @return \Google\Service\Gmail\Google_Service_Gmail_Label
-     */
-    public function createLabel($userEmail, $label)
-    {
-		$service = new Google_Service_Gmail($this);
-		return $service->users_labels->create($userEmail, $label);
-    }
-
-	/**
-     * first or create label in the user's mailbox.
-     *
-     * @param $userEmail
-     * @param $label
-     *
-     * @return \Google\Service\Gmail\Google_Service_Gmail_Label
-     */
-    public function firstOrCreateLabel($userEmail, $nLabel)
-    {
-        $labels = $this->labelsList($userEmail);
-        $label = null;
-        foreach ($labels->getLabels() as $existLabel) {
-            if ($existLabel->getName() == $nLabel->getName()) {
-				$label = $existLabel;
-                break;
-            }
-        }
-        if (is_null($label)) {
-            $service = new Google_Service_Gmail($this);
-            $label = $service->users_labels->create($userEmail, $nLabel);
-        }
-        return $label;
-    }
 }

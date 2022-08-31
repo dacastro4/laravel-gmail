@@ -220,24 +220,24 @@ trait Replyable
 		return $this;
 	}
 
-    /**
-     * loads markdown file for message body
-     *
-     * @throws \Throwable
-     * @return Replyable
-     */
-    public function markdown(string $markdown_view, array $data = [])
-    {
-        $markdown = Container::getInstance()->make(Markdown::class);
+	/**
+	 * loads markdown file for message body
+	 *
+	 * @return Replyable
+	 * @throws \Throwable
+	 */
+	public function markdown(string $markdown_view, array $data = [])
+	{
+		$markdown = Container::getInstance()->make(Markdown::class);
 
-        if (config('mail.markdown.theme')) {
-            $markdown->theme(config('mail.markdown.theme'));
-        }
+		if (config('mail.markdown.theme')) {
+			$markdown->theme(config('mail.markdown.theme'));
+		}
 
-        $this->message = $markdown->render($markdown_view, $data);
+		$this->message = $markdown->render($markdown_view, $data);
 
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * @param string $message
@@ -339,6 +339,7 @@ trait Replyable
 		if ($messageId = $this->getHeader('Message-ID')) {
 			return $messageId;
 		}
+
 		if ($messageId = $this->getHeader('Message-Id')) {
 			return $messageId;
 		}

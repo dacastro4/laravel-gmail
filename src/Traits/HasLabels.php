@@ -56,4 +56,18 @@ trait HasLabels
 
 		return $service->users_labels->create($userEmail, $newLabel);
 	}
+
+	/**
+	 * List the labels in the user's mailbox.
+	 *
+	 * @param $userEmail
+	 *
+	 * @return \Google\Service\Gmail\Label
+	 */
+	public function getLabel($userEmail, $id)
+	{
+		$service = new Google_Service_Gmail($this);
+
+		return $service->users_labels->get($userEmail, $id);
+	}
 }

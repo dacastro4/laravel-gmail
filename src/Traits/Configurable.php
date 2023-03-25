@@ -42,7 +42,6 @@ trait Configurable
 			} else {
 				return $config;
 			}
-
 		}
 
 		return null;
@@ -90,12 +89,14 @@ trait Configurable
 	{
 		$type = $this->_config['gmail.access_type'];
 		$approval_prompt = $this->_config['gmail.approval_prompt'];
+		$prompt = $this->_config['gmail.prompt'];
 
 		$this->setScopes($this->getUserScopes());
 
 		$this->setAccessType($type);
 
 		$this->setApprovalPrompt($approval_prompt);
+		$this->setPrompt($prompt);
 	}
 
 	public abstract function setScopes($scopes);
@@ -141,5 +142,5 @@ trait Configurable
 	public abstract function setAccessType($type);
 
 	public abstract function setApprovalPrompt($approval);
-
+	public abstract function setPrompt($prompt);
 }

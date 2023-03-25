@@ -359,7 +359,6 @@ trait Replyable
 		$headers = $this->symfonyEmail->getHeaders();
 
 		$headers->addTextHeader($header, $value);
-
 	}
 
 	private function setReplySubject()
@@ -401,16 +400,18 @@ trait Replyable
 	private function getMessageBody()
 	{
 		$body = new Google_Service_Gmail_Message();
-
 		$this->symfonyEmail
 			->from($this->fromAddress())
 			->to($this->toAddress())
-			->cc($this->returnCopies($this->cc))
-			->bcc($this->returnCopies($this->bcc))
 			->subject($this->subject)
 			->html($this->message)
 			->priority($this->priority);
-
+		if (!empty($this->cc)) {
+			$this->symfonyEmail->cc($this->returnCopies($this->cc));
+		}
+		if (!empty($this->bcc)) {
+			$this->symfonyEmail->bcc($this->returnCopies($this->bcc));
+		}
 		foreach ($this->attachments as $file) {
 			$this->symfonyEmail->attachFromPath($file);
 		}
@@ -438,7 +439,7 @@ trait Replyable
 			return $final;
 		}
 
-		return [];
+		return "";
 	}
 
 	public function toAddress()
@@ -472,7 +473,6 @@ trait Replyable
 	public function send()
 	{
 		$body = $this->getMessageBody();
-
 		$this->setMessage($this->service->users_messages->send('me', $body, $this->parameters));
 
 		return $this;

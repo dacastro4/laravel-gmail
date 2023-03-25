@@ -71,6 +71,11 @@ class Mail extends GmailConnection
 
 	public $parts;
 
+    /**
+     * @var
+     */
+    public $snippet;
+
 	/**
 	 * @var Google_Service_Gmail
 	 */
@@ -130,6 +135,7 @@ class Mail extends GmailConnection
 		$this->threadId = $message->getThreadId();
 		$this->historyId = $message->getHistoryId();
 		$this->payload = $message->getPayload();
+        $this->snippet = $message->getSnippet();
 		if ($this->payload) {
 			$this->parts = collect($this->payload->getParts());
 		}
@@ -230,6 +236,18 @@ class Mail extends GmailConnection
 
 		return $this->getFrom($replyTo ? $replyTo : $this->getHeader('From'));
 	}
+
+    /**
+     * Returns the Snippet from the email
+     *
+     * @return string
+     */
+    public function getSnippet()
+    {
+
+
+        return $this->snippet;
+    }
 
 	/**
 	 * Returns array of name and email of each recipient
@@ -407,7 +425,6 @@ class Mail extends GmailConnection
 	public function getBody($type = 'text/plain')
 	{
 		$parts = $this->getAllParts($this->parts);
-
 		try {
 			if (!$parts->isEmpty()) {
 				foreach ($parts as $part) {

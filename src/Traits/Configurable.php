@@ -15,6 +15,7 @@ trait Configurable
 
 	protected $additionalScopes = [];
 	private $_config;
+	private $configObject;
 
 	public function __construct($config)
 	{
@@ -27,7 +28,9 @@ trait Configurable
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
 		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
-
+		if ($this->configObject) {
+			return $this->configObject;
+		}
 		if ($disk->exists($file)) {
 			if ($allowJsonEncrypt) {
 				$config = json_decode(decrypt($disk->get($file)), true);

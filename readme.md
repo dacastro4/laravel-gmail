@@ -13,10 +13,10 @@ Gmail API for Laravel 9
 
 You need to create an application in the [Google Console](https://console.developers.google.com/apis/credentials). Guidance [here](https://developers.google.com/gmail/api/quickstart/php#step_1_turn_on_the_api_name).
 
-if you need **Laravel 5** compatibility please use version `2.0.x`.
-if you need **Laravel 6** compatibility please use version `3.0.x`.
-if you need **Laravel 7** compatibility please use version `4.0.x`.
-if you need **Laravel 8** compatibility please use version `5.0.x`.
+If you need **Laravel 5** compatibility please use version `2.0.x`.  
+If you need **Laravel 6** compatibility please use version `3.0.x`.  
+If you need **Laravel 7** compatibility please use version `4.0.x`.  
+If you need **Laravel 8** compatibility please use version `5.0.x`.  
 
 # Requirements
 
@@ -108,8 +108,8 @@ GOOGLE_PROJECT_ID=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=
-GOOGLE_ALLOW_MULTIPLE_CREDENTIALS
-GOOGLE_ALLOW_JSON_ENCRYPT
+GOOGLE_ALLOW_MULTIPLE_CREDENTIALS=
+GOOGLE_ALLOW_JSON_ENCRYPT=
 ```
 
 To modify the scopes and the credentials file name, just run:
@@ -198,24 +198,24 @@ Note that if you don't preload the messages you have to do something like:
 and after that you don't have to call it again.
 
 ## Pagination
-Use `$messages->hasNextPage()` to check whether next page is available. 
-Use `$messages->next()` to get the next page results, which uses the same parameters (result per page, filters, etc.) when you loaded the first page. 
-Use `$messages->getPageToken()` to get the unique identifier for the next page token. This is useful in creating a unique idendifier when storing the result in cache. 
+Use `$messages->hasNextPage()` To check whether next page is available. 
+Use `$messages->next()` To get the next page results, which uses the same parameters (result per page, filters, etc.) when you loaded the first page. 
+Use `$messages->getPageToken()` To get the unique identifier for the next page token. This is useful in creating a unique idendifier when storing the result in cache. 
 Generally speaking, it is a bad practice to use API for pagination. It is slow and costly. Therefore, it is recommended to retrieve the cached result moving between pages and only flush the cache when have to. 
 
 # Documentation
 
 ## Basic
 
-`LaravelGmail::getAuthUrl` Gets the URL to auth the user.
+`LaravelGmail::getAuthUrl()` Gets the URL to auth the user.
 
-`LaravelGmail::redirect` You can use this as a direct method `<a href="{{ LaravelGmail::redirect() }}">Login</a>`
+`LaravelGmail::redirect()` You can use this as a direct method `<a href="{{ LaravelGmail::redirect() }}">Login</a>`
 
 `LaravelGmail::makeToken()` Set and Save AccessToken in json file (useful in the callback)
 
-`LaravelGmail::logout` Logs out the user
+`LaravelGmail::logout()` Logs out the user
 
-`LaravelGmail::check` Checks if the user is logged in
+`LaravelGmail::check()` Checks if the user is logged in
 
 `LaravelGmail::setUserId($account_id)->makeToken()` Set and Save AccessToken for $account_id (added v5.1.2)
 
@@ -232,86 +232,86 @@ $mail = new Mail;
 For `to`, `from`, `cc` and `bcc`, you can set an array of emails and name or a string of email and name.
 
 
-`$mail->using( $token )` If you don't want to use the token file, you can use this function that sets the token to use in the request. It doesn't refresh
+`$mail->using($token)` If you don't want to use the token file, you can use this function that sets the token to use in the request. It doesn't refresh
 
-`$mail->to( $to, $name = null )` sets the recipient email and name as optional
+`$mail->to($to, $name=null)` Sets the recipient email and name as optional
 
-`$mail->from( $from, $name = null )` sets sender's email
+`$mail->from($from, $name=null)` Sets sender's email
 
-`$mail->cc( $cc, $name = null )` sets carbon copy
+`$mail->cc($cc, $name=null)` Sets carbon copy
 
-`$mail->bcc( $bcc, $name = null )` sets a blind carbon copy
+`$mail->bcc($bcc, $name=null)` Sets a blind carbon copy
 
-`$mail->subject( $subject )` sets the subject of the email
+`$mail->subject($subject)` Sets the subject of the email
 
-`$mail->message( $message )` sets the body of the email
+`$mail->message($message)` Sets the body of the email
 
-`$mail->view( 'view.name', $dataArray )` sets the body from a blade file
+`$mail->view('view.name', $dataArray)` Sets the body from a blade file
 
-`$mail->markdown( 'view.name', $dataArray )` sets the body from a markdown file
+`$mail->markdown('view.name', $dataArray)` Sets the body from a markdown file
 
-`$mail->attach( ...$path )` add file attachments to the email
+`$mail->attach(...$path)` Add file attachments to the email
 
-`$mail->priority( $priority )` sets the priority of the email from 1 to 5
+`$mail->priority($priority)` Sets the priority of the email from 1 to 5
 
-`$mail->reply()` replies to an existent email
+`$mail->reply()` Replies to an existent email
 
-`$mail->send()` sends a new email
+`$mail->send()` Sends a new email
 
-`$mail->setHeader( $header, $value )` sets header to the email
+`$mail->setHeader($header, $value)` Sets header to the email
 
 ## Mail
 
-`$mail->getId` returns the email's ID
+`$mail->getId()` Returns the email's ID
 
-`$mail->getInternalDate` returns date in UNIX format
+`$mail->getInternalDate()` Returns date in UNIX format
 
-`$mail->getDate` returns a Carbon date from the header of the email
+`$mail->getDate()` Returns a Carbon date from the header of the email
 
-`$mail->getLabels` returns an array of all the labels of the email
+`$mail->getLabels()` Returns an array of all the labels of the email
 
-`$mail->getHeaders` returns a collection of the header. Each header is an array with two rows key and value
+`$mail->getHeaders()` Returns a collection of the header. Each header is an array with two rows key and value
 
-`$mail->getSubject` returns an string of the subject
+`$mail->getSubject()` Returns an string of the subject
 
-`$mail->getFrom` Returns an array with name and email of sender
+`$mail->getFrom()` Returns an array with name and email of sender
 
-`$mail->getFromName` Returns string of name
+`$mail->getFromName()` Returns string of name
 
-`$mail->getFromEmail` Returns string of email
+`$mail->getFromEmail()` Returns string of email
 
-`$mail->getTo` Returns an array with name and email of all recipients
+`$mail->getTo()` Returns an array with name and email of all recipients
 
-`$mail->getDeliveredTo` Returns the email of the receiver
+`$mail->getDeliveredTo()` Returns the email of the receiver
 
-`$mail->getPlainTextBody` Returns the plain text version of the email
+`$mail->getPlainTextBody()` Returns the plain text version of the email
 
-`$mail->getRawPlainTextBody` Returns the raw version of the body base64 encrypted
+`$mail->getRawPlainTextBody()` Returns the raw version of the body base64 encrypted
 
-`$mail->hasAttachments` Returns a boolean if the email has attachments
+`$mail->hasAttachments()` Returns a boolean if the email has attachments
 
-`$mail->load` Load all the information of the email (labels, body, headers). You call this function on a single email. To load from the beginning see [preload()](#preload)
+`$mail->load()` Load all the information of the email (labels, body, headers). You call this function on a single email. To load from the beginning see [preload()](#preload)
 
 `$mail->getHeader( $headerName, $regex = null )` Returns the header by name. Optionally, you can execute a regex on the value
 
 
 # Labels
 
-`$mail->markAsRead` Removes the 'UNREAD' label from the email.
+`$mail->markAsRead()` Removes the 'UNREAD' label from the email.
 
-`$mail->markAsUnread` Adds the 'UNREAD' label to the email.
+`$mail->markAsUnread()` Adds the 'UNREAD' label to the email.
 
-`$mail->markAsImportant` Adds the 'IMPORTANT' label to the email.
+`$mail->markAsImportant()` Adds the 'IMPORTANT' label to the email.
 
-`$mail->markAsNotImportant` Removes the 'IMPORTANT' label from the email.
+`$mail->markAsNotImportant()` Removes the 'IMPORTANT' label from the email.
 
-`$mail->addStar` Adds the 'STARRED' label to the email.
+`$mail->addStar()` Adds the 'STARRED' label to the email.
 
-`$mail->removeStar` Removes the 'STARRED' label from the email.
+`$mail->removeStar()` Removes the 'STARRED' label from the email.
 
-`$mail->sendToTrash` Adds the 'TRASH' label to the email.
+`$mail->sendToTrash()` Adds the 'TRASH' label to the email.
 
-`$mail->removeFromTrash` Removes the 'TRASH' label from the email.
+`$mail->removeFromTrash()` Removes the 'TRASH' label from the email.
 
 `$mail->addLabel($string|$array)` Add multiple or single label to the email
 
@@ -374,26 +374,26 @@ use Dacastro4\LaravelGmail\Services\Message\Attachment
 $attachment = new Attachment;
 ```
 
-`$attachment->getId` Returns the ID of the attachment
+`$attachment->getId()` Returns the ID of the attachment
 
-`$attachment->getFileName` Returns the file name of the attachment
+`$attachment->getFileName()` Returns the file name of the attachment
 
-`$attachment->getMimeType` Returns the mime type Ex: application/pdf
+`$attachment->getMimeType()` Returns the mime type Ex: application/pdf
 
-`$attachment->getSize` Returns the size of the attachment in bytes
+`$attachment->getSize()` Returns the size of the attachment in bytes
 
-`$attachment->getData` Get the all the information from the attachment. If you call `getAttachmentsWithData` you won't need this method.
+`$attachment->getData()` Get the all the information from the attachment. If you call `getAttachmentsWithData()` you won't need this method.
 
 `$attachment->saveAttachmentTo($path = null, $filename = null, $disk = 'local')` Saves the attachment on the storage folder. You can pass the path, name and disk to use.
 
 
 ## Messages
 
-`LaravelGmail::message()->all( $pageToken = null )` Returns all the emails from the inbox
+`LaravelGmail::message()->all($pageToken = null)` Returns all the emails from the inbox
 
 `LaravelGmail::message()->take(2)->all( $pageToken = null )` The `take` method limits the emails coming from the query by the number set
 
-`LaravelGmail::message()->get( $id )` Returns a single email with all the information
+`LaravelGmail::message()->get($id)` Returns a single email with all the information
 
 ### Modifiers
 
@@ -403,9 +403,9 @@ To get all unread emails: `LaravelGmail::message()->unread()->all()`
 
 `message()->unread()`
 
-`message()->from( $email )`
+`message()->from($email)`
 
-`message()->in( $box = 'inbox' )`
+`message()->in($box='inbox')`
 
 `message()->hasAttachment()`
 
@@ -428,71 +428,6 @@ Of course you can use as a fluent api.
                 ->hasAttachment()
                 ->all()
 ```
-
-## Attachment
-
-```
-use Dacastro4\LaravelGmail\Services\Message\Attachment
-...
-
-$attachment = new Attachment;
-```
-
-`$attachment->getId` Returns the ID of the attachment
-
-`$attachment->getFileName` Returns the file name of the attachment
-
-`$attachment->getMimeType` Returns the mime type Ex: application/pdf
-
-`$attachment->getSize` Returns the size of the attachment in bytes
-
-`$attachment->getData` Get the all the information from the attachment. If you call `getAttachmentsWithData` you won't need this method.
-
-`$attachment->saveAttachmentTo($path = null, $filename = null, $disk = 'local')` Saves the attachment on the storage folder. You can pass the path, name and disk to use.
-
-
-## Messages
-
-`LaravelGmail::message()->all( $pageToken = null )` Returns all the emails from the inbox
-
-`LaravelGmail::message()->take(2)->all( $pageToken = null )` The `take` method limits the emails coming from the query by the number set
-
-`LaravelGmail::message()->get( $id )` Returns a single email with all the information
-
-### Modifiers
-
-You can modify your query with these methods. For example:
-
-To get all unread emails: `LaravelGmail::message()->unread()->all()`
-
-`message()->unread()`
-
-`message()->from( $email )`
-
-`message()->in( $box = 'inbox' )`
-
-`message()->hasAttachment()`
-
-`message()->subject($subject)`
-
-`->after($date)` and `->before($date)`
-
-`message()->raw($query)` for customized queries
-
-All the possible filters are in the [Filterable Trait](https://github.com/dacastro4/laravel-gmail/blob/master/src/Traits/Filterable.php)
-
-Of course you can use as a fluent api.
-
-``` php
-
-    LaravelGmail::message()
-                ->from('someone@gmail.com')
-                ->unread()
-                ->in('TRASH')
-                ->hasAttachment()
-                ->all()
-```
-
 ### Preload
 
 You can preload the body, header and the rest of every single email just by calling this method.

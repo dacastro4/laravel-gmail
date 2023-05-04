@@ -57,7 +57,9 @@ class GmailConnection extends Google_Client
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
 		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
-
+		if (!empty($this->configObject)) {
+			return !empty($this->configObject['access_token']);
+		}
 		if (Storage::disk('local')->exists($file)) {
 			if ($allowJsonEncrypt) {
 				$savedConfigToken = json_decode(decrypt(Storage::disk('local')->get($file)), true);
@@ -183,7 +185,7 @@ class GmailConnection extends Google_Client
 	 * @return array|string
 	 * @throws \Exception
 	 */
-	public function makeToken()
+	public function makeToken($saveFile = true)
 	{
 		if (!$this->check()) {
 			$request = Request::capture();
@@ -197,7 +199,11 @@ class GmailConnection extends Google_Client
 						$accessToken['email'] = $me->emailAddress;
 					}
 				}
-				$this->setBothAccessToken($accessToken);
+				if ($saveFile) {
+					$this->setBothAccessToken($accessToken);
+				} else {
+					$this->setAccessToken($accessToken);
+				}
 
 				return $accessToken;
 			} else {

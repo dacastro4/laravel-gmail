@@ -183,7 +183,7 @@ class GmailConnection extends Google_Client
 	 * @return array|string
 	 * @throws \Exception
 	 */
-	public function makeToken()
+	public function makeToken($saveFile = true)
 	{
 		if (!$this->check()) {
 			$request = Request::capture();
@@ -197,7 +197,11 @@ class GmailConnection extends Google_Client
 						$accessToken['email'] = $me->emailAddress;
 					}
 				}
-				$this->setBothAccessToken($accessToken);
+				if ($saveFile) {
+					$this->setBothAccessToken($accessToken);
+				} else {
+					$this->setAccessToken($accessToken);
+				}
 
 				return $accessToken;
 			} else {

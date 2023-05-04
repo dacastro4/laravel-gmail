@@ -59,7 +59,7 @@ return [
 
 	'access_type' => 'offline',
 
-	'approval_prompt' => 'force',
+	'prompt' => 'consent',
 
 	/*
 	|--------------------------------------------------------------------------

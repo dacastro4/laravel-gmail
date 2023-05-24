@@ -31,21 +31,21 @@ trait Configurable
 		if ($this->configObject) {
 			return $this->configObject;
 		}
-		if ($disk->exists($file)) {
-			if ($allowJsonEncrypt) {
-				$config = json_decode(decrypt($disk->get($file)), true);
-			} else {
-				$config = json_decode($disk->get($file), true);
-			}
+		// if ($disk->exists($file)) {
+		// 	if ($allowJsonEncrypt) {
+		// 		$config = json_decode(decrypt($disk->get($file)), true);
+		// 	} else {
+		// 		$config = json_decode($disk->get($file), true);
+		// 	}
 
-			if ($string) {
-				if (isset($config[$string])) {
-					return $config[$string];
-				}
-			} else {
-				return $config;
-			}
-		}
+		// 	if ($string) {
+		// 		if (isset($config[$string])) {
+		// 			return $config[$string];
+		// 		}
+		// 	} else {
+		// 		return $config;
+		// 	}
+		// }
 
 		return null;
 	}

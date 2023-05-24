@@ -56,17 +56,19 @@ class GmailConnection extends Google_Client
 		$fileName = $this->getFileName();
 		$file = "gmail/tokens/$fileName.json";
 		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
-
-		if (Storage::disk('local')->exists($file)) {
-			if ($allowJsonEncrypt) {
-				$savedConfigToken = json_decode(decrypt(Storage::disk('local')->get($file)), true);
-			} else {
-				$savedConfigToken = json_decode(Storage::disk('local')->get($file), true);
-			}
-
-			return !empty($savedConfigToken['access_token']);
-
+		if (!empty($this->configObject)) {
+			return !empty($this->configObject['access_token']);
 		}
+		// if (Storage::disk('local')->exists($file)) {
+		// 	if ($allowJsonEncrypt) {
+		// 		$savedConfigToken = json_decode(decrypt(Storage::disk('local')->get($file)), true);
+		// 	} else {
+		// 		$savedConfigToken = json_decode(Storage::disk('local')->get($file), true);
+		// 	}
+
+		// 	return !empty($savedConfigToken['access_token']);
+
+		// }
 
 		return false;
 	}
@@ -182,13 +184,14 @@ class GmailConnection extends Google_Client
 	 * @return array|string
 	 * @throws \Exception
 	 */
-	public function makeToken()
+	public function makeToken($saveFile = true)
 	{
 		if (!$this->check()) {
 			$request = Request::capture();
 			$code = (string)$request->input('code', null);
 			if (!is_null($code) && !empty($code)) {
 				$accessToken = $this->fetchAccessTokenWithAuthCode($code);
+                $this->configObject = $accessToken;
 				if ($this->haveReadScope()) {
 					$me = $this->getProfile();
 					if (property_exists($me, 'emailAddress')) {
@@ -196,7 +199,11 @@ class GmailConnection extends Google_Client
 						$accessToken['email'] = $me->emailAddress;
 					}
 				}
-				$this->setBothAccessToken($accessToken);
+				if ($saveFile) {
+					$this->setBothAccessToken($accessToken);
+				} else {
+					$this->setAccessToken($accessToken);
+				}
 
 				return $accessToken;
 			} else {

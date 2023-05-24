@@ -68,6 +68,7 @@ class GmailConnection extends Google_Client
 
 		// 	return !empty($savedConfigToken['access_token']);
 
+
 		// }
 
 		return false;

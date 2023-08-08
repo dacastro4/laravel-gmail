@@ -22,6 +22,11 @@ trait Configurable
 		$this->_config = $config;
 	}
 
+	public function setConfiguration($config)
+	{
+		$this->configObject = $config;
+	}
+
 	public function config($string = null)
 	{
 		$disk = Storage::disk('local');
@@ -29,6 +34,11 @@ trait Configurable
 		$file = "gmail/tokens/$fileName.json";
 		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
 		if ($this->configObject) {
+			if ($string) {
+				if (isset($this->configObject[$string])) {
+					return $this->configObject[$string];
+				}
+			}
 			return $this->configObject;
 		}
 		// if ($disk->exists($file)) {

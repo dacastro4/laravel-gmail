@@ -75,10 +75,10 @@ class Message
 
 		$messages = $response->getMessages();
 
-		if (!$this->preload) {
-			foreach ($messages as $message) {
-				$mails[] = new Mail($message, $this->preload, $this->client->userId);
-			}
+		if (!$this->preload && !empty($messages)) {
+            foreach ($messages as $message) {
+                $mails[] = new Mail($message, $this->preload, $this->client->userId);
+            }
 		} else {
 			$mails = count($messages) > 0 ? $this->batchRequest($messages) : [];
 		}

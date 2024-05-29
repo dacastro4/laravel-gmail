@@ -1,5 +1,5 @@
 {
-    "name": "anil/laravel-gmail-client",
+    "name": "dacastro4/laravel-gmail",
     "description": "Gmail API package for Laravel",
     "keywords": [
         "api",

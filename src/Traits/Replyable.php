@@ -405,11 +405,17 @@ trait Replyable
 		$this->symfonyEmail
 			->from($this->fromAddress())
 			->to($this->toAddress())
-			->cc($this->returnCopies($this->cc))
-			->bcc($this->returnCopies($this->bcc))
 			->subject($this->subject)
 			->html($this->message)
 			->priority($this->priority);
+		
+		// Fixes the issue: "An address can be an instance of Address or a string ("null" given)."
+		if(isset($this->cc)){
+            $this->symfonyEmail->cc($this->returnCopies($this->cc));
+        }
+        if(isset($this->bcc)){
+            $this->symfonyEmail->bcc($this->returnCopies($this->bcc));
+        }
 
 		foreach ($this->attachments as $file) {
 			$this->symfonyEmail->attachFromPath($file);

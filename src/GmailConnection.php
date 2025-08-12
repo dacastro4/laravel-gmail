@@ -7,7 +7,7 @@ use Dacastro4\LaravelGmail\Traits\HasLabels;
 use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Container\Container;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class GmailConnection extends Google_Client
@@ -180,10 +180,9 @@ class GmailConnection extends Google_Client
      *
      * @throws \Exception
      */
-    public function makeToken()
+    public function makeToken(Request $request)
     {
         if (! $this->check()) {
-            $request = Request::capture();
             $code = (string) $request->input('code', null);
             if (! is_null($code) && ! empty($code)) {
                 $accessToken = $this->fetchAccessTokenWithAuthCode($code);

@@ -18,13 +18,13 @@ class LaravelGmailTest extends TestCase
         $mocked_markdown->shouldReceive('theme')->once()->with(config('mail.markdown.theme'));
         $mocked_markdown->shouldReceive('render')->once()->with(
             'sample-markdown',
-            [ 'url' => 'https://www.google.com' ]
+            ['url' => 'https://www.google.com']
         );
-        
+
         // trigger
-        (new Mail())->markdown(
+        (new Mail)->markdown(
             'sample-markdown',
-            [ 'url' => 'https://www.google.com' ]
+            ['url' => 'https://www.google.com']
         );
     }
 
@@ -33,7 +33,7 @@ class LaravelGmailTest extends TestCase
     {
         $emails = 'Alice <alice@example.com>, Bob <bob@example.com>';
 
-        $formatted = (new Mail())->formatEmailList($emails);
+        $formatted = (new Mail)->formatEmailList($emails);
 
         $this->assertCount(2, $formatted);
         $this->assertEquals(['name' => 'Alice', 'email' => 'alice@example.com'], $formatted[0]);

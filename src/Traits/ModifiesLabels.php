@@ -7,69 +7,68 @@ use Google_Service_Gmail_ModifyMessageRequest;
 
 trait ModifiesLabels
 {
+    private $messageRequest;
 
-	private $messageRequest;
+    public function __construct()
+    {
+        $this->messageRequest = new Google_Service_Gmail_ModifyMessageRequest;
+    }
 
-	public function __construct()
-	{
-		$this->messageRequest = new Google_Service_Gmail_ModifyMessageRequest();
-	}
+    /**
+     * Adds labels to the email
+     *
+     * @param  string|array  $labels
+     * @return Mail|string
+     *
+     * @throws \Exception
+     */
+    public function addLabel($labels)
+    {
+        if (is_string($labels)) {
+            $labels = [$labels];
+        }
 
-	/**
-	 * Adds labels to the email
-	 *
-	 * @param string|array $labels
-	 *
-	 * @return Mail|string
-	 * @throws \Exception
-	 */
-	public function addLabel($labels)
-	{
-		if (is_string($labels)) {
-			$labels = [$labels];
-		}
+        $this->messageRequest->setAddLabelIds($labels);
 
-		$this->messageRequest->setAddLabelIds($labels);
+        try {
+            return $this->modify();
+        } catch (\Exception $e) {
+            throw new \Exception("Couldn't add labels: {$e->getMessage()}");
+        }
+    }
 
-		try {
-			return $this->modify();
-		} catch (\Exception $e) {
-			throw new \Exception("Couldn't add labels: {$e->getMessage()}");
-		}
-	}
+    /**
+     * Executes the modification
+     *
+     * @return Mail
+     */
+    private function modify()
+    {
+        return new Mail($this->service->users_messages->modify('me', $this->getId(), $this->messageRequest));
+    }
 
-	/**
-	 * Executes the modification
-	 *
-	 * @return Mail
-	 */
-	private function modify()
-	{
-		return new Mail($this->service->users_messages->modify('me', $this->getId(), $this->messageRequest));
-	}
+    abstract public function getId();
 
-	public abstract function getId();
+    /**
+     * Removes labels from the email
+     *
+     * @param  string|array  $labels
+     * @return Mail|string
+     *
+     * @throws \Exception
+     */
+    public function removeLabel($labels)
+    {
+        if (is_string($labels)) {
+            $labels = [$labels];
+        }
 
-	/**
-	 * Removes labels from the email
-	 *
-	 * @param string|array $labels
-	 *
-	 * @return Mail|string
-	 * @throws \Exception
-	 */
-	public function removeLabel($labels)
-	{
-		if (is_string($labels)) {
-			$labels = [$labels];
-		}
+        $this->messageRequest->setRemoveLabelIds($labels);
 
-		$this->messageRequest->setRemoveLabelIds($labels);
-
-		try {
-			return $this->modify();
-		} catch (\Exception $e) {
-			throw new \Exception("Couldn't remove labels: {$e->getMessage()}");
-		}
-	}
+        try {
+            return $this->modify();
+        } catch (\Exception $e) {
+            throw new \Exception("Couldn't remove labels: {$e->getMessage()}");
+        }
+    }
 }

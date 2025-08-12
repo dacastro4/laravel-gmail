@@ -2,7 +2,4 @@
 
 namespace Dacastro4\LaravelGmail\Exceptions;
 
-class AuthException extends \Exception
-{
-
-}
+class AuthException extends \Exception {}

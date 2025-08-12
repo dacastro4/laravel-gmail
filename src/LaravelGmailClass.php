@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail;
 
 use Dacastro4\LaravelGmail\Exceptions\AuthException;
 use Dacastro4\LaravelGmail\Services\Message;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 
 class LaravelGmailClass extends GmailConnection
@@ -18,11 +21,9 @@ class LaravelGmailClass extends GmailConnection
     }
 
     /**
-     * @return Message
-     *
      * @throws AuthException
      */
-    public function message()
+    public function message(): Message
     {
         if (! $this->getToken()) {
             throw new AuthException('No credentials found.');
@@ -33,10 +34,8 @@ class LaravelGmailClass extends GmailConnection
 
     /**
      * Returns the Gmail user's email
-     *
-     * @return string
      */
-    public function user()
+    public function user(): string
     {
         return $this->config('email');
     }
@@ -46,29 +45,27 @@ class LaravelGmailClass extends GmailConnection
      *
      * @return \Google_Service_Gmail_Profile
      */
-    public function setUserId($userId)
+    public function setUserId(string $userId): self
     {
         $this->userId = $userId;
 
         return $this;
     }
 
-    public function redirect()
+    public function redirect(): RedirectResponse
     {
         return Redirect::to($this->getAuthUrl());
     }
 
     /**
      * Gets the URL to authorize the user
-     *
-     * @return string
      */
-    public function getAuthUrl()
+    public function getAuthUrl(): string
     {
         return $this->createAuthUrl();
     }
 
-    public function logout()
+    public function logout(): void
     {
         $this->revokeToken();
         $this->deleteAccessToken();

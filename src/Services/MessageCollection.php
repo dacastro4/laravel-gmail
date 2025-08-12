@@ -6,10 +6,7 @@ use Illuminate\Support\Collection;
 
 class MessageCollection extends Collection
 {
-    /**
-     * @var Message
-     */
-    private $message;
+    private ?Message $message;
 
     /**
      * MessageCollection constructor.
@@ -22,28 +19,24 @@ class MessageCollection extends Collection
         $this->message = $message;
     }
 
-    public function next()
+    public function next(): Collection
     {
         return $this->message->next();
     }
 
     /**
      * Returns boolean if the page token variable is null or not
-     *
-     * @return bool
      */
-    public function hasNextPage()
+    public function hasNextPage(): bool
     {
-        return (bool) $this->message->pageToken;
+        return $this->message->hasNextPage();
     }
 
     /**
      * Returns the page token or null
-     *
-     * @return string
      */
-    public function getPageToken()
+    public function getPageToken(): ?string
     {
-        return $this->message->pageToken;
+        return $this->message->getPageToken();
     }
 }

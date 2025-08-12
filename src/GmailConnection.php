@@ -6,304 +6,300 @@ use Dacastro4\LaravelGmail\Traits\Configurable;
 use Dacastro4\LaravelGmail\Traits\HasLabels;
 use Google_Client;
 use Google_Service_Gmail;
-use Google_Service_Gmail_WatchRequest;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
 class GmailConnection extends Google_Client
 {
-	use HasLabels;
-	use Configurable {
-		__construct as configConstruct;
-	}
+    use Configurable {
+        __construct as configConstruct;
+    }
+    use HasLabels;
 
+    protected $emailAddress;
 
-	protected $emailAddress;
-	protected $refreshToken;
-	protected $app;
-	protected $accessToken;
-	protected $token;
-	private $configuration;
-	public $userId;
+    protected $refreshToken;
 
-	public function __construct($config = null, $userId = null)
-	{
-		$this->app = Container::getInstance();
+    protected $app;
 
-		$this->userId = $userId;
+    protected $accessToken;
 
-		$this->configConstruct($config);
+    protected $token;
 
-		$this->configuration = $config;
+    private $configuration;
 
-		parent::__construct($this->getConfigs());
+    public $userId;
 
-		$this->configApi();
+    public function __construct($config = null, $userId = null)
+    {
+        $this->app = Container::getInstance();
 
-		if ($this->checkPreviouslyLoggedIn()) {
-			$this->refreshTokenIfNeeded();
-		}
+        $this->userId = $userId;
 
-	}
+        $this->configConstruct($config);
 
-	/**
-	 * Check and return true if the user has previously logged in without checking if the token needs to refresh
-	 *
-	 * @return bool
-	 */
-        public function checkPreviouslyLoggedIn()
-        {
-                $fileName = $this->getFileName();
-                $file = "gmail/tokens/$fileName.json";
-                $disk = Storage::disk('local');
+        $this->configuration = $config;
 
-                if (!$disk->exists($file)) {
-                        return false;
-                }
+        parent::__construct($this->getConfigs());
 
-                $contents = $disk->get($file);
-                $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
-                $savedConfigToken = json_decode($allowJsonEncrypt ? decrypt($contents) : $contents, true);
+        $this->configApi();
 
-                return !empty($savedConfigToken['access_token']);
+        if ($this->checkPreviouslyLoggedIn()) {
+            $this->refreshTokenIfNeeded();
         }
 
-	/**
-	 * Refresh the auth token if needed
-	 *
-	 * @return mixed|null
-	 */
-	private function refreshTokenIfNeeded()
-	{
-		if ($this->isAccessTokenExpired()) {
-			$this->fetchAccessTokenWithRefreshToken($this->getRefreshToken());
-			$token = $this->getAccessToken();
-			$this->setBothAccessToken($token);
+    }
 
-			return $token;
-		}
+    /**
+     * Check and return true if the user has previously logged in without checking if the token needs to refresh
+     *
+     * @return bool
+     */
+    public function checkPreviouslyLoggedIn()
+    {
+        $fileName = $this->getFileName();
+        $file = "gmail/tokens/$fileName.json";
+        $disk = Storage::disk('local');
 
-		return $this->token;
-	}
+        if (! $disk->exists($file)) {
+            return false;
+        }
 
-	/**
-	 * Check if token exists and is expired
-	 * Throws an AuthException when the auth file its empty or with the wrong token
-	 *
-	 *
-	 * @return bool Returns True if the access_token is expired.
-	 */
-	public function isAccessTokenExpired()
-	{
-		$token = $this->getToken();
+        $contents = $disk->get($file);
+        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
+        $savedConfigToken = json_decode($allowJsonEncrypt ? decrypt($contents) : $contents, true);
 
-		if ($token) {
-			$this->setAccessToken($token);
-		}
+        return ! empty($savedConfigToken['access_token']);
+    }
 
-		return parent::isAccessTokenExpired();
-	}
+    /**
+     * Refresh the auth token if needed
+     *
+     * @return mixed|null
+     */
+    private function refreshTokenIfNeeded()
+    {
+        if ($this->isAccessTokenExpired()) {
+            $this->fetchAccessTokenWithRefreshToken($this->getRefreshToken());
+            $token = $this->getAccessToken();
+            $this->setBothAccessToken($token);
 
-	public function getToken()
-	{
-		return parent::getAccessToken() ?: $this->config();
-	}
+            return $token;
+        }
 
-	public function setToken($token)
-	{
-		$this->setAccessToken($token);
-	}
+        return $this->token;
+    }
 
-	public function getAccessToken()
-	{
-		$token = parent::getAccessToken() ?: $this->config();
+    /**
+     * Check if token exists and is expired
+     * Throws an AuthException when the auth file its empty or with the wrong token
+     *
+     *
+     * @return bool Returns True if the access_token is expired.
+     */
+    public function isAccessTokenExpired()
+    {
+        $token = $this->getToken();
 
-		return $token;
-	}
+        if ($token) {
+            $this->setAccessToken($token);
+        }
 
-	/**
-	 * @param array|string $token
-	 */
-	public function setAccessToken($token)
-	{
-		parent::setAccessToken($token);
-	}
+        return parent::isAccessTokenExpired();
+    }
 
-	/**
-	 * @param $token
-	 */
-	public function setBothAccessToken($token)
-	{
-		$this->setAccessToken($token);
-		$this->saveAccessToken($token);
-	}
+    public function getToken()
+    {
+        return parent::getAccessToken() ?: $this->config();
+    }
 
-	/**
-	 * Save the credentials in a file
-	 *
-	 * @param array $config
-	 */
-	public function saveAccessToken(array $config)
-	{
-		$disk = Storage::disk('local');
-		$fileName = $this->getFileName();
-		$file = "gmail/tokens/$fileName.json";
-		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
-		$config['email'] = $this->emailAddress;
+    public function setToken($token)
+    {
+        $this->setAccessToken($token);
+    }
 
-		if ($disk->exists($file)) {
+    public function getAccessToken()
+    {
+        $token = parent::getAccessToken() ?: $this->config();
 
-			if (empty($config['email'])) {
-				if ($allowJsonEncrypt) {
-					$savedConfigToken = json_decode(decrypt($disk->get($file)), true);
-				} else {
-					$savedConfigToken = json_decode($disk->get($file), true);
-				}
-				if (isset($savedConfigToken['email'])) {
-					$config['email'] = $savedConfigToken['email'];
-				}
-			}
+        return $token;
+    }
 
-			$disk->delete($file);
-		}
+    /**
+     * @param  array|string  $token
+     */
+    public function setAccessToken($token)
+    {
+        parent::setAccessToken($token);
+    }
 
-		if ($allowJsonEncrypt) {
-			$disk->put($file, encrypt(json_encode($config)));
-		} else {
-			$disk->put($file, json_encode($config));
-		}
+    public function setBothAccessToken($token)
+    {
+        $this->setAccessToken($token);
+        $this->saveAccessToken($token);
+    }
 
-	}
+    /**
+     * Save the credentials in a file
+     */
+    public function saveAccessToken(array $config)
+    {
+        $disk = Storage::disk('local');
+        $fileName = $this->getFileName();
+        $file = "gmail/tokens/$fileName.json";
+        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
+        $config['email'] = $this->emailAddress;
 
-	/**
-	 * @return array|string
-	 * @throws \Exception
-	 */
-	public function makeToken()
-	{
-		if (!$this->check()) {
-			$request = Request::capture();
-			$code = (string)$request->input('code', null);
-			if (!is_null($code) && !empty($code)) {
-				$accessToken = $this->fetchAccessTokenWithAuthCode($code);
-				if ($this->haveReadScope()) {
-					$me = $this->getProfile();
-					if (property_exists($me, 'emailAddress')) {
-						$this->emailAddress = $me->emailAddress;
-						$accessToken['email'] = $me->emailAddress;
-					}
-				}
-				$this->setBothAccessToken($accessToken);
+        if ($disk->exists($file)) {
 
-				return $accessToken;
-			} else {
-				throw new \Exception('No access token');
-			}
-		} else {
-			return $this->getAccessToken();
-		}
-	}
+            if (empty($config['email'])) {
+                if ($allowJsonEncrypt) {
+                    $savedConfigToken = json_decode(decrypt($disk->get($file)), true);
+                } else {
+                    $savedConfigToken = json_decode($disk->get($file), true);
+                }
+                if (isset($savedConfigToken['email'])) {
+                    $config['email'] = $savedConfigToken['email'];
+                }
+            }
 
-	/**
-	 * Check
-	 *
-	 * @return bool
-	 */
-	public function check()
-	{
-		return !$this->isAccessTokenExpired();
-	}
+            $disk->delete($file);
+        }
 
-	/**
-	 * Gets user profile from Gmail
-	 *
-	 * @return \Google_Service_Gmail_Profile
-	 */
-	public function getProfile()
-	{
-		$service = new Google_Service_Gmail($this);
+        if ($allowJsonEncrypt) {
+            $disk->put($file, encrypt(json_encode($config)));
+        } else {
+            $disk->put($file, json_encode($config));
+        }
 
-		return $service->users->getProfile('me');
-	}
+    }
 
-	/**
-	 * Revokes user's permission and logs them out
-	 */
-	public function logout()
-	{
-		$this->revokeToken();
-	}
+    /**
+     * @return array|string
+     *
+     * @throws \Exception
+     */
+    public function makeToken()
+    {
+        if (! $this->check()) {
+            $request = Request::capture();
+            $code = (string) $request->input('code', null);
+            if (! is_null($code) && ! empty($code)) {
+                $accessToken = $this->fetchAccessTokenWithAuthCode($code);
+                if ($this->haveReadScope()) {
+                    $me = $this->getProfile();
+                    if (property_exists($me, 'emailAddress')) {
+                        $this->emailAddress = $me->emailAddress;
+                        $accessToken['email'] = $me->emailAddress;
+                    }
+                }
+                $this->setBothAccessToken($accessToken);
 
-	/**
-	 * Delete the credentials in a file
-	 */
-	public function deleteAccessToken()
-	{
-		$disk = Storage::disk('local');
-		$fileName = $this->getFileName();
-		$file = "gmail/tokens/$fileName.json";
+                return $accessToken;
+            } else {
+                throw new \Exception('No access token');
+            }
+        } else {
+            return $this->getAccessToken();
+        }
+    }
 
-		$allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
+    /**
+     * Check
+     *
+     * @return bool
+     */
+    public function check()
+    {
+        return ! $this->isAccessTokenExpired();
+    }
 
-		if ($disk->exists($file)) {
-			$disk->delete($file);
-		}
+    /**
+     * Gets user profile from Gmail
+     *
+     * @return \Google_Service_Gmail_Profile
+     */
+    public function getProfile()
+    {
+        $service = new Google_Service_Gmail($this);
 
-		if ($allowJsonEncrypt) {
-			$disk->put($file, encrypt(json_encode([])));
-		} else {
-			$disk->put($file, json_encode([]));
-		}
+        return $service->users->getProfile('me');
+    }
 
-	}
+    /**
+     * Revokes user's permission and logs them out
+     */
+    public function logout()
+    {
+        $this->revokeToken();
+    }
 
-	private function haveReadScope()
-	{
-		$scopes = $this->getUserScopes();
+    /**
+     * Delete the credentials in a file
+     */
+    public function deleteAccessToken()
+    {
+        $disk = Storage::disk('local');
+        $fileName = $this->getFileName();
+        $file = "gmail/tokens/$fileName.json";
 
-		return in_array(Google_Service_Gmail::GMAIL_READONLY, $scopes);
-	}
+        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
 
-	/**
-	 * users.stop receiving push notifications for the given user mailbox.
-	 *
-	 * @param string $userEmail Email address
-	 * @param array $optParams
-	 * @return \Google_Service_Gmail_Stop
-	 */
-	public function stopWatch($userEmail, $optParams = [])
-	{
-		$service = new Google_Service_Gmail($this);
+        if ($disk->exists($file)) {
+            $disk->delete($file);
+        }
 
-		return $service->users->stop($userEmail, $optParams);
-	}
+        if ($allowJsonEncrypt) {
+            $disk->put($file, encrypt(json_encode([])));
+        } else {
+            $disk->put($file, json_encode([]));
+        }
 
-	/**
-	 * Set up or update a push notification watch on the given user mailbox.
-	 *
-	 * @param string $userEmail Email address
-	 * @param Google_Service_Gmail_WatchRequest $postData
-	 *
-	 * @return \Google_Service_Gmail_WatchResponse
-	 */
-	public function setWatch($userEmail, \Google_Service_Gmail_WatchRequest $postData): \Google_Service_Gmail_WatchResponse
-	{
-		$service = new Google_Service_Gmail($this);
+    }
 
-		return $service->users->watch($userEmail, $postData);
-	}
+    private function haveReadScope()
+    {
+        $scopes = $this->getUserScopes();
 
-	/**
-	 * Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing historyId).
-	 * @param $userEmail
-	 * @param $params
-	 * @return \Google\Service\Gmail\ListHistoryResponse
-	 */
-	public function historyList($userEmail, $params)
-	{
-		$service = new Google_Service_Gmail($this);
+        return in_array(Google_Service_Gmail::GMAIL_READONLY, $scopes);
+    }
 
-		return $service->users_history->listUsersHistory($userEmail, $params);
-	}
+    /**
+     * users.stop receiving push notifications for the given user mailbox.
+     *
+     * @param  string  $userEmail  Email address
+     * @param  array  $optParams
+     * @return \Google_Service_Gmail_Stop
+     */
+    public function stopWatch($userEmail, $optParams = [])
+    {
+        $service = new Google_Service_Gmail($this);
+
+        return $service->users->stop($userEmail, $optParams);
+    }
+
+    /**
+     * Set up or update a push notification watch on the given user mailbox.
+     *
+     * @param  string  $userEmail  Email address
+     */
+    public function setWatch($userEmail, \Google_Service_Gmail_WatchRequest $postData): \Google_Service_Gmail_WatchResponse
+    {
+        $service = new Google_Service_Gmail($this);
+
+        return $service->users->watch($userEmail, $postData);
+    }
+
+    /**
+     * Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing historyId).
+     *
+     * @return \Google\Service\Gmail\ListHistoryResponse
+     */
+    public function historyList($userEmail, $params)
+    {
+        $service = new Google_Service_Gmail($this);
+
+        return $service->users_history->listUsersHistory($userEmail, $params);
+    }
 }

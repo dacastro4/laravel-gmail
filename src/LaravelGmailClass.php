@@ -8,68 +8,69 @@ use Illuminate\Support\Facades\Redirect;
 
 class LaravelGmailClass extends GmailConnection
 {
-	public function __construct($config, $userId = null)
-	{
-		if (class_basename($config) === 'Application') {
-			$config = $config['config'];
-		}
-
-		parent::__construct($config, $userId);
-	}
-
-	/**
-	 * @return Message
-	 * @throws AuthException
-	 */
-	public function message()
-	{
-		if (!$this->getToken()) {
-			throw new AuthException('No credentials found.');
-		}
-
-		return new Message($this);
-	}
-
-        /**
-         * Returns the Gmail user's email
-         *
-         * @return string
-         */
-        public function user()
-        {
-                return $this->config('email');
+    public function __construct($config, $userId = null)
+    {
+        if (class_basename($config) === 'Application') {
+            $config = $config['config'];
         }
 
-	/**
-	 * Updates / sets the current userId for the service
-	 *
-	 * @return \Google_Service_Gmail_Profile
-	 */
-	public function setUserId($userId)
-	{
-		$this->userId = $userId;
-		return $this;
-	}
+        parent::__construct($config, $userId);
+    }
 
-	public function redirect()
-	{
-		return Redirect::to($this->getAuthUrl());
-	}
+    /**
+     * @return Message
+     *
+     * @throws AuthException
+     */
+    public function message()
+    {
+        if (! $this->getToken()) {
+            throw new AuthException('No credentials found.');
+        }
 
-	/**
-	 * Gets the URL to authorize the user
-	 *
-	 * @return string
-	 */
-	public function getAuthUrl()
-	{
-		return $this->createAuthUrl();
-	}
+        return new Message($this);
+    }
 
-	public function logout()
-	{
-		$this->revokeToken();
-		$this->deleteAccessToken();
-	}
+    /**
+     * Returns the Gmail user's email
+     *
+     * @return string
+     */
+    public function user()
+    {
+        return $this->config('email');
+    }
 
+    /**
+     * Updates / sets the current userId for the service
+     *
+     * @return \Google_Service_Gmail_Profile
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    public function redirect()
+    {
+        return Redirect::to($this->getAuthUrl());
+    }
+
+    /**
+     * Gets the URL to authorize the user
+     *
+     * @return string
+     */
+    public function getAuthUrl()
+    {
+        return $this->createAuthUrl();
+    }
+
+    public function logout()
+    {
+        $this->revokeToken();
+        $this->deleteAccessToken();
+    }
 }

@@ -30,15 +30,15 @@ class LaravelGmailClass extends GmailConnection
 		return new Message($this);
 	}
 
-	/**
-	 * Returns the Gmail user email
-	 *
-	 * @return \Google_Service_Gmail_Profile
-	 */
-	public function user()
-	{
-		return $this->config('email');
-	}
+        /**
+         * Returns the Gmail user's email
+         *
+         * @return string
+         */
+        public function user()
+        {
+                return $this->config('email');
+        }
 
 	/**
 	 * Updates / sets the current userId for the service

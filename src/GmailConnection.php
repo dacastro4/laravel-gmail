@@ -29,7 +29,7 @@ class GmailConnection extends Google_Client
 
     private $configuration;
 
-    public $userId;
+    protected ?int $userId = null;
 
     public function __construct($config = null, $userId = null)
     {
@@ -49,6 +49,11 @@ class GmailConnection extends Google_Client
             $this->refreshTokenIfNeeded();
         }
 
+    }
+
+    public function getUserId()
+    {
+        return $this->userId;
     }
 
     /**

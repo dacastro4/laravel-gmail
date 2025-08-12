@@ -96,16 +96,16 @@ class Message
 		return !!$this->pageToken;
 	}
 
-	/**
-	 * Limit the messages coming from the queryxw
-	 *
-	 * @param int $number
-	 *
-	 * @return Message
-	 */
-	public function take($number)
-	{
-		$this->params['maxResults'] = abs((int)$number);
+        /**
+         * Limit the messages coming from the query
+         *
+         * @param int $number
+         *
+         * @return Message
+         */
+        public function take($number)
+        {
+                $this->params['maxResults'] = abs((int)$number);
 
 		return $this;
 	}

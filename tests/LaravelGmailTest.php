@@ -23,8 +23,20 @@ class LaravelGmailTest extends TestCase
         
         // trigger
         (new Mail())->markdown(
-            'sample-markdown', 
+            'sample-markdown',
             [ 'url' => 'https://www.google.com' ]
         );
+    }
+
+    /** @test */
+    public function test_format_email_list_parses_names_and_addresses()
+    {
+        $emails = 'Alice <alice@example.com>, Bob <bob@example.com>';
+
+        $formatted = (new Mail())->formatEmailList($emails);
+
+        $this->assertCount(2, $formatted);
+        $this->assertEquals(['name' => 'Alice', 'email' => 'alice@example.com'], $formatted[0]);
+        $this->assertEquals(['name' => 'Bob', 'email' => 'bob@example.com'], $formatted[1]);
     }
 }

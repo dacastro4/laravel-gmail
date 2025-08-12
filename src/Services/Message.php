@@ -7,26 +7,27 @@ use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Dacastro4\LaravelGmail\Traits\Filterable;
 use Dacastro4\LaravelGmail\Traits\SendsParameters;
 use Google_Service_Gmail;
+use Google_Service_Gmail_ListMessagesResponse;
+use Google_Service_Gmail_Message;
+use Illuminate\Support\Collection;
 
 class Message
 {
     use Filterable,
         SendsParameters;
 
-    public $service;
+    private Google_Service_Gmail $service;
 
-    public $preload = false;
+    private bool $preload = false;
 
-    public $pageToken;
+    private ?string $pageToken = null;
 
-    public $client;
+    private LaravelGmailClass $client;
 
     /**
      * Optional parameter for getting single and multiple emails
-     *
-     * @var array
      */
-    protected $params = [];
+    protected array $params = [];
 
     /**
      * Message constructor.
@@ -40,28 +41,26 @@ class Message
     /**
      * Returns next page if available of messages or an empty collection
      *
-     * @return \Illuminate\Support\Collection
      *
      * @throws \Google_Exception
      */
-    public function next()
+    public function next(): Collection
     {
         if ($this->pageToken) {
             return $this->all($this->pageToken);
-        } else {
-            return new MessageCollection([], $this);
         }
+
+        return new MessageCollection([], $this);
     }
 
     /**
      * Returns a collection of Mail instances
      *
      *
-     * @return \Illuminate\Support\Collection
      *
      * @throws \Google_Exception
      */
-    public function all(?string $pageToken = null)
+    public function all(?string $pageToken = null): Collection
     {
         if (! is_null($pageToken)) {
             $this->add($pageToken, 'pageToken');
@@ -86,31 +85,23 @@ class Message
 
     /**
      * Returns boolean if the page token variable is null or not
-     *
-     * @return bool
      */
-    public function hasNextPage()
+    public function hasNextPage(): bool
     {
         return (bool) $this->pageToken;
     }
 
     /**
      * Limit the messages coming from the query
-     *
-     * @param  int  $number
-     * @return Message
      */
-    public function take($number)
+    public function take(int $number): self
     {
-        $this->params['maxResults'] = abs((int) $number);
+        $this->params['maxResults'] = abs($number);
 
         return $this;
     }
 
-    /**
-     * @return Mail
-     */
-    public function get($id)
+    public function get(string $id): Mail
     {
         $message = $this->getRequest($id);
 
@@ -123,7 +114,7 @@ class Message
      *
      * @return array|null
      */
-    public function batchRequest($allMessages)
+    public function batchRequest(array $allMessages): array
     {
         $this->client->setUseBatch(true);
 
@@ -154,42 +145,44 @@ class Message
      *
      * @see Mail::load()
      */
-    public function preload()
+    public function preload(): self
     {
         $this->preload = true;
 
         return $this;
     }
 
-    public function getUser()
+    public function getUser(): string
     {
         return $this->client->user();
     }
 
-    /**
-     * @return \Google_Service_Gmail_Message
-     */
-    private function getRequest($id)
+    private function getRequest(string $id): Google_Service_Gmail_Message
     {
         return $this->service->users_messages->get('me', $id);
     }
 
     /**
-     * @return \Google_Service_Gmail_ListMessagesResponse|object
-     *
      * @throws \Google_Exception
      */
-    private function getMessagesResponse()
+    private function getMessagesResponse(): Google_Service_Gmail_ListMessagesResponse|object
     {
         $responseOrRequest = $this->service->users_messages->listUsersMessages('me', $this->params);
 
         if (get_class($responseOrRequest) === "GuzzleHttp\Psr7\Request") {
-            $response = $this->service->getClient()->execute($responseOrRequest,
-                'Google_Service_Gmail_ListMessagesResponse');
+            $response = $this->service->getClient()->execute(
+                $responseOrRequest,
+                'Google_Service_Gmail_ListMessagesResponse'
+            );
 
             return $response;
         }
 
         return $responseOrRequest;
+    }
+
+    public function getPageToken(): ?string
+    {
+        return $this->pageToken;
     }
 }

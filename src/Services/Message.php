@@ -7,6 +7,7 @@ use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Dacastro4\LaravelGmail\Traits\Filterable;
 use Dacastro4\LaravelGmail\Traits\SendsParameters;
 use Google_Service_Gmail;
+use Google_Service_Gmail_ListMessagesResponse;
 
 class Message
 {
@@ -175,17 +176,17 @@ class Message
     }
 
     /**
-     * @return \Google_Service_Gmail_ListMessagesResponse|object
-     *
      * @throws \Google_Exception
      */
-    private function getMessagesResponse()
+    private function getMessagesResponse(): array|Google_Service_Gmail_ListMessagesResponse
     {
         $responseOrRequest = $this->service->users_messages->listUsersMessages('me', $this->params);
 
-        if (get_class($responseOrRequest) === "GuzzleHttp\Psr7\Request") {
-            $response = $this->service->getClient()->execute($responseOrRequest,
-                'Google_Service_Gmail_ListMessagesResponse');
+        if ($responseOrRequest instanceof \GuzzleHttp\Psr7\Request) {
+            $response = $this->service->getClient()->execute(
+                $responseOrRequest,
+                'Google_Service_Gmail_ListMessagesResponse'
+            );
 
             return $response;
         }

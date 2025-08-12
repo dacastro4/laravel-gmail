@@ -137,7 +137,7 @@ Route::get('/oauth/gmail', function (){
 });
 
 Route::get('/oauth/gmail/callback', function (){
-    LaravelGmail::makeToken();
+    LaravelGmail::makeToken(request());
     return redirect()->to('/');
 });
 
@@ -173,13 +173,13 @@ Generally speaking, it is a bad practice to use API for pagination. It is slow a
 
 `LaravelGmail::redirect` You can use this as a direct method `<a href="{{ LaravelGmail::redirect() }}">Login</a>`
 
-`LaravelGmail::makeToken()` Set and Save AccessToken in json file (useful in the callback)
+`LaravelGmail::makeToken($request)` Set and Save AccessToken in json file (useful in the callback)
 
 `LaravelGmail::logout` Logs out the user
 
 `LaravelGmail::check` Checks if the user is logged in
 
-`LaravelGmail::setUserId($account_id)->makeToken()` Set and Save AccessToken for $account_id (added v5.1.2)
+`LaravelGmail::setUserId($account_id)->makeToken($request)` Set and Save AccessToken for $account_id (added v5.1.2)
 
 
 ## Sending

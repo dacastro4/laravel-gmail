@@ -9,19 +9,14 @@
 
 
 # Gmail
-Gmail API for Laravel 9 and 10
+Gmail API for Laravel 9 through 12
 
 You need to create an application in the [Google Console](https://console.developers.google.com/apis/credentials). Guidance [here](https://developers.google.com/gmail/api/quickstart/php#step_1_turn_on_the_api_name).
 
-if you need **Laravel 5** compatibility please use version `2.0.x`.
-if you need **Laravel 6** compatibility please use version `3.0.x`.
-if you need **Laravel 7** compatibility please use version `4.0.x`.
-if you need **Laravel 8** compatibility please use version `5.0.x`.
-
 # Requirements
 
-* PHP ^8.0
-* Laravel 9
+* PHP ^8.2
+* Laravel 9-12
 
 # Installation
 
@@ -53,31 +48,6 @@ Now add the alias.
 
 For laravel >=5.5 that's all. This package supports Laravel new [Package Discovery](https://laravel.com/docs/5.5/packages#package-discovery).
 
-For <= PHP 7.4 compatibility use version `v5.0`
-
-# Migration from 5.0 to 6.0
-
-Requires Laravel 9 and you have to change the dependency to `"laravel/laravel": "^9.0"`
-Please, follow [Upgrading To 9.0 From 8.x Guide](https://laravel.com/docs/9.x/upgrade)
-
-# Migration from 4.0 to 5.0
-
-Requires Laravel 8 and you have to change the dependency to `"laravel/laravel": "^8.0"`
-Please, follow [Upgrading To 8.0 From 7.x Guide](https://laravel.com/docs/8.x/upgrade)
-
-# Migration from 3.0 to 4.0
-
-Requires Laravel 7 and you have to change the dependency to `"laravel/laravel": "^7.0"`
-Please, follow [Upgrading To 7.0 From 6.x Guide](https://laravel.com/docs/7.x/upgrade)
-
-# Migration from 2.0 to 3.0
-
-Requires Laravel 6 and you only have to change the dependency to `"laravel/laravel": "^6.0"`
-
-# Migration from 1.0 to 2.0
-The only changed made was the multi credentials feature.
-- Change your composer.json from `"dacastro4/laravel-gmail": "^1.0"` to `"dacastro4/laravel-gmail": "^2.0"`
-
 I had to change version because of a typo and that might break apps calling those attributes.
 
 All variable with the word "threat" was change to "thread" (yeah, I know.. sorry)
@@ -90,14 +60,6 @@ Ex:
     `$mail->setReplyThreat()` => `$mail->setReplyThread()`
 
 and so on.
-
-# Migration from 0.6 to 1.0
-The only changed made was the multi credentials feature.
-- Change your composer.json from `"dacastro4/laravel-gmail": "^0.6"` to `"dacastro4/laravel-gmail": "^1.0"`
-
-If you don't want the multi user credentials, you don't have to do anything else, if you do, you're going to have to
-login again to create a new credentials file per user.
-
 
 # Configuration
 

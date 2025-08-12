@@ -143,7 +143,7 @@ class Mail extends GmailConnection
 		$this->to = $this->getTo();
 		$from = $this->getFrom();
 		$this->from = isset($from['email']) ? $from['email'] : null;
-		$this->nameFrom = isset($from['email']) ? $from['email'] : null;
+               $this->nameFrom = isset($from['name']) ? $from['name'] : null;
 
 		$this->subject = $this->getSubject();
 	}

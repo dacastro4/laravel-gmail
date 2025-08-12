@@ -26,31 +26,23 @@ class Mail extends GmailConnection
             Modifiable::__construct as private __mConstruct;
         }
 
-    public $id;
+    protected string $id = '';
 
-    public $userId;
+    protected ?int $internalDate = null;
 
-    public $internalDate;
+    protected array $labels = [];
 
-    public $labels;
+    protected ?int $size = null;
 
-    public $size;
+    protected ?string $threadId = null;
 
-    public $threadId;
+    protected ?string $historyId = null;
 
-    public $historyId;
+    protected ?Google_Service_Gmail_MessagePart $payload = null;
 
-    /**
-     * @var \Google_Service_Gmail_MessagePart
-     */
-    public $payload;
+    protected ?Collection $parts = null;
 
-    public $parts;
-
-    /**
-     * @var Google_Service_Gmail
-     */
-    public $service;
+    protected Google_Service_Gmail $service;
 
     /**
      * SingleMessage constructor.
@@ -115,8 +107,8 @@ class Mail extends GmailConnection
     {
         $this->to = $this->getTo();
         $from = $this->getFrom();
-        $this->from = isset($from['email']) ? $from['email'] : null;
-        $this->nameFrom = isset($from['name']) ? $from['name'] : null;
+        $this->from = $from['email'] ?? null;
+        $this->nameFrom = $from['name'] ?? null;
 
         $this->subject = $this->getSubject();
     }
@@ -511,6 +503,36 @@ class Mail extends GmailConnection
         }
 
         return $attachments;
+    }
+
+    /**
+     * Returns the payload of the message
+     *
+     * @return Google_Service_Gmail_MessagePart|null
+     */
+    public function getPayload()
+    {
+        return $this->payload;
+    }
+
+    /**
+     * Returns the parts collection of the message
+     *
+     * @return Collection|null
+     */
+    public function getParts()
+    {
+        return $this->parts;
+    }
+
+    /**
+     * Returns Gmail service instance
+     *
+     * @return Google_Service_Gmail
+     */
+    public function getService()
+    {
+        return $this->service;
     }
 
     /**

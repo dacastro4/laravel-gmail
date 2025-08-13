@@ -1,19 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Services;
 
 use Illuminate\Support\Collection;
 
 class MessageCollection extends Collection
 {
-    private ?Message $message;
+    private ?Message $message = null;
 
-    /**
-     * MessageCollection constructor.
-     *
-     * @param  array  $items
-     */
-    public function __construct($items = [], ?Message $message = null)
+    public function __construct(array $items = [], ?Message $message = null)
     {
         parent::__construct($items);
         $this->message = $message;

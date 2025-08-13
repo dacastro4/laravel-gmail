@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Dacastro4\LaravelGmail\Services\Message\Mail;
@@ -25,7 +27,7 @@ trait Modifiable
      *
      * @return Mail|string
      */
-    public function markAsRead()
+    public function markAsRead(): Mail|string
     {
         try {
             return $this->removeLabel('UNREAD');
@@ -41,7 +43,7 @@ trait Modifiable
      *
      * @throws \Exception
      */
-    public function markAsUnread()
+    public function markAsUnread(): Mail|string
     {
         try {
             return $this->addLabel('UNREAD');
@@ -55,7 +57,7 @@ trait Modifiable
      *
      * @throws \Exception
      */
-    public function markAsImportant()
+    public function markAsImportant(): Mail|string
     {
         try {
             return $this->addLabel('IMPORTANT');
@@ -69,7 +71,7 @@ trait Modifiable
      *
      * @throws \Exception
      */
-    public function markAsNotImportant()
+    public function markAsNotImportant(): Mail|string
     {
         try {
             return $this->removeLabel('IMPORTANT');
@@ -83,7 +85,7 @@ trait Modifiable
      *
      * @throws \Exception
      */
-    public function addStar()
+    public function addStar(): Mail|string
     {
         try {
             return $this->addLabel('STARRED');
@@ -97,7 +99,7 @@ trait Modifiable
      *
      * @throws \Exception
      */
-    public function removeStar()
+    public function removeStar(): Mail|string
     {
         try {
             return $this->removeLabel('STARRED');
@@ -111,7 +113,7 @@ trait Modifiable
      *
      * @return \Dacastro4\LaravelGmail\Services\Message\Mail|\Exception
      */
-    public function sendToTrash()
+    public function sendToTrash(): Mail|\Exception
     {
         try {
             return $this->addLabel('TRASH');
@@ -120,7 +122,7 @@ trait Modifiable
         }
     }
 
-    public function removeFromTrash()
+    public function removeFromTrash(): Mail|\Exception
     {
         try {
             return $this->removeLabel('TRASH');

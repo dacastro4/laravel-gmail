@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Services\Message;
 
 use Dacastro4\LaravelGmail\GmailConnection;
@@ -12,33 +14,25 @@ class Attachment extends GmailConnection
 {
     use HasDecodableBody;
 
-    public $body;
+    public mixed $body = null;
 
-    public $id;
+    public string $id;
 
-    public $filename;
+    public string $filename;
 
-    public $mimeType;
+    public string $mimeType;
 
-    public $size;
+    public int $size;
 
-    public $headerDetails;
+    public array $headerDetails;
 
-    private $headers;
+    private array $headers = [];
 
-    /**
-     * @var Google_Service_Gmail
-     */
-    private $service;
+    public mixed $service;
 
-    private $messageId;
+    private string $messageId;
 
-    /**
-     * Attachment constructor.
-     *
-     * @param  int  $userId
-     */
-    public function __construct($singleMessageId, \Google_Service_Gmail_MessagePart $part, $userId = null)
+    public function __construct(string $singleMessageId, \Google_Service_Gmail_MessagePart $part, ?string $userId = null)
     {
         parent::__construct(config(), $userId);
 
@@ -59,7 +53,7 @@ class Attachment extends GmailConnection
      *
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -69,7 +63,7 @@ class Attachment extends GmailConnection
      *
      * @return string
      */
-    public function getFileName()
+    public function getFileName(): string
     {
         return $this->filename;
     }
@@ -79,7 +73,7 @@ class Attachment extends GmailConnection
      *
      * @return string
      */
-    public function getMimeType()
+    public function getMimeType(): string
     {
         return $this->mimeType;
     }
@@ -89,7 +83,7 @@ class Attachment extends GmailConnection
      *
      * @return mixed
      */
-    public function getSize()
+    public function getSize(): int
     {
         return $this->size;
     }
@@ -102,14 +96,15 @@ class Attachment extends GmailConnection
      *
      * @throws \Exception
      */
-    public function saveAttachmentTo($path = null, $filename = null, $disk = 'local')
+    public function saveAttachmentTo(?string $path = null, ?string $filename = null, string $disk = 'local'): string
     {
+        $dataRaw = $this->getData();
 
-        $data = $this->getDecodedBody($this->getData());
-
-        if (! $data) {
+        if (! $dataRaw) {
             throw new \Exception('Could not get the attachment.');
         }
+
+        $data = $this->getDecodedBody($dataRaw);
 
         $filename = $filename ?: $this->filename;
 
@@ -126,13 +121,12 @@ class Attachment extends GmailConnection
         Storage::disk($disk)->put($filePathAndName, $data);
 
         return $filePathAndName;
-
     }
 
     /**
      * @throws \Exception
      */
-    public function getData()
+    public function getData(): ?string
     {
         $attachment = $this->service->users_messages_attachments->get('me', $this->messageId, $this->id);
 
@@ -145,7 +139,7 @@ class Attachment extends GmailConnection
      *
      * @return array
      */
-    public function getHeaderDetails($headers)
+    public function getHeaderDetails(array $headers): array
     {
         $headerDetails = [];
 

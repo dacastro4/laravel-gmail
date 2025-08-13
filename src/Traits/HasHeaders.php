@@ -1,17 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Traits;
 
 trait HasHeaders
 {
     /**
      * Gets a single header from an existing email by name.
-     *
-     *
-     * @param  string  $regex  if this is set, value will be evaluated with the give regular expression.
-     * @return null|string
      */
-    public function getHeader($headerName, $regex = null)
+    public function getHeader(string $headerName, ?string $regex = null): ?string
     {
         $headers = $this->getHeaders();
 
@@ -28,11 +26,11 @@ trait HasHeaders
         }
 
         if (is_array($value)) {
-            return isset($value[1]) ? $value[1] : null;
+            return $value[1] ?? null;
         }
 
         return $value;
     }
 
-    abstract public function getHeaders();
+    abstract public function getHeaders(): \Illuminate\Support\Collection;
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Google_Service_Gmail;
@@ -11,16 +13,16 @@ use Illuminate\Support\Facades\Storage;
  */
 trait Configurable
 {
-    protected $additionalScopes = [];
+    protected array $additionalScopes = [];
 
-    private $_config;
+    private mixed $_config;
 
-    public function __construct($config)
+    public function __construct(mixed $config)
     {
         $this->_config = $config;
     }
 
-    public function config($string = null)
+    public function config(?string $string = null): mixed
     {
         $disk = Storage::disk('local');
         $fileName = $this->getFileName();
@@ -47,7 +49,7 @@ trait Configurable
         return null;
     }
 
-    private function getFileName()
+    private function getFileName(): ?string
     {
         if (property_exists(get_class($this), 'userId') && $this->userId) {
             $userId = $this->userId;
@@ -68,7 +70,7 @@ trait Configurable
     /**
      * @return array
      */
-    public function getConfigs()
+    public function getConfigs(): array
     {
         return [
             'client_secret' => $this->_config['gmail.client_secret'],
@@ -78,14 +80,14 @@ trait Configurable
         ];
     }
 
-    public function setAdditionalScopes(array $scopes)
+    public function setAdditionalScopes(array $scopes): self
     {
         $this->additionalScopes = $scopes;
 
         return $this;
     }
 
-    private function configApi()
+    private function configApi(): void
     {
         $type = $this->_config['gmail.access_type'];
         $approval_prompt = $this->_config['gmail.approval_prompt'];
@@ -99,12 +101,12 @@ trait Configurable
 
     abstract public function setScopes($scopes);
 
-    private function getUserScopes()
+    private function getUserScopes(): array
     {
         return $this->mapScopes();
     }
 
-    private function mapScopes()
+    private function mapScopes(): array
     {
         $scopes = array_merge($this->_config['gmail.scopes'] ?? [], $this->additionalScopes);
         $scopes = array_unique(array_filter($scopes));
@@ -119,7 +121,7 @@ trait Configurable
         return array_merge($mappedScopes, $this->_config['gmail.additional_scopes'] ?? []);
     }
 
-    private function scopeMap($scope)
+    private function scopeMap(string $scope): ?string
     {
         $scopes = [
             'all' => Google_Service_Gmail::MAIL_GOOGLE_COM,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Google_Service_Gmail_MessagePart;
@@ -7,12 +9,7 @@ use Illuminate\Support\Collection;
 
 trait HasParts
 {
-    /**
-     * LOL
-     *
-     * @var Collection
-     */
-    private $allParts;
+    private array $allParts = [];
 
     /**
      * Find all Parts of a message.
@@ -21,7 +18,7 @@ trait HasParts
      * @param  collection  $partsContainer  . F.e. collect([$message->payload])
      * @return Collection of all 'parts' flattened
      */
-    private function getAllParts($partsContainer)
+    private function getAllParts(Collection $partsContainer): Collection
     {
         $this->iterateParts($partsContainer);
 
@@ -36,7 +33,7 @@ trait HasParts
      * @param  bool  $returnOnFirstFound
      * @return Collection|bool
      */
-    private function iterateParts($partsContainer, $returnOnFirstFound = false)
+    private function iterateParts(Collection $partsContainer, bool $returnOnFirstFound = false): mixed
     {
         $parts = [];
 
@@ -44,10 +41,8 @@ trait HasParts
 
         if ($plucked->count()) {
             $parts = $plucked;
-        } else {
-            if ($partsContainer->count()) {
-                $parts = $partsContainer;
-            }
+        } elseif ($partsContainer->count()) {
+            $parts = $partsContainer;
         }
 
         if ($parts) {
@@ -63,5 +58,7 @@ trait HasParts
                 }
             }
         }
+
+        return null;
     }
 }

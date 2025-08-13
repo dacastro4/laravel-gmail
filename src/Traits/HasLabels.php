@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Google_Service_Gmail;
@@ -12,7 +14,7 @@ trait HasLabels
      *
      * @return \Google\Service\Gmail\ListLabelsResponse
      */
-    public function labelsList($userEmail)
+    public function labelsList(string $userEmail): \Google\Service\Gmail\ListLabelsResponse
     {
         $service = new Google_Service_Gmail($this);
 
@@ -25,7 +27,7 @@ trait HasLabels
      *
      * @return \Google\Service\Gmail\Label
      */
-    public function createLabel($userEmail, $label)
+    public function createLabel(string $userEmail, \Google_Service_Gmail_Label $label): \Google\Service\Gmail\Label
     {
         $service = new Google_Service_Gmail($this);
 
@@ -38,7 +40,7 @@ trait HasLabels
      * @param  $nLabel
      * @return \Google\Service\Gmail\Label
      */
-    public function firstOrCreateLabel($userEmail, $newLabel)
+    public function firstOrCreateLabel(string $userEmail, \Google_Service_Gmail_Label $newLabel): \Google\Service\Gmail\Label
     {
         $labels = $this->labelsList($userEmail);
 

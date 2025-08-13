@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Illuminate\Support\Arr;
@@ -8,11 +10,8 @@ trait SendsParameters
 {
     /**
      * Adds values to the property which is used to send additional parameters in the request.
-     *
-     * @param  string  $column
-     * @param  bool  $encode
      */
-    public function add($query, $column = 'q', $encode = true)
+    public function add(string $query, string $column = 'q', bool $encode = true): void
     {
         $query = $encode ? urlencode($query) : $query;
 
@@ -25,10 +24,9 @@ trait SendsParameters
         } else {
             $this->params = Arr::add($this->params, $column, $query);
         }
-
     }
 
-    public function addPageToken($token)
+    public function addPageToken(string $token): void
     {
         $this->params['pageToken'] = $token;
     }

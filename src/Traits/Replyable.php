@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Dacastro4\LaravelGmail\Services\Message\Mail;
@@ -18,97 +20,37 @@ trait Replyable
 {
     use HasHeaders;
 
-    private $symfonyEmail;
+    private Email $symfonyEmail;
 
-    /**
-     * Gmail optional parameters
-     *
-     * @var array
-     */
-    private $parameters = [];
+    private array $parameters = [];
 
-    /**
-     * Text or html message to send
-     *
-     * @var string
-     */
-    private $message;
+    private ?string $message = null;
 
-    /**
-     * Subject of the email
-     *
-     * @var string
-     */
-    private $subject;
+    private ?string $subject = null;
 
-    /**
-     * Sender's email
-     *
-     * @var string
-     */
-    private $from;
+    private ?string $from = null;
 
-    /**
-     * Sender's name
-     *
-     * @var string
-     */
-    private $nameFrom;
+    private ?string $nameFrom = null;
 
-    /**
-     * Email of the recipient
-     *
-     * @var string|array
-     */
-    private $to;
+    private string|array|null $to = null;
 
-    /**
-     * Name of the recipient
-     *
-     * @var string
-     */
-    private $nameTo;
+    private ?string $nameTo = null;
 
-    /**
-     * Single email or array of email for a carbon copy
-     *
-     * @var array|string
-     */
-    private $cc;
+    private string|array|null $cc = null;
 
-    /**
-     * Name of the recipient
-     *
-     * @var string
-     */
-    private $nameCc;
+    private ?string $nameCc = null;
 
-    /**
-     * Single email or array of email for a blind carbon copy
-     *
-     * @var array|string
-     */
-    private $bcc;
+    private string|array|null $bcc = null;
 
-    /**
-     * Name of the recipient
-     *
-     * @var string
-     */
-    private $nameBcc;
+    private ?string $nameBcc = null;
 
-    /**
-     * List of attachments
-     *
-     * @var array
-     */
-    private $attachments = [];
+    private array $attachments = [];
 
-    private $priority = 2;
+    private int $priority = 2;
 
     public function __construct()
     {
-        $this->symfonyEmail = new Email;
+        $this->symfonyEmail = new Email();
     }
 
     /**
@@ -123,7 +65,7 @@ trait Replyable
      * @param  string|null  $name
      * @return Replyable
      */
-    public function to($to, $name = null)
+    public function to(string|array $to, ?string $name = null): self
     {
         $this->to = $this->emailList($to, $name);
         $this->nameTo = $name;
@@ -131,7 +73,7 @@ trait Replyable
         return $this;
     }
 
-    public function from($from, $name = null)
+    public function from(string $from, ?string $name = null): self
     {
         $this->from = $from;
         $this->nameFrom = $name;
@@ -139,12 +81,7 @@ trait Replyable
         return $this;
     }
 
-    /**
-     * @param  array|string  $cc
-     * @param  string|null  $name
-     * @return Replyable
-     */
-    public function cc($cc, $name = null)
+    public function cc(string|array $cc, ?string $name = null): self
     {
         $this->cc = $this->emailList($cc, $name);
         $this->nameCc = $name;
@@ -152,21 +89,21 @@ trait Replyable
         return $this;
     }
 
-    private function emailList($list, $name = null)
+    private function emailList(string|array $list, string|array|null $name = null): array|string
     {
         if (is_array($list)) {
-            return $this->convertEmailList($list, $name);
-        } else {
-            return $list;
+            return $this->convertEmailList($list, is_array($name) ? $name : (isset($name) ? [$name] : null));
         }
+
+        return $list;
     }
 
-    private function convertEmailList($emails, $name = null)
+    private function convertEmailList(array $emails, ?array $name = null): array
     {
         $newList = [];
         $count = 0;
         foreach ($emails as $key => $email) {
-            $emailName = isset($name[$count]) ? $name[$count] : explode('@', $email)[0];
+            $emailName = $name[$count] ?? explode('@', $email)[0];
             $newList[$email] = $emailName;
             $count = $count + 1;
         }
@@ -174,12 +111,7 @@ trait Replyable
         return $newList;
     }
 
-    /**
-     * @param  array|string  $bcc
-     * @param  string|null  $name
-     * @return Replyable
-     */
-    public function bcc($bcc, $name = null)
+    public function bcc(string|array $bcc, ?string $name = null): self
     {
         $this->bcc = $this->emailList($bcc, $name);
         $this->nameBcc = $name;
@@ -187,11 +119,7 @@ trait Replyable
         return $this;
     }
 
-    /**
-     * @param  string  $subject
-     * @return Replyable
-     */
-    public function subject($subject)
+    public function subject(string $subject): self
     {
         $this->subject = $subject;
 
@@ -206,7 +134,7 @@ trait Replyable
      *
      * @throws \Throwable
      */
-    public function view($view, $data = [], $mergeData = [])
+    public function view(string $view, array $data = [], array $mergeData = []): self
     {
         $this->message = view($view, $data, $mergeData)->render();
 
@@ -220,7 +148,7 @@ trait Replyable
      *
      * @throws \Throwable
      */
-    public function markdown(string $markdown_view, array $data = [])
+    public function markdown(string $markdown_view, array $data = []): self
     {
         $markdown = Container::getInstance()->make(Markdown::class);
 
@@ -237,7 +165,7 @@ trait Replyable
      * @param  string  $message
      * @return Replyable
      */
-    public function message($message)
+    public function message(string $message): self
     {
         $this->message = $message;
 
@@ -252,16 +180,14 @@ trait Replyable
      *
      * @throws \Exception
      */
-    public function attach(...$files)
+    public function attach(string ...$files): self
     {
-
         foreach ($files as $file) {
-
             if (! file_exists($file)) {
                 throw new FileNotFoundException($file);
             }
 
-            array_push($this->attachments, $file);
+            $this->attachments[] = $file;
         }
 
         return $this;
@@ -273,7 +199,7 @@ trait Replyable
      * @param  int  $priority
      * @return Replyable
      */
-    public function priority($priority)
+    public function priority(int $priority): self
     {
         $this->priority = $priority;
 
@@ -283,21 +209,14 @@ trait Replyable
     /**
      * @return Replyable
      */
-    public function optionalParameters(array $parameters)
+    public function optionalParameters(array $parameters): self
     {
         $this->parameters = $parameters;
 
         return $this;
     }
 
-    /**
-     * Reply to a specific email
-     *
-     * @return Mail
-     *
-     * @throws \Exception
-     */
-    public function reply()
+    public function reply(): Mail
     {
         if (! $this->getId()) {
             throw new \Exception('This is a new email. Use send().');
@@ -313,9 +232,9 @@ trait Replyable
         return new Mail($this->service->users_messages->send('me', $body, $this->parameters));
     }
 
-    abstract public function getId();
+    abstract public function getId(): string;
 
-    private function setReplyThread()
+    private function setReplyThread(): void
     {
         $threadId = $this->getThreadId();
         if ($threadId) {
@@ -325,7 +244,7 @@ trait Replyable
         }
     }
 
-    private function getMessageIdHeader()
+    private function getMessageIdHeader(): ?string
     {
         if ($messageId = $this->getHeader('Message-ID')) {
             return $messageId;
@@ -338,30 +257,23 @@ trait Replyable
         return null;
     }
 
-    abstract public function getThreadId();
+    abstract public function getThreadId(): ?string;
 
-    /**
-     * Add a header to the email
-     *
-     * @param  string  $header
-     * @param  string  $value
-     */
-    public function setHeader($header, $value)
+    public function setHeader(string $header, string $value): void
     {
         $headers = $this->symfonyEmail->getHeaders();
 
         $headers->addTextHeader($header, $value);
-
     }
 
-    private function setReplySubject()
+    private function setReplySubject(): void
     {
         if (! $this->subject) {
             $this->subject = $this->getSubject();
         }
     }
 
-    private function setReplyTo()
+    private function setReplyTo(): void
     {
         if (! $this->to) {
             $replyTo = $this->getReplyTo();
@@ -371,7 +283,7 @@ trait Replyable
         }
     }
 
-    private function setReplyFrom()
+    private function setReplyFrom(): void
     {
         if (! $this->from) {
             $this->from = $this->getUser();
@@ -381,18 +293,15 @@ trait Replyable
         }
     }
 
-    abstract public function getSubject();
+    abstract public function getSubject(): ?string;
 
-    abstract public function getReplyTo();
+    abstract public function getReplyTo(): array;
 
-    abstract public function getUser();
+    abstract public function getUser(): ?string;
 
-    /**
-     * @return Google_Service_Gmail_Message
-     */
-    private function getMessageBody()
+    private function getMessageBody(): Google_Service_Gmail_Message
     {
-        $body = new Google_Service_Gmail_Message;
+        $body = new Google_Service_Gmail_Message();
 
         $this->symfonyEmail
             ->from($this->fromAddress())
@@ -418,11 +327,7 @@ trait Replyable
         return $body;
     }
 
-    /**
-     * @param  array|string  $cc
-     * @return array|string
-     */
-    public function returnCopies($cc)
+    public function returnCopies(array|string $cc): array|string
     {
         if ($cc) {
             $final = $this->cc;
@@ -439,7 +344,7 @@ trait Replyable
         return [];
     }
 
-    public function toAddress()
+    public function toAddress(): Address|array
     {
         if ($this->to) {
             return new Address($this->to, $this->nameTo ?: '');
@@ -448,7 +353,7 @@ trait Replyable
         return [];
     }
 
-    public function fromAddress()
+    public function fromAddress(): Address|array
     {
         if ($this->from) {
             return new Address($this->from, $this->nameFrom ?: '');
@@ -457,17 +362,12 @@ trait Replyable
         return [];
     }
 
-    private function base64_encode($data)
+    private function base64_encode(string $data): string
     {
         return rtrim(strtr(base64_encode($data), ['+' => '-', '/' => '_']), '=');
     }
 
-    /**
-     * Sends a new email
-     *
-     * @return self|Mail
-     */
-    public function send()
+    public function send(): self
     {
         $body = $this->getMessageBody();
 
@@ -476,5 +376,5 @@ trait Replyable
         return $this;
     }
 
-    abstract protected function setMessage(\Google_Service_Gmail_Message $message);
+    abstract protected function setMessage(\Google_Service_Gmail_Message $message): void;
 }

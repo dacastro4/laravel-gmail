@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Dacastro4\LaravelGmail\Services\Message;
@@ -7,52 +9,32 @@ use Dacastro4\LaravelGmail\Services\Message;
 trait Filterable
 {
     /**
-     * Filter to get only unread emalis
-     *
-     * @return self|Message
+     * Filter to get only unread emails
      */
-    public function unread()
+    public function unread(): self|Message
     {
         $this->add('is:unread');
 
         return $this;
     }
 
-    abstract public function add($query, $column = 'q', $encode = true);
+    abstract public function add(string $query, string $column = 'q', bool $encode = true): void;
 
-    /**
-     * Filter to get only unread emalis
-     *
-     *
-     * @return self|Message
-     */
-    public function subject($query)
+    public function subject(string $query): self|Message
     {
         $this->add("[{$query}]");
 
         return $this;
     }
 
-    /**
-     * Filter to get only emails from a specific email address
-     *
-     *
-     * @return self|Message
-     */
-    public function to($email)
+    public function to(string $email): self|Message
     {
         $this->add("to:{$email}");
 
         return $this;
     }
 
-    /**
-     * add an array of from addresses
-     *
-     *
-     * @return self|Message
-     */
-    public function fromThese(array $emails)
+    public function fromThese(array $emails): self|Message
     {
         $emailsCount = count($emails);
         for ($i = 0; $i < $emailsCount; $i++) {
@@ -62,86 +44,42 @@ trait Filterable
         return $this;
     }
 
-    /**
-     * Filter to get only emails from a specific email address
-     *
-     *
-     * @return self|Message
-     */
-    public function from($email)
+    public function from(string $email): self|Message
     {
         $this->add("from:{$email}");
 
         return $this;
     }
 
-    /**
-     * Filter to get only emails after a specific date
-     *
-     *
-     * @return self|Message
-     */
-    public function after($date)
+    public function after(string $date): self|Message
     {
         $this->add("after:{$date}");
 
         return $this;
     }
 
-    /**
-     * Filter to get only emails before a specific date
-     *
-     *
-     * @return self|Message
-     */
-    public function before($date)
+    public function before(string $date): self|Message
     {
         $this->add("before:{$date}");
 
         return $this;
     }
 
-    /**
-     * Filter by a Gmail raw query
-     * Label should be the last thing to put in the raw query
-     *
-     *
-     * @return self|Message
-     */
-    public function raw($query)
+    public function raw(string $query): self|Message
     {
         $this->add($query, 'q', false);
 
         return $this;
     }
 
-    /**
-     * Filters emails by tag
-     * Example:
-     * * starred
-     * * inbox
-     * * spam
-     * * chats
-     * * sent
-     * * draft
-     * * trash
-     *
-     *
-     * @return self|Message
-     */
-    public function in($box = 'inbox')
+    public function in(string $box = 'inbox'): self|Message
     {
         $this->add("in:{$box}");
 
         return $this;
     }
 
-    /**
-     * Determines if the email has attachments
-     *
-     * @return self|Message
-     */
-    public function hasAttachment()
+    public function hasAttachment(): self|Message
     {
         $this->add('has:attachment');
 

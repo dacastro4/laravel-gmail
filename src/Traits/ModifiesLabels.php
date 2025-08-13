@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Traits;
 
 use Dacastro4\LaravelGmail\Services\Message\Mail;
@@ -7,11 +9,11 @@ use Google_Service_Gmail_ModifyMessageRequest;
 
 trait ModifiesLabels
 {
-    private $messageRequest;
+    private Google_Service_Gmail_ModifyMessageRequest $messageRequest;
 
     public function __construct()
     {
-        $this->messageRequest = new Google_Service_Gmail_ModifyMessageRequest;
+        $this->messageRequest = new Google_Service_Gmail_ModifyMessageRequest();
     }
 
     /**
@@ -22,7 +24,7 @@ trait ModifiesLabels
      *
      * @throws \Exception
      */
-    public function addLabel($labels)
+    public function addLabel(string|array $labels): Mail|string
     {
         if (is_string($labels)) {
             $labels = [$labels];
@@ -42,12 +44,12 @@ trait ModifiesLabels
      *
      * @return Mail
      */
-    private function modify()
+    private function modify(): Mail
     {
         return new Mail($this->service->users_messages->modify('me', $this->getId(), $this->messageRequest));
     }
 
-    abstract public function getId();
+    abstract public function getId(): string;
 
     /**
      * Removes labels from the email
@@ -57,7 +59,7 @@ trait ModifiesLabels
      *
      * @throws \Exception
      */
-    public function removeLabel($labels)
+    public function removeLabel(string|array $labels): Mail|string
     {
         if (is_string($labels)) {
             $labels = [$labels];

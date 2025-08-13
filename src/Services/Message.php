@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dacastro4\LaravelGmail\Services;
 
 use Dacastro4\LaravelGmail\LaravelGmailClass;
@@ -16,7 +18,7 @@ class Message
     use Filterable,
         SendsParameters;
 
-    private Google_Service_Gmail $service;
+    public mixed $service;
 
     private bool $preload = false;
 
@@ -160,7 +162,7 @@ class Message
     /**
      * @throws \Google_Exception
      */
-    private function getMessagesResponse(): array|Google_Service_Gmail_ListMessagesResponse
+    private function getMessagesResponse(): mixed
     {
         $responseOrRequest = $this->service->users_messages->listUsersMessages('me', $this->params);
 

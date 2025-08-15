@@ -43,6 +43,8 @@ class Mail extends GmailConnection
 
     protected ?Google_Service_Gmail_MessagePart $payload = null;
 
+    protected ?string $snippet = null;
+
     protected ?Collection $parts = null;
 
     protected Google_Service_Gmail $service;
@@ -87,6 +89,7 @@ class Mail extends GmailConnection
         $this->threadId = $message->getThreadId();
         $this->historyId = $message->getHistoryId();
         $this->payload = $message->getPayload();
+        $this->snippet = $message->getSnippet();
         if ($this->payload) {
             $this->parts = collect($this->payload->getParts());
         }
@@ -172,6 +175,14 @@ class Mail extends GmailConnection
         $replyTo = $this->getHeader('Reply-To');
 
         return $this->getFrom($replyTo ? $replyTo : $this->getHeader('From'));
+    }
+
+    /**
+     * Returns the snippet from the email
+     */
+    public function getSnippet(): ?string
+    {
+        return $this->snippet;
     }
 
     /**

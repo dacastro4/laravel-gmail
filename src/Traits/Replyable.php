@@ -50,7 +50,7 @@ trait Replyable
 
     public function __construct()
     {
-        $this->symfonyEmail = new Email();
+        $this->symfonyEmail = new Email;
     }
 
     /**
@@ -61,8 +61,6 @@ trait Replyable
      * If $name is passed and the first parameter is a string, this name will be
      * associated with the address.
      *
-     * @param  string|array  $to
-     * @param  string|null  $name
      * @return Replyable
      */
     public function to(string|array $to, ?string $name = null): self
@@ -127,9 +125,6 @@ trait Replyable
     }
 
     /**
-     * @param  string  $view
-     * @param  array  $data
-     * @param  array  $mergeData
      * @return Replyable
      *
      * @throws \Throwable
@@ -162,7 +157,6 @@ trait Replyable
     }
 
     /**
-     * @param  string  $message
      * @return Replyable
      */
     public function message(string $message): self
@@ -196,7 +190,6 @@ trait Replyable
     /**
      * The value is an integer where 1 is the highest priority and 5 is the lowest.
      *
-     * @param  int  $priority
      * @return Replyable
      */
     public function priority(int $priority): self
@@ -229,7 +222,7 @@ trait Replyable
         $body = $this->getMessageBody();
         $body->setThreadId($this->getThreadId());
 
-        return new Mail($this->service->users_messages->send('me', $body, $this->parameters));
+        return new Mail($this->getTokenRepository(), $this->service->users_messages->send('me', $body, $this->parameters));
     }
 
     abstract public function getId(): string;
@@ -301,7 +294,7 @@ trait Replyable
 
     private function getMessageBody(): Google_Service_Gmail_Message
     {
-        $body = new Google_Service_Gmail_Message();
+        $body = new Google_Service_Gmail_Message;
 
         $this->symfonyEmail
             ->from($this->fromAddress())

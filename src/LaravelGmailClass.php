@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dacastro4\LaravelGmail;
 
+use Dacastro4\LaravelGmail\Contracts\TokenRepository;
 use Dacastro4\LaravelGmail\Exceptions\AuthException;
 use Dacastro4\LaravelGmail\Services\Message;
 use Illuminate\Http\RedirectResponse;
@@ -11,13 +12,13 @@ use Illuminate\Support\Facades\Redirect;
 
 class LaravelGmailClass extends GmailConnection
 {
-    public function __construct(mixed $config, ?string $userId = null)
+    public function __construct(mixed $config, TokenRepository $tokenRepository, ?string $userId = null)
     {
         if (class_basename($config) === 'Application') {
             $config = $config['config'];
         }
 
-        parent::__construct($config, $userId);
+        parent::__construct($tokenRepository, $config, $userId);
     }
 
     /**

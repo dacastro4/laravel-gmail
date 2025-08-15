@@ -1,5 +1,7 @@
 <?php
 
+
+use Dacastro4\LaravelGmail\Repositories\StorageTokenRepository;
 use Dacastro4\LaravelGmail\LaravelGmailClass;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Illuminate\Container\Container;
@@ -9,6 +11,19 @@ use Tests\TestCase;
 
 class LaravelGmailTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config([
+            'gmail.client_secret' => 'secret',
+            'gmail.client_id' => 'client',
+            'gmail.redirect_url' => '/',
+            'gmail.credentials_file_name' => 'test-token',
+            'gmail.allow_json_encrypt' => false,
+        ]);
+    }
+
     /** @test */
     public function test_markdown_method()
     {
@@ -24,7 +39,8 @@ class LaravelGmailTest extends TestCase
         );
 
         // trigger
-        (new Mail)->markdown(
+        $repository = new StorageTokenRepository;
+        (new Mail($repository))->markdown(
             'sample-markdown',
             ['url' => 'https://www.google.com']
         );
@@ -35,7 +51,8 @@ class LaravelGmailTest extends TestCase
     {
         $emails = 'Alice <alice@example.com>, Bob <bob@example.com>';
 
-        $formatted = (new Mail)->formatEmailList($emails);
+        $repository = new StorageTokenRepository;
+        $formatted = (new Mail($repository))->formatEmailList($emails);
 
         $this->assertCount(2, $formatted);
         $this->assertEquals(['name' => 'Alice', 'email' => 'alice@example.com'], $formatted[0]);

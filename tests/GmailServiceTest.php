@@ -3,6 +3,7 @@
 use Dacastro4\LaravelGmail\Exceptions\AuthException;
 use Dacastro4\LaravelGmail\GmailConnection;
 use Dacastro4\LaravelGmail\LaravelGmailClass;
+use Dacastro4\LaravelGmail\Repositories\StorageTokenRepository;
 use Dacastro4\LaravelGmail\Services\Message;
 use Dacastro4\LaravelGmail\Services\Message\Attachment;
 use Illuminate\Support\Facades\Storage;
@@ -29,7 +30,8 @@ class GmailServiceTest extends TestCase
     {
         Storage::fake('local');
 
-        $connection = new GmailConnection($this->app['config']);
+        $repository = new StorageTokenRepository;
+        $connection = new GmailConnection($repository, $this->app['config']);
         $token = ['access_token' => 'token', 'refresh_token' => 'refresh'];
         $connection->saveAccessToken($token);
 
@@ -42,7 +44,8 @@ class GmailServiceTest extends TestCase
     {
         Storage::fake('local');
 
-        $connection = new GmailConnection($this->app['config']);
+        $repository = new StorageTokenRepository;
+        $connection = new GmailConnection($repository, $this->app['config']);
 
         $this->assertFalse($connection->checkPreviouslyLoggedIn());
     }
@@ -51,10 +54,11 @@ class GmailServiceTest extends TestCase
     public function test_message_retrieval_returns_collection()
     {
         Storage::fake('local');
-        $client = new LaravelGmailClass($this->app['config']);
-        $service = new \stdClass();
+        $repository = new StorageTokenRepository;
+        $client = new LaravelGmailClass($this->app['config'], $repository);
+        $service = new \stdClass;
 
-        $googleMessage = new \Google_Service_Gmail_Message();
+        $googleMessage = new \Google_Service_Gmail_Message;
         $googleMessage->setId('msg1');
 
         $response = Mockery::mock();
@@ -78,8 +82,9 @@ class GmailServiceTest extends TestCase
     public function test_message_retrieval_handles_empty_response()
     {
         Storage::fake('local');
-        $client = new LaravelGmailClass($this->app['config']);
-        $service = new \stdClass();
+        $repository = new StorageTokenRepository;
+        $client = new LaravelGmailClass($this->app['config'], $repository);
+        $service = new \stdClass;
 
         $response = Mockery::mock();
         $response->shouldReceive('getMessages')->andReturn([]);
@@ -113,14 +118,15 @@ class GmailServiceTest extends TestCase
         $part->shouldReceive('getMimeType')->andReturn('text/plain');
         $part->shouldReceive('getHeaders')->andReturn([]);
 
-        $attachment = new Attachment('msg', $part);
+        $repository = new StorageTokenRepository;
+        $attachment = new Attachment($repository, 'msg', $part);
 
         $attachmentsResource = Mockery::mock();
         $attachmentData = Mockery::mock();
         $attachmentData->shouldReceive('getData')->andReturn(base64_encode('content'));
         $attachmentsResource->shouldReceive('get')->with('me', 'msg', 'attach')->andReturn($attachmentData);
 
-        $service = new \stdClass();
+        $service = new \stdClass;
         $service->users_messages_attachments = $attachmentsResource;
         $ref = new ReflectionProperty(Attachment::class, 'service');
         $ref->setAccessible(true);
@@ -147,14 +153,15 @@ class GmailServiceTest extends TestCase
         $part->shouldReceive('getMimeType')->andReturn('text/plain');
         $part->shouldReceive('getHeaders')->andReturn([]);
 
-        $attachment = new Attachment('msg', $part);
+        $repository = new StorageTokenRepository;
+        $attachment = new Attachment($repository, 'msg', $part);
 
         $attachmentsResource = Mockery::mock();
         $attachmentData = Mockery::mock();
         $attachmentData->shouldReceive('getData')->andReturn(null);
         $attachmentsResource->shouldReceive('get')->andReturn($attachmentData);
 
-        $service = new \stdClass();
+        $service = new \stdClass;
         $service->users_messages_attachments = $attachmentsResource;
         $ref = new ReflectionProperty(Attachment::class, 'service');
         $ref->setAccessible(true);
@@ -168,7 +175,8 @@ class GmailServiceTest extends TestCase
     public function test_message_method_throws_exception_without_credentials()
     {
         Storage::fake('local');
-        $client = new LaravelGmailClass($this->app['config']);
+        $repository = new StorageTokenRepository;
+        $client = new LaravelGmailClass($this->app['config'], $repository);
 
         $this->expectException(AuthException::class);
         $client->message();

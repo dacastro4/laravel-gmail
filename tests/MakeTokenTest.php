@@ -1,6 +1,7 @@
 <?php
 
 use Dacastro4\LaravelGmail\GmailConnection;
+use Dacastro4\LaravelGmail\Repositories\StorageTokenRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -26,7 +27,8 @@ class MakeTokenTest extends TestCase
             'gmail.allow_json_encrypt' => false,
         ];
 
-        $connection = \Mockery::mock(GmailConnection::class.'[check,fetchAccessTokenWithAuthCode]', [$config]);
+        $repository = new StorageTokenRepository;
+        $connection = \Mockery::mock(GmailConnection::class.'[check,fetchAccessTokenWithAuthCode]', [$repository, $config]);
         $connection->shouldReceive('check')->andReturn(false);
         $connection->shouldReceive('fetchAccessTokenWithAuthCode')
             ->with('test-code')

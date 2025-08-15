@@ -9,7 +9,6 @@ use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Dacastro4\LaravelGmail\Traits\Filterable;
 use Dacastro4\LaravelGmail\Traits\SendsParameters;
 use Google_Service_Gmail;
-use Google_Service_Gmail_ListMessagesResponse;
 use Google_Service_Gmail_Message;
 use Illuminate\Support\Collection;
 
@@ -71,7 +70,7 @@ class Message
 
         if (! $this->preload) {
             foreach ($messages as $message) {
-                $mails[] = new Mail($message, $this->preload, $this->client->userId);
+                $mails[] = new Mail($this->client->getTokenRepository(), $message, $this->preload, $this->client->userId);
             }
         } else {
             $mails = count($messages) > 0 ? $this->batchRequest($messages) : [];
@@ -107,7 +106,7 @@ class Message
     {
         $message = $this->getRequest($id);
 
-        return new Mail($message, false, $this->client->userId);
+        return new Mail($this->client->getTokenRepository(), $message, false, $this->client->userId);
     }
 
     /**
@@ -130,7 +129,7 @@ class Message
         $messages = [];
 
         foreach ($messagesBatch as $message) {
-            $messages[] = new Mail($message, false, $this->client->userId);
+            $messages[] = new Mail($this->client->getTokenRepository(), $message, false, $this->client->userId);
         }
 
         return $messages;

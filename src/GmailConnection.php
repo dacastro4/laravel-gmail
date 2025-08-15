@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Dacastro4\LaravelGmail;
 
+use Dacastro4\LaravelGmail\Contracts\TokenRepository;
 use Dacastro4\LaravelGmail\Traits\Configurable;
 use Dacastro4\LaravelGmail\Traits\HasLabels;
 use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class GmailConnection extends Google_Client
 {
@@ -33,9 +33,13 @@ class GmailConnection extends Google_Client
 
     public ?string $userId = null;
 
-    public function __construct(mixed $config = null, ?string $userId = null)
+    protected TokenRepository $tokenRepository;
+
+    public function __construct(TokenRepository $tokenRepository, mixed $config = null, ?string $userId = null)
     {
         $this->app = Container::getInstance();
+
+        $this->tokenRepository = $tokenRepository;
 
         $this->userId = $userId;
 
@@ -53,6 +57,11 @@ class GmailConnection extends Google_Client
 
     }
 
+    public function getTokenRepository(): TokenRepository
+    {
+        return $this->tokenRepository;
+    }
+
     public function getUserId(): ?string
     {
         return $this->userId;
@@ -60,22 +69,17 @@ class GmailConnection extends Google_Client
 
     /**
      * Check and return true if the user has previously logged in without checking if the token needs to refresh
-     *
-     * @return bool
      */
     public function checkPreviouslyLoggedIn(): bool
     {
         $fileName = $this->getFileName();
-        $file = "gmail/tokens/$fileName.json";
-        $disk = Storage::disk('local');
+        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
 
-        if (! $disk->exists($file)) {
+        if (! $this->tokenRepository->tokenExists($fileName)) {
             return false;
         }
 
-        $contents = $disk->get($file);
-        $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
-        $savedConfigToken = json_decode($allowJsonEncrypt ? decrypt($contents) : $contents, true);
+        $savedConfigToken = $this->tokenRepository->getToken($fileName, $allowJsonEncrypt);
 
         return ! empty($savedConfigToken['access_token']);
     }
@@ -152,39 +156,14 @@ class GmailConnection extends Google_Client
      */
     public function saveAccessToken(array $config): void
     {
-        $disk = Storage::disk('local');
         $fileName = $this->getFileName();
-        $file = "gmail/tokens/$fileName.json";
         $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
         $config['email'] = $this->emailAddress;
 
-        if ($disk->exists($file)) {
-
-            if (empty($config['email'])) {
-                if ($allowJsonEncrypt) {
-                    $savedConfigToken = json_decode(decrypt($disk->get($file)), true);
-                } else {
-                    $savedConfigToken = json_decode($disk->get($file), true);
-                }
-                if (isset($savedConfigToken['email'])) {
-                    $config['email'] = $savedConfigToken['email'];
-                }
-            }
-
-            $disk->delete($file);
-        }
-
-        if ($allowJsonEncrypt) {
-            $disk->put($file, encrypt(json_encode($config)));
-        } else {
-            $disk->put($file, json_encode($config));
-        }
-
+        $this->tokenRepository->storeToken($fileName, $config, $allowJsonEncrypt);
     }
 
     /**
-     * @return array|string
-     *
      * @throws \Exception
      */
     public function makeToken(Request $request): array|string
@@ -213,8 +192,6 @@ class GmailConnection extends Google_Client
 
     /**
      * Check
-     *
-     * @return bool
      */
     public function check(): bool
     {
@@ -223,8 +200,6 @@ class GmailConnection extends Google_Client
 
     /**
      * Gets user profile from Gmail
-     *
-     * @return \Google_Service_Gmail_Profile
      */
     public function getProfile(): \Google_Service_Gmail_Profile
     {
@@ -246,22 +221,10 @@ class GmailConnection extends Google_Client
      */
     public function deleteAccessToken(): void
     {
-        $disk = Storage::disk('local');
         $fileName = $this->getFileName();
-        $file = "gmail/tokens/$fileName.json";
-
         $allowJsonEncrypt = $this->_config['gmail.allow_json_encrypt'];
 
-        if ($disk->exists($file)) {
-            $disk->delete($file);
-        }
-
-        if ($allowJsonEncrypt) {
-            $disk->put($file, encrypt(json_encode([])));
-        } else {
-            $disk->put($file, json_encode([]));
-        }
-
+        $this->tokenRepository->deleteToken($fileName, $allowJsonEncrypt);
     }
 
     private function haveReadScope(): bool
@@ -275,8 +238,6 @@ class GmailConnection extends Google_Client
      * users.stop receiving push notifications for the given user mailbox.
      *
      * @param  string  $userEmail  Email address
-     * @param  array  $optParams
-     * @return \Google_Service_Gmail_Stop
      */
     public function stopWatch(string $userEmail, array $optParams = []): \Google_Service_Gmail_Stop
     {
@@ -299,8 +260,6 @@ class GmailConnection extends Google_Client
 
     /**
      * Lists the history of all changes to the given mailbox. History results are returned in chronological order (increasing historyId).
-     *
-     * @return \Google\Service\Gmail\ListHistoryResponse
      */
     public function historyList(string $userEmail, array $params): \Google\Service\Gmail\ListHistoryResponse
     {

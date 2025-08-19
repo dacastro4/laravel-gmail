@@ -13,14 +13,12 @@ trait ModifiesLabels
 
     public function __construct()
     {
-        $this->messageRequest = new Google_Service_Gmail_ModifyMessageRequest();
+        $this->messageRequest = new Google_Service_Gmail_ModifyMessageRequest;
     }
 
     /**
      * Adds labels to the email
      *
-     * @param  string|array  $labels
-     * @return Mail|string
      *
      * @throws \Exception
      */
@@ -41,12 +39,10 @@ trait ModifiesLabels
 
     /**
      * Executes the modification
-     *
-     * @return Mail
      */
     private function modify(): Mail
     {
-        return new Mail($this->service->users_messages->modify('me', $this->getId(), $this->messageRequest));
+        return new Mail($this->getTokenRepository(), $this->service->users_messages->modify('me', $this->getId(), $this->messageRequest));
     }
 
     abstract public function getId(): string;
@@ -54,8 +50,6 @@ trait ModifiesLabels
     /**
      * Removes labels from the email
      *
-     * @param  string|array  $labels
-     * @return Mail|string
      *
      * @throws \Exception
      */

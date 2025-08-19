@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dacastro4\LaravelGmail\Services\Message;
 
 use Carbon\Carbon;
+use Dacastro4\LaravelGmail\Contracts\TokenRepository;
 use Dacastro4\LaravelGmail\GmailConnection;
 use Dacastro4\LaravelGmail\Traits\HasDecodableBody;
 use Dacastro4\LaravelGmail\Traits\HasParts;
@@ -42,17 +43,19 @@ class Mail extends GmailConnection
 
     protected ?Google_Service_Gmail_MessagePart $payload = null;
 
+    protected ?string $snippet = null;
+
     protected ?Collection $parts = null;
 
     protected Google_Service_Gmail $service;
 
-    public function __construct(?\Google_Service_Gmail_Message $message = null, bool $preload = false, ?string $userId = null)
+    public function __construct(TokenRepository $tokenRepository, ?\Google_Service_Gmail_Message $message = null, bool $preload = false, ?string $userId = null)
     {
         $this->service = new Google_Service_Gmail($this);
 
         $this->__rConstruct();
         $this->__mConstruct();
-        parent::__construct(config(), $userId);
+        parent::__construct($tokenRepository, config(), $userId);
 
         if (! is_null($message)) {
             if ($preload) {
@@ -86,6 +89,7 @@ class Mail extends GmailConnection
         $this->threadId = $message->getThreadId();
         $this->historyId = $message->getHistoryId();
         $this->payload = $message->getPayload();
+        $this->snippet = $message->getSnippet();
         if ($this->payload) {
             $this->parts = collect($this->payload->getParts());
         }
@@ -171,6 +175,14 @@ class Mail extends GmailConnection
         $replyTo = $this->getHeader('Reply-To');
 
         return $this->getFrom($replyTo ? $replyTo : $this->getHeader('From'));
+    }
+
+    /**
+     * Returns the snippet from the email
+     */
+    public function getSnippet(): ?string
+    {
+        return $this->snippet;
     }
 
     /**
@@ -389,12 +401,12 @@ class Mail extends GmailConnection
 
     public function getAttachments(bool $preload = false): Collection
     {
-        $attachments = new Collection();
+        $attachments = new Collection;
         $parts = $this->getAllParts($this->parts);
 
         foreach ($parts as $part) {
             if (! empty($part->body->attachmentId)) {
-                $attachment = (new Attachment($part->body->attachmentId, $part, $this->userId));
+                $attachment = new Attachment($this->getTokenRepository(), $part->body->attachmentId, $part, $this->userId);
 
                 if ($preload) {
                     $attachment = $attachment->getData();
@@ -457,7 +469,7 @@ class Mail extends GmailConnection
 
         foreach ($emailHeaders as $header) {
             /** @var \Google_Service_Gmail_MessagePartHeader $header */
-            $head = new \stdClass();
+            $head = new \stdClass;
 
             $head->key = $header->getName();
             $head->value = $header->getValue();

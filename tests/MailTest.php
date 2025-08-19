@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Dacastro4\LaravelGmail\Contracts\TokenRepository;
 use Dacastro4\LaravelGmail\Services\Message\Mail;
 use Illuminate\Support\Facades\Storage;
 
@@ -25,6 +26,7 @@ class MailTest extends TestCase
     public function get_from_parses_name_and_email()
     {
         Storage::fake('local');
+
         $mail = new Mail;
 
         $header = new \Google_Service_Gmail_MessagePartHeader;
@@ -42,5 +44,34 @@ class MailTest extends TestCase
         $this->assertSame('John Doe', $from['name']);
         $this->assertSame('john@example.com', $from['email']);
         $this->assertSame('john@example.com', $mail->getFromEmail());
+    }
+
+    /** @test */
+    public function it_returns_the_snippet()
+    {
+        Storage::fake('local');
+        $tokenRepo = new class implements TokenRepository
+        {
+            public function tokenExists(string $fileName): bool
+            {
+                return false;
+            }
+
+            public function getToken(string $fileName, bool $allowJsonEncrypt): array
+            {
+                return [];
+            }
+
+            public function storeToken(string $fileName, array $config, bool $allowJsonEncrypt): void {}
+
+            public function deleteToken(string $fileName, bool $allowJsonEncrypt): void {}
+        };
+        $mail = new Mail($tokenRepo);
+
+        $ref = new \ReflectionProperty(Mail::class, 'snippet');
+        $ref->setAccessible(true);
+        $ref->setValue($mail, 'This is a snippet');
+
+        $this->assertSame('This is a snippet', $mail->getSnippet());
     }
 }

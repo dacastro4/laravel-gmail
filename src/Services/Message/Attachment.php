@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dacastro4\LaravelGmail\Services\Message;
 
+use Dacastro4\LaravelGmail\Contracts\TokenRepository;
 use Dacastro4\LaravelGmail\GmailConnection;
 use Dacastro4\LaravelGmail\Traits\HasDecodableBody;
 use Google_Service_Gmail;
@@ -32,9 +33,9 @@ class Attachment extends GmailConnection
 
     private string $messageId;
 
-    public function __construct(string $singleMessageId, \Google_Service_Gmail_MessagePart $part, ?string $userId = null)
+    public function __construct(TokenRepository $tokenRepository, string $singleMessageId, \Google_Service_Gmail_MessagePart $part, ?string $userId = null)
     {
-        parent::__construct(config(), $userId);
+        parent::__construct($tokenRepository, config(), $userId);
 
         $this->service = new Google_Service_Gmail($this);
 
@@ -50,8 +51,6 @@ class Attachment extends GmailConnection
 
     /**
      * Retuns attachment ID
-     *
-     * @return string
      */
     public function getId(): string
     {
@@ -60,8 +59,6 @@ class Attachment extends GmailConnection
 
     /**
      * Returns attachment file name
-     *
-     * @return string
      */
     public function getFileName(): string
     {
@@ -70,8 +67,6 @@ class Attachment extends GmailConnection
 
     /**
      * Returns mime type of the attachment
-     *
-     * @return string
      */
     public function getMimeType(): string
     {
@@ -89,11 +84,6 @@ class Attachment extends GmailConnection
     }
 
     /**
-     * @param  string  $path
-     * @param  string|null  $filename
-     * @param  string  $disk
-     * @return string
-     *
      * @throws \Exception
      */
     public function saveAttachmentTo(?string $path = null, ?string $filename = null, string $disk = 'local'): string
@@ -136,8 +126,6 @@ class Attachment extends GmailConnection
     /**
      * Returns attachment headers
      * Contains Content-ID and X-Attachment-Id for embedded images
-     *
-     * @return array
      */
     public function getHeaderDetails(array $headers): array
     {

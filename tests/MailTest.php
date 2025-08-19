@@ -26,23 +26,8 @@ class MailTest extends TestCase
     public function get_from_parses_name_and_email()
     {
         Storage::fake('local');
-        $tokenRepo = new class implements TokenRepository
-        {
-            public function tokenExists(string $fileName): bool
-            {
-                return false;
-            }
 
-            public function getToken(string $fileName, bool $allowJsonEncrypt): array
-            {
-                return [];
-            }
-
-            public function storeToken(string $fileName, array $config, bool $allowJsonEncrypt): void {}
-
-            public function deleteToken(string $fileName, bool $allowJsonEncrypt): void {}
-        };
-        $mail = new Mail($tokenRepo);
+        $mail = new Mail;
 
         $header = new \Google_Service_Gmail_MessagePartHeader;
         $header->setName('From');
